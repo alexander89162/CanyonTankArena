@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class HUDController : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private BaseController playerController;
+    [SerializeField] private TankController playerController;
     [SerializeField] private Slider healthBar;
     [SerializeField] private Image healthFillImage;
     [SerializeField] private TMP_Text healthText;
@@ -18,6 +18,7 @@ public class HUDController : MonoBehaviour
     [SerializeField] private MinimapRadarOverlay minimapRadarOverlay;
     [SerializeField] private bool use2DMinimap = true;
     [SerializeField] private Color minimap2DBackgroundColor = new Color(0.18f, 0.28f, 0.2f, 1f);
+     [SerializeField] private HealthComponent playerHealth; 
 
     private bool minimapMarkerCleaned;
     private MinimapPlayerMarker minimapPlayerMarker;
@@ -90,8 +91,8 @@ public class HUDController : MonoBehaviour
         if (playerController == null)
             TryResolvePlayerController();
 
-        if (playerController != null)
-            UpdateHealthAndAmmo(playerController);
+        if (playerHealth != null)
+            UpdateHealthAndAmmo(playerHealth);
         else
             SetMissingPlayerState();
 
@@ -104,36 +105,67 @@ public class HUDController : MonoBehaviour
         ApplyAmmoAnchor();
     }
 
-    void UpdateHealthAndAmmo(BaseController controller)
+    void UpdateHealthAndAmmo(HealthComponent controller)
     {
-        float maxHealth = Mathf.Max(1f, controller.MaxHealth);
-        float currentHealth = Mathf.Clamp(controller.CurrentHealth, 0f, maxHealth);
-        float health01 = currentHealth / maxHealth;
+        //float maxHealth = Mathf.Max(1f, controller.MaxHealth);
+        //float currentHealth = Mathf.Clamp(controller.CurrentHealth, 0f, maxHealth);
+        float maxHealth = playerHealth.MaxHealth;
+        float currentHealth = playerHealth.CurrentHealth;
+        //float health01 = currentHealth / maxHealth;
 
         if (healthBar != null)
         {
-            healthBar.minValue = 0f;
-            healthBar.maxValue = maxHealth;
+            //healthBar.minValue = 0f;
+            //healthBar.maxValue = maxHealth;
             healthBar.value = currentHealth;
         }
 
-        ApplyHealthFillColor(health01);
+        ApplyHealthFillColor(currentHealth);
 
         if (healthText != null)
             healthText.text = $"HP {Mathf.CeilToInt(currentHealth)}/{Mathf.CeilToInt(maxHealth)}";
 
+        /*
         if (ammoText != null)
             ammoText.text = $"Ammo {controller.CurrentAmmo}/{controller.MaxAmmo}";
+        */
     }
+
+    /*
+      private void UpdateHealthBar(float normalizedValue)
+    {
+        if (healthBar != null)
+            healthBar.value = normalizedValue;
+    }
+
+     private void OnEnable()
+    {
+        if (playerHealth != null)
+        {
+            playerHealth.OnHealthChanged.AddListener(UpdateHealthBar);
+            // Set initial value
+            UpdateHealthBar(playerHealth.HealthNormalized);
+        }
+
+    }
+
+    private void OnDisable()
+    {
+        if (playerHealth != null)
+            playerHealth.OnHealthChanged.RemoveListener(UpdateHealthBar);
+    }
+    */
 
     void SetMissingPlayerState()
     {
+        
         if (healthBar != null)
         {
             healthBar.minValue = 0f;
             healthBar.maxValue = 1f;
             healthBar.value = 0f;
         }
+        
 
         ApplyHealthFillColor(0f);
 
@@ -708,10 +740,10 @@ public class HUDController : MonoBehaviour
     {
         GameObject taggedPlayer = TryFindTaggedPlayer();
         if (taggedPlayer != null)
-            playerController = taggedPlayer.GetComponent<BaseController>();
+            playerController = taggedPlayer.GetComponent<TankController>();
 
         if (playerController == null)
-            playerController = FindFirstObjectByType<BaseController>();
+            playerController = FindFirstObjectByType<TankController>();
 
         cachedMinimapTarget = ResolveMinimapTargetTransform(true);
     }
