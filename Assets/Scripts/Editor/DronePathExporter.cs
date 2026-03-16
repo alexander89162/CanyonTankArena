@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+/*Automatically build drone path.
+Note: drone armature needs to be Rotation {-90, 180, 0} for this to work.*/
 public class DronePathExporterWindow : EditorWindow
 {
     private Transform arrowParent;
@@ -17,6 +19,13 @@ public class DronePathExporterWindow : EditorWindow
 
     private void OnGUI()
     {
+        if (arrowParent == null)
+        {
+            GameObject arrows = GameObject.Find("Arrows");
+            if (arrows != null)
+                arrowParent = arrows.transform;
+        }
+
         GUILayout.Label("Drone Path Exporter", EditorStyles.boldLabel);
 
         arrowParent = (Transform)EditorGUILayout.ObjectField("Arrow Parent", arrowParent, typeof(Transform), true);

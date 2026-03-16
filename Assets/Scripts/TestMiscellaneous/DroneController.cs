@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 /*Given a series of Move instructions, this component automatically moves 
-and animates the drone*/
+and animates the drone
+Note: drone armature needs to be Rotation {-90, 180, 0} for this to work.*/
 public class DroneController : MonoBehaviour
 {
     public string droneActions; // the file containing the specific actions this drone will follow
@@ -16,6 +17,7 @@ public class DroneController : MonoBehaviour
     private float elapsedTime = 0f;
     private float segmentDuration = 3f;
     private float segmentTimer = 0f;
+    private Quaternion startRot;
 
     private enum ControllerState
     {
@@ -40,11 +42,13 @@ public class DroneController : MonoBehaviour
         public float endVelocity;
         public AccelerationType accelerationType; // "linear" or "quadratic"
         public RotationType rotationType; // "linear" or "Slerp"
-        public Move(MoveJson json)
+        public Move(MoveJson json, Quaternion rotOffset)
         {
             moveId = json.moveId;
             position = json.position;
-            rotation = Quaternion.Euler(json.rotation);
+            Quaternion jsonRot = Quaternion.Euler(json.rotation);
+            rotation = jsonRot * rotOffset;
+            //rotation = Quaternion.Euler(json.rotation);
             endVelocity = json.endVelocity;
 
             accelerationType =
@@ -99,11 +103,12 @@ public class DroneController : MonoBehaviour
         Slerp
     }
 
-    public bool debug = true;
+    public bool debug = false;
 
     void Awake()
     {
         droneActions = "temp"; // hard-coded during testing
+        startRot = Quaternion.Euler(-90f, 180f, 0f);
 
         SetState(ControllerState.InitializingController);
         StartCoroutine(InitializeDroneActions());
@@ -118,14 +123,17 @@ public class DroneController : MonoBehaviour
                 elapsedTime += Time.deltaTime;
                 segmentTimer += Time.deltaTime;
 
-                float fac = segmentTimer / segmentDuration;
-                fac = Mathf.Clamp01(fac);
+                float posFac = segmentTimer / segmentDuration;
+                posFac = Mathf.Clamp01(posFac);
+                float rotFac = segmentTimer / segmentDuration;
+                rotFac = Mathf.Clamp01(rotFac);
 
-                transform.position = Vector3.Lerp(moves[currentNodeIndex - 1].position, moves[currentNodeIndex].position, fac);
+                transform.position = Vector3.Lerp(moves[currentNodeIndex - 1].position, moves[currentNodeIndex].position, posFac);
+                transform.rotation = Quaternion.Lerp(moves[currentNodeIndex - 1].rotation, moves[currentNodeIndex].rotation, rotFac);
                 
-                if (fac >= 1)
+                if (posFac >= 1)
                 {
-                    fac = 0; segmentTimer = 0;
+                    posFac = 0; segmentTimer = 0;
                     if (currentNodeIndex + 1 < moves.Count)
                         currentNodeIndex++;
                     else
@@ -181,7 +189,7 @@ public class DroneController : MonoBehaviour
 
         // 3) Cache the data we need
         foreach (var m in actions.movements)
-            moves.Add(new Move(m));
+            moves.Add(new Move(m, startRot));
         brakingManeuvers = new List<BrakingManeuver>(actions.brakingManeuvers);
         deploymentActions = new List<DeploymentAction>(actions.deploymentActions);
 
