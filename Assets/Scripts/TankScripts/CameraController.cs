@@ -93,7 +93,6 @@ public class CameraController : MonoBehaviour
             targetYaw = followTarget.eulerAngles.y;
         }
 
-        // Accumulate RELATIVE rotations (mouse/stick)
         yaw += look.x * rotationSpeed * Time.deltaTime;
         float pitchDelta = look.y * rotationSpeed * Time.deltaTime;
         float pitchInput = invertLookY ? -pitchDelta : pitchDelta;
@@ -106,10 +105,10 @@ public class CameraController : MonoBehaviour
         Quaternion yawRotation   = Quaternion.Euler(0, targetYaw + yaw, 0);
         Quaternion pitchRotation = Quaternion.Euler(pitch, 0, 0);
         Quaternion finalRotation = yawRotation * pitchRotation;
+
         //rotate offset around target
         transform.position = followTarget.position + finalRotation * offset;
 
-        // Look at target (slight up bias for better view)
         //transform.LookAt(followTarget.position + followTarget.up * 1.5f, followTarget.up);   
         Vector3 lookAtPoint = followTarget.position + followTarget.up * lookAtHeight;
         Vector3 lookDirection = lookAtPoint - transform.position;
