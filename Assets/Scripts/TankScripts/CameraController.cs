@@ -10,6 +10,9 @@ public class CameraController : MonoBehaviour
     [SerializeField] bool forcePreferredTarget = true;
     [SerializeField] bool enableOnlyOnPreferredTank = true;
 
+    //syncs camera and aim controller to have better aiming
+    [SerializeField] AimController aimController;
+
     //Variables to change how the camera feels when moving
     [SerializeField] Vector3 offset = new Vector3(2.2f, 2.2f, -8.2f);
     [SerializeField] float rotationSpeed = 90f;
@@ -77,7 +80,18 @@ public class CameraController : MonoBehaviour
 
 
         //Horizontal rotation 
-        targetYaw = followTarget.eulerAngles.y;
+        if (aimController != null)
+        {
+            Transform turret = aimController.GetTurretTransform();
+            if (turret != null)
+                targetYaw = turret.eulerAngles.y;
+            else
+                targetYaw = followTarget.eulerAngles.y;
+        }
+        else
+        {
+            targetYaw = followTarget.eulerAngles.y;
+        }
 
         // Accumulate RELATIVE rotations (mouse/stick)
         yaw += look.x * rotationSpeed * Time.deltaTime;
@@ -86,15 +100,24 @@ public class CameraController : MonoBehaviour
 
         pitch += pitchInput;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+        pitch = Mathf.Clamp(pitch, -88.5f, 88.5f);
 
-        // ABSOLUTE rotation: tank yaw + relative camera offset
-        Quaternion rot = Quaternion.Euler(pitch, targetYaw + yaw, 0);
-
-        // Position: rotate offset around target
-        transform.position = followTarget.position + rot * offset;
+        //tank yaw + relative camera offset
+        Quaternion yawRotation   = Quaternion.Euler(0, targetYaw + yaw, 0);
+        Quaternion pitchRotation = Quaternion.Euler(pitch, 0, 0);
+        Quaternion finalRotation = yawRotation * pitchRotation;
+        //rotate offset around target
+        transform.position = followTarget.position + finalRotation * offset;
 
         // Look at target (slight up bias for better view)
-        transform.LookAt(followTarget.position + followTarget.up * lookAtHeight);
+        //transform.LookAt(followTarget.position + followTarget.up * 1.5f, followTarget.up);   
+        Vector3 lookAtPoint = followTarget.position + followTarget.up * lookAtHeight;
+        Vector3 lookDirection = lookAtPoint - transform.position;
+
+        if (lookDirection.sqrMagnitude > 0.001f)
+        {
+            transform.rotation = Quaternion.LookRotation(lookDirection.normalized, followTarget.up);
+        }
     }
 
     void ApplyCameraOwnershipGate()

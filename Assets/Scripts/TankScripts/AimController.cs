@@ -19,6 +19,11 @@ public class AimController: MonoBehaviour
     [SerializeField] bool clampYawRate = false;
     [SerializeField] float maxYawRate = 180f;
 
+    //Variables to set yaxis of turret rotation
+    [SerializeField] float cannonElevationSpeed = 60f;
+    [SerializeField] float maxElevation =  20f; 
+    [SerializeField] float minElevation = -8f;
+
     //grabs the obejects to transform
     [SerializeField] Transform turretTransform;   
     [SerializeField] Transform cannonTransform;   
@@ -55,6 +60,7 @@ public class AimController: MonoBehaviour
     private Vector3 cameraTarget;
     private Vector3 actualTarget;
     private bool hasValidTarget;
+    private float currentCannonPitch = 0f;
 
     void Awake()
     {
@@ -88,6 +94,20 @@ public class AimController: MonoBehaviour
         turretYawOffset = Mathf.Repeat(turretYawOffset + 180f, 360f) - 180f;
 
         ApplyTurretRotation();
+
+        float pitchInput   = aimInput.y;                         
+        float pitchDelta   = pitchInput * aimSensitivity * cannonElevationSpeed * Time.deltaTime;
+
+        currentCannonPitch += pitchDelta;
+        currentCannonPitch  = Mathf.Clamp(currentCannonPitch, minElevation, maxElevation);
+
+        if (cannonTransform != null)
+        {
+            // Preserve existing y & z, only change x (pitch)
+            Vector3 localEuler = cannonTransform.localEulerAngles;
+            localEuler.x = currentCannonPitch;
+            cannonTransform.localEulerAngles = localEuler;
+        }
 
         UpdateTargeting();
     }

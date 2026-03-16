@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SimpleProjectile : MonoBehaviour
@@ -7,22 +8,24 @@ public class SimpleProjectile : MonoBehaviour
     public float maxLifetime = 8f;
     public Vector3 initialVelocity = Vector3.zero;
 
-    [Header("Hit Detection")]
-    public LayerMask hitLayers;             // only enemies / world — **exclude** your own tank layer!
-    public float raycastLengthMultiplier = 1.2f;   // safety margin
-    public float initialIgnoreDistance = 1.5f;     // NEW: ignore hits within X meters of spawn
 
-    //private Vector3 velocityDirection;
+    [SerializeField] private float damage = 35f;
+    [SerializeField] private GameObject hitEffectPrefab;
+
+    [Header("Hit Detection")]
+    public LayerMask hitLayers;        
+    public float raycastLengthMultiplier = 1.2f;   
+    public float initialIgnoreDistance = 1.5f;   
+
+
     private Vector3 velocity;
-    private Vector3 spawnPosition;                 // NEW
+    private Vector3 spawnPosition;             
     private float spawnTime;
 
     void Start()
     {
         spawnTime = Time.time;
-        spawnPosition = transform.position;        // remember exact spawn point
-        //velocityDirection = transform.forward.normalized;
-        //velocity = velocity.normalized * (speed + initialVelocity.magnitude * 0.8f);
+        spawnPosition = transform.position; 
         velocity = initialVelocity + transform.forward * speed;
     }
 
@@ -43,7 +46,7 @@ public class SimpleProjectile : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, rayDistanceThisFrame, hitLayers))
         {
-            // NEW: ignore very close hits (self / muzzle / gun barrel)
+            //ignore self / muzzle / gun barrel
             float distanceFromSpawn = Vector3.Distance(hit.point, spawnPosition);
             if (distanceFromSpawn >= initialIgnoreDistance)
             {
@@ -62,10 +65,20 @@ public class SimpleProjectile : MonoBehaviour
 
     private void OnHit(Vector3 point, Vector3 normal, Collider target)
     {
-        // Apply damage, spawn particles, etc.
-        Debug.Log($"Hit: {target.name} at distance {Vector3.Distance(spawnPosition, point):F1}m");
+        Debug.Log($"[Projectile] Hit {target.name} for {damage} damage!");
 
-        Destroy(gameObject);
+        if (target.TryGetComponent<DamageController>(out DamageController receiver))
+        {
+            receiver.TakeDamage(damage);
+        }
+
+        if (hitEffectPrefab != null)
+        {
+            Instantiate(hitEffectPrefab, point, Quaternion.LookRotation(normal));
+        }
+
+        Destroy(Instantiate(hitEffectPrefab, point, Quaternion.LookRotation(normal)), .15f); // Destroy effect after 2 seconds
+        //hitEffectPrefab.IsDestroyed();
     }
 
     // Optional: keep OnTriggerEnter as fallback / for trigger colliders

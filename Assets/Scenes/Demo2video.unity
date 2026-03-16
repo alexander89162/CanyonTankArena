@@ -466,11 +466,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1091484981753174827, guid: f4afa433567604c41925f304aa343e9a, type: 3}
       propertyPath: maxPitch
-      value: 120
+      value: 89.5
       objectReference: {fileID: 0}
     - target: {fileID: 1091484981753174827, guid: f4afa433567604c41925f304aa343e9a, type: 3}
       propertyPath: minPitch
-      value: 0
+      value: -45
       objectReference: {fileID: 0}
     - target: {fileID: 1091484981753174827, guid: f4afa433567604c41925f304aa343e9a, type: 3}
       propertyPath: offset.y
@@ -481,8 +481,16 @@ PrefabInstance:
       value: -42
       objectReference: {fileID: 0}
     - target: {fileID: 1091484981753174827, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      propertyPath: lookAtHeight
+      value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1091484981753174827, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      propertyPath: aimController
+      value: 
+      objectReference: {fileID: 1862526479}
+    - target: {fileID: 1091484981753174827, guid: f4afa433567604c41925f304aa343e9a, type: 3}
       propertyPath: rotationSpeed
-      value: 25
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1091484981753174827, guid: f4afa433567604c41925f304aa343e9a, type: 3}
       propertyPath: preferredTargetName
@@ -490,12 +498,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1119538069294149937, guid: f4afa433567604c41925f304aa343e9a, type: 3}
       propertyPath: fireCooldown
-      value: 1
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 2258660592341581919, guid: f4afa433567604c41925f304aa343e9a, type: 3}
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 1077013190}
+    - target: {fileID: 2258660592341581919, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      propertyPath: maxElevation
+      value: 65
+      objectReference: {fileID: 0}
+    - target: {fileID: 2258660592341581919, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      propertyPath: minElevation
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2258660592341581919, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      propertyPath: turretTurnSpeed
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 2258660592341581919, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      propertyPath: cannonElevationSpeed
+      value: 45
+      objectReference: {fileID: 0}
     - target: {fileID: 3247923120125761810, guid: f4afa433567604c41925f304aa343e9a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 103.72916
@@ -5191,6 +5215,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47b796e0e10a541f58cc896e02ebea8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinimapEnemyMarker
+  target: {fileID: 0}
+  playerReference: {fileID: 0}
+  radarOverlay: {fileID: 0}
+  edgePadding: 18
+  yawOffset: 0
+  hideWhenOutOfRange: 0
 --- !u!4 &1651121015 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9163105107614280370, guid: dc1e36e9c3e8c78499e04030edd01ec8, type: 3}
@@ -6081,6 +6111,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1359039920150511767, guid: a7a5f83da0856ca4698a53a029ec4686, type: 3}
   m_PrefabInstance: {fileID: 1855262538}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1862526479 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2258660592341581919, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+  m_PrefabInstance: {fileID: 176427536}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4589164b3559bec4b88f2fa90499834f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AimController
 --- !u!1001 &1877050615
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6904,6 +6945,7 @@ MonoBehaviour:
   preferredTargetName: minitank-v10-green 1
   forcePreferredTarget: 1
   enableOnlyOnPreferredTank: 1
+  aimController: {fileID: 0}
   offset: {x: 0, y: 25, z: -25}
   rotationSpeed: 50
   minPitch: 75
@@ -8547,6 +8589,9 @@ MonoBehaviour:
   turretTurnSpeed: 55
   clampYawRate: 0
   maxYawRate: 180
+  cannonElevationSpeed: 60
+  maxElevation: 20
+  minElevation: -8
   turretTransform: {fileID: 852596436266322608}
   cannonTransform: {fileID: 8130457747034431317}
   turretYawAxis: 1
