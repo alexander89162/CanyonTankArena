@@ -1,0 +1,68 @@
+{
+    "movements": [
+        {
+            "moveId": 0,
+            "position": {
+                "x": 1051.567626953125,
+                "y": 635.0,
+                "z": 2165.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 180.0,
+                "z": 0.0
+            },
+            "endVelocity": 40.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 1,
+            "position": {
+                "x": 1051.567626953125,
+                "y": 635.0,
+                "z": 1686.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 270.0,
+                "z": 0.0
+            },
+            "endVelocity": 40.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 2,
+            "position": {
+                "x": 1051.567626953125,
+                "y": 635.0,
+                "z": 1220.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "endVelocity": 40.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 3,
+            "position": {
+                "x": 1051.567626953125,
+                "y": 635.0,
+                "z": 745.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 90.0,
+                "z": 0.0
+            },
+            "endVelocity": 40.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        }
+    ]
+}

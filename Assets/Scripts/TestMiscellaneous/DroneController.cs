@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 /*Given a series of Move instructions, this component automatically moves 
 and animates the drone
-Note: drone armature needs to be Rotation {-90, 180, 0} for this to work.*/
+Note: drone armature needs to be Rotation {-90, 0, 0} for this to work.*/
 public class DroneController : MonoBehaviour
 {
     public string droneActions; // the file containing the specific actions this drone will follow
@@ -27,6 +27,7 @@ public class DroneController : MonoBehaviour
         Idle, // Rock up and down, small sideways noise which should always return to original position and tilt gently while doing so
     }
 
+    [System.Serializable]
     public class DroneActions
     {
         public MoveJson[] movements;
@@ -75,9 +76,14 @@ public class DroneController : MonoBehaviour
     [System.Serializable]
     public struct BrakingManeuver
     {
-        public Quaternion rotation;
+        public Vector3 rotation;
         public float duration;
         public float outwardMove;
+
+        public Quaternion GetRotation()
+        {
+            return Quaternion.Euler(rotation);
+        }
     }
 
     [System.Serializable]
@@ -107,8 +113,7 @@ public class DroneController : MonoBehaviour
 
     void Awake()
     {
-        droneActions = "temp"; // hard-coded during testing
-        startRot = Quaternion.Euler(-90f, 180f, 0f);
+        startRot = Quaternion.Euler(0f, 0f, 0f);
 
         SetState(ControllerState.InitializingController);
         StartCoroutine(InitializeDroneActions());
@@ -129,11 +134,13 @@ public class DroneController : MonoBehaviour
                 rotFac = Mathf.Clamp01(rotFac);
 
                 transform.position = Vector3.Lerp(moves[currentNodeIndex - 1].position, moves[currentNodeIndex].position, posFac);
-                transform.rotation = Quaternion.Lerp(moves[currentNodeIndex - 1].rotation, moves[currentNodeIndex].rotation, rotFac);
+                transform.rotation = Quaternion.Slerp(moves[currentNodeIndex - 1].rotation, moves[currentNodeIndex].rotation, rotFac);
                 
                 if (posFac >= 1)
                 {
-                    posFac = 0; segmentTimer = 0;
+                    segmentTimer = 0;
+                    transform.position = moves[currentNodeIndex].position;
+                    transform.rotation = moves[currentNodeIndex].rotation;
                     if (currentNodeIndex + 1 < moves.Count)
                         currentNodeIndex++;
                     else
@@ -157,10 +164,11 @@ public class DroneController : MonoBehaviour
         string path = System.IO.Path.Combine(
             Application.streamingAssetsPath,
             "DroneActions",
-            droneActions + ".json"
+            droneActions.Trim() + ".json"
         );
 
         path = "file://" + path;
+        if (debug) Debug.Log($"droneActions evaluated to {droneActions}.\nAttempted to read from path {path}");
 
         UnityWebRequest request = UnityWebRequest.Get(path);
         yield return request.SendWebRequest();
@@ -180,6 +188,8 @@ public class DroneController : MonoBehaviour
 
         // 2) Validation: fail = delete this drone to avoid crashes
         moves = new List<Move>(actions.movements.Length);
+        brakingManeuvers = new List<BrakingManeuver>(actions.brakingManeuvers);
+        deploymentActions = new List<DeploymentAction>(actions.deploymentActions);
         if (!ValidateDroneActions(actions)) // TODO: fix validation, it does nothing right now
         {
             Debug.LogError($"DroneController on {name} received invalid action data. Destroying drone.");
@@ -190,8 +200,6 @@ public class DroneController : MonoBehaviour
         // 3) Cache the data we need
         foreach (var m in actions.movements)
             moves.Add(new Move(m, startRot));
-        brakingManeuvers = new List<BrakingManeuver>(actions.brakingManeuvers);
-        deploymentActions = new List<DeploymentAction>(actions.deploymentActions);
 
         // 4) Done initializing
         if (debug) Debug.Log("DroneController finished initialization");
@@ -200,19 +208,28 @@ public class DroneController : MonoBehaviour
 
     private bool ValidateDroneActions(DroneActions actions)
     {
-        // 1) Interpolation methods must be valid
-        for (int i = 0; i < moves.Count; i++)
+        // 1) There should be no nulls
+        if (actions.movements == null)
+            Debug.LogError("movements is NULL in external actions");
+        if (actions.brakingManeuvers == null)
+            Debug.LogError("brakingManeuvers is NULL in external actions");
+        if (actions.deploymentActions == null)
+            Debug.LogError("deploymentActions is NULL in external actions");
+
+        // 2) Interpolation methods must be valid
+        for (int i = 0; i < actions.movements.Length; i++)
         {
-            var move = moves[i];
-            if (!System.Enum.IsDefined(typeof(AccelerationType), move.accelerationType) || move.accelerationType == AccelerationType.Unknown)
+            var move = actions.movements[i];
+            if (!System.Enum.TryParse(move.accelerationType, true, out AccelerationType a) || a == AccelerationType.Unknown)
             {
-                Debug.LogError($"Acceleration type is invalid.");
-                return false;   
+                Debug.LogError("Acceleration type is invalid.");
+                return false;
             }
-            if (!System.Enum.IsDefined(typeof(RotationType), move.rotationType) || move.rotationType == RotationType.Unknown)
+
+            if (!System.Enum.TryParse(move.rotationType, true, out RotationType r) || r == RotationType.Unknown)
             {
-                Debug.LogError($"Rotation type is invalid.");
-                return false;   
+                Debug.LogError("Rotation type is invalid.");
+                return false;
             }
         }
 

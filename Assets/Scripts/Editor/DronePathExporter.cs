@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 
 /*Automatically build drone path.
-Note: drone armature needs to be Rotation {-90, 180, 0} for this to work.*/
+Note: drone armature needs to be Rotation {-90, 0, 0} for this to work.*/
 public class DronePathExporterWindow : EditorWindow
 {
     private Transform arrowParent;
