@@ -17,7 +17,6 @@ public class DroneController : MonoBehaviour
     private float elapsedTime = 0f;
     private float segmentDuration = 3f;
     private float segmentTimer = 0f;
-    private Quaternion startRot;
 
     private enum ControllerState
     {
@@ -43,13 +42,11 @@ public class DroneController : MonoBehaviour
         public float endVelocity;
         public AccelerationType accelerationType; // "linear" or "quadratic"
         public RotationType rotationType; // "linear" or "Slerp"
-        public Move(MoveJson json, Quaternion rotOffset)
+        public Move(MoveJson json)
         {
             moveId = json.moveId;
             position = json.position;
-            Quaternion jsonRot = Quaternion.Euler(json.rotation);
-            rotation = jsonRot * rotOffset;
-            //rotation = Quaternion.Euler(json.rotation);
+            rotation = Quaternion.Euler(json.rotation);
             endVelocity = json.endVelocity;
 
             accelerationType =
@@ -113,8 +110,6 @@ public class DroneController : MonoBehaviour
 
     void Awake()
     {
-        startRot = Quaternion.Euler(0f, 0f, 0f);
-
         SetState(ControllerState.InitializingController);
         StartCoroutine(InitializeDroneActions());
     }
@@ -199,7 +194,7 @@ public class DroneController : MonoBehaviour
 
         // 3) Cache the data we need
         foreach (var m in actions.movements)
-            moves.Add(new Move(m, startRot));
+            moves.Add(new Move(m));
 
         // 4) Done initializing
         if (debug) Debug.Log("DroneController finished initialization");
