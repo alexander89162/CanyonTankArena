@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using static DroneController;
 
 /*Automatically build drone path.
 Note: drone armature needs to be Rotation {-90, 0, 0} for this to work.*/
@@ -71,19 +72,23 @@ public class DronePathExporterWindow : EditorWindow
 
         moves = moves.OrderBy(m => m.moveId).ToList();
 
-        DroneActions actions = new DroneActions();
-        actions.movements = moves.ToArray();
-
-        // Ensure folder exists
         string folderPath = Path.Combine(Application.streamingAssetsPath, "DroneActions");
         if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
-
         string path = Path.Combine(folderPath, jsonFileName + ".json");
 
-        File.WriteAllText(path, JsonUtility.ToJson(actions, true));
+        // Load existing data if file exists, otherwise start fresh
+        DroneActions actions = new DroneActions();
+        if (File.Exists(path))
+            actions = JsonUtility.FromJson<DroneActions>(File.ReadAllText(path));
 
+        // Overwrite only movements
+        actions.movements = moves.ToArray();
+
+        File.WriteAllText(path, JsonUtility.ToJson(actions, true));
         Debug.Log("Drone path exported to: " + path);
-    }
+
+            Debug.Log("Drone path exported to: " + path);
+        }
 
     private int ExtractId(string name)
     {
@@ -105,16 +110,24 @@ public class DronePathExporterWindow : EditorWindow
     private class DroneActions
     {
         public MoveJson[] movements;
+        public BrakingManeuver[] brakingManeuvers;
+        public DeploymentAction[] deploymentActions;
     }
 
     [System.Serializable]
-    private class MoveJson
+    private class BrakingManeuver
     {
-        public int moveId;
-        public Vector3 position;
         public Vector3 rotation;
-        public float endVelocity;
-        public string accelerationType;
-        public string rotationType;
+        public float duration;
+        public float outwardMove;
+    }
+
+    [System.Serializable]
+    private class DeploymentAction
+    {
+        public string action;
+        public int activationNode;
+        public float startDelay;
+        public float duration;
     }
 }
