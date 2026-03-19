@@ -594,6 +594,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7944852702322325749, guid: f4afa433567604c41925f304aa343e9a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1833390463}
+    - targetCorrespondingSourceObject: {fileID: 7944852702322325749, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1833390464}
   m_SourcePrefab: {fileID: 100100000, guid: f4afa433567604c41925f304aa343e9a, type: 3}
 --- !u!1 &192043876
 GameObject:
@@ -635,6 +638,11 @@ Transform:
   - {fileID: 1408669267465028200}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &203034639 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7529430814226637219, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+  m_PrefabInstance: {fileID: 176427536}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &206510238
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6135,7 +6143,34 @@ MonoBehaviour:
   rotationSpeed: 45
   gravity: -75
   moveInput: {x: 0, y: 0}
+  currentVelocityV: {x: 0, y: 0, z: 0}
   tankSlope: {fileID: 1833390458}
+--- !u!114 &1833390464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833390443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18ebc428c1dee244b8c90ccbde45664c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TreadsAnimator
+  targetRenderer: {fileID: 203034639}
+  scrollSpeed: 0.025
+  scrollDirection: {x: 1, y: 0}
+  scrollProgress: 0
+  scrollThreshold: 0.65
+  moveAction:
+    m_Name: Move
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 46600823-0559-4698-90eb-56c2ff66d540
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
 --- !u!1001 &1853620209
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8876,18 +8911,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d47d067757c1d34880247d113502b67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankController
+  movement: {fileID: 0}
   tankSlope: {fileID: 4586253788303365788}
   turrets:
   - {fileID: 5875081913910973950}
   - {fileID: 6054368396544998811}
   - {fileID: 819380162120837839}
-  maxSpeed: 100
-  accelerationTime: 0.9
-  decelerationTime: 0.4
-  backwardMultiplier: 0.65
-  rotationSpeed: 45
-  gravity: -75
-  currentVelocityV: {x: 0, y: 0, z: 0}
 --- !u!114 &8978627124084702695
 MonoBehaviour:
   m_ObjectHideFlags: 0
