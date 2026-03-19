@@ -115,12 +115,13 @@ public class HUDController : MonoBehaviour
 
         if (healthBar != null)
         {
-            //healthBar.minValue = 0f;
-            //healthBar.maxValue = maxHealth;
+            // Always set min/max before value to avoid fill reset
+            healthBar.minValue = 0f;
+            healthBar.maxValue = maxHealth;
             healthBar.value = currentHealth;
         }
 
-        ApplyHealthFillColor(currentHealth);
+        ApplyHealthFillColor(currentHealth / maxHealth);
 
         if (healthText != null)
             healthText.text = $"HP {Mathf.CeilToInt(currentHealth)}/{Mathf.CeilToInt(maxHealth)}";
@@ -830,19 +831,116 @@ public class HUDController : MonoBehaviour
                     fillAreaRect.offsetMax = new Vector2(-inset, -inset);
                 }
 
-                Transform fill = fillArea.Find("Fill");
-                if (fill != null)
-                {
-                    RectTransform fillRect = fill as RectTransform;
-                    if (fillRect != null)
-                    {
-                        fillRect.anchorMin = Vector2.zero;
-                        fillRect.anchorMax = Vector2.one;
-                        fillRect.offsetMin = Vector2.zero;
-                        fillRect.offsetMax = Vector2.zero;
-                    }
-                }
+
+void Awake()
+{
+    ResolveUIReferences();
+    EnsureHealthBarPresentation(); // only once here
+}
+
+void RefreshUI()
+{
+    ResolveUIReferences();
+
+    if (playerController == null)
+        TryResolvePlayerController();
+
+    if (playerHealth != null)
+        UpdateHealthAndAmmo(playerHealth);
+    else
+        SetMissingPlayerState();
+
+    UpdateMinimapState();
+}
+
+void UpdateHealthAndAmmo(HealthComponent controller)
+{
+    if (controller == null)
+    {
+        SetMissingPlayerState();
+        return;
+    }
+
+    float maxHealth = Mathf.Max(1f, controller.MaxHealth);
+    float currentHealth = Mathf.Clamp(controller.CurrentHealth, 0f, maxHealth);
+    float health01 = currentHealth / maxHealth;
+
+    if (healthBar != null)
+    {
+        healthBar.minValue = 0f;
+        healthBar.maxValue = 1f;
+        healthBar.SetValueWithoutNotify(health01);
+    }
+
+    ApplyHealthFillColor(health01);
+
+    if (healthText != null)
+        healthText.text = $"HP {Mathf.CeilToInt(currentHealth)}/{Mathf.CeilToInt(maxHealth)}";
+}
+
+void EnsureHealthBarPresentation()
+{
+    if (healthBar != null)
+    {
+        RectTransform healthBarRect = healthBar.GetComponent<RectTransform>();
+        if (healthBarRect != null)
+        {
+            healthBarRect.anchorMin = new Vector2(0f, 1f);
+            healthBarRect.anchorMax = new Vector2(1f, 1f);
+            healthBarRect.pivot = new Vector2(0.5f, 1f);
+            healthBarRect.sizeDelta = new Vector2(0f, healthBarHeight);
+            healthBarRect.anchoredPosition = Vector2.zero;
+        }
+
+        // KEEP THIS
+        Transform fillArea = healthBar.transform.Find("Fill Area");
+        if (fillArea != null)
+        {
+            RectTransform fillAreaRect = fillArea as RectTransform;
+            if (fillAreaRect != null)
+            {
+                fillAreaRect.anchorMin = Vector2.zero;
+                fillAreaRect.anchorMax = Vector2.one;
+                float inset = lowPolyHealthUiMode ? Mathf.Max(1f, healthFrameThickness) : 0f;
+                fillAreaRect.offsetMin = new Vector2(inset, inset);
+                fillAreaRect.offsetMax = new Vector2(-inset, -inset);
             }
+        }
+
+        // ❌ REMOVED: Fill rect override (this was causing auto-fill bug)
+
+        Transform background = healthBar.transform.Find("Background");
+        if (background != null)
+        {
+            Image backgroundImage = background.GetComponent<Image>();
+            if (backgroundImage != null)
+                backgroundImage.color = lowPolyHealthUiMode
+                    ? healthFrameColor
+                    : new Color(0.04f, 0.05f, 0.04f, 0.95f);
+        }
+
+        EnsureHealthFrameImage(healthBar);
+    }
+
+    if (healthText != null && healthBar != null)
+    {
+        RectTransform healthTextRect = healthText.GetComponent<RectTransform>();
+        RectTransform healthBarRect = healthBar.GetComponent<RectTransform>();
+        if (healthTextRect != null && healthBarRect != null)
+        {
+            healthTextRect.anchorMin = new Vector2(0f, 1f);
+            healthTextRect.anchorMax = new Vector2(1f, 1f);
+            healthTextRect.pivot = new Vector2(0.5f, 1f);
+            healthTextRect.sizeDelta = new Vector2(0f, 26f);
+            healthTextRect.anchoredPosition =
+                new Vector2(0f, -(healthBarHeight + healthTextOffsetBelowBar));
+        }
+
+        healthText.alignment = TextAlignmentOptions.Center;
+        healthText.color = healthTextDisplayColor;
+        healthText.fontSize = Mathf.Max(22f, healthText.fontSize);
+    }
+} }
 
             Transform background = healthBar.transform.Find("Background");
             if (background != null)
