@@ -50,7 +50,11 @@ public class HealthComponent : MonoBehaviour
             if (destroyOnDeath)
             {
                 Destroy(gameObject, deathDelay);
-                SceneManager.LoadScene("MainMenu"); // Reload current scene on player death
+
+                if (gameObject.CompareTag("Player"))
+                {
+                    SceneManager.LoadScene("MainMenu"); // Reload current scene on player death
+                }
             }
         }
     }

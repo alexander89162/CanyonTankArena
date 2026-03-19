@@ -1,0 +1,86 @@
+using UnityEngine;
+
+[RequireComponent(typeof(CharacterController))]
+public class MovementController : MonoBehaviour
+{
+    [Header("Movement Settings")]
+    public float maxSpeed;
+    public float accelerationTime;
+    public float decelerationTime;
+    public float backwardMultiplier;
+    public float rotationSpeed;
+    public float gravity;
+
+    public Vector2 moveInput = Vector2.zero; 
+
+    private CharacterController controller;
+    private Vector3 currentVelocity = Vector3.zero;
+    private float verticalVelocity = 0f;
+    public Vector3 currentVelocityV = Vector3.zero;
+
+    public TankSlope tankSlope;
+
+    void Awake()
+    {
+        controller = GetComponent<CharacterController>();
+
+        if (tankSlope != null)
+        {
+            tankSlope.tankRoot = transform;
+        }
+    }
+
+    void Update()
+    {
+        HandleMovement();
+    }
+
+    public void HandleMovement()
+    {
+        float turnInput = moveInput.x;
+        if (Mathf.Abs(turnInput) > 0.01f)
+        {
+            float rotationThisFrame = turnInput * rotationSpeed * Time.deltaTime;
+            transform.Rotate(0, rotationThisFrame, 0);
+        }
+
+        Vector3 targetDirection = transform.forward * moveInput.y;
+        float targetSpeed = Mathf.Abs(moveInput.y) * maxSpeed;
+
+        if (moveInput.y < 0)
+            targetSpeed *= backwardMultiplier;
+
+        float smoothTime = (moveInput.y != 0) ? accelerationTime : decelerationTime;
+
+        currentVelocity = Vector3.SmoothDamp(
+            currentVelocity,
+            targetDirection * targetSpeed,
+            ref currentVelocityV,
+            smoothTime
+        );
+
+        if (controller.isGrounded)
+        {
+            verticalVelocity = -2f;
+        }
+        else
+        {
+            verticalVelocity += gravity * Time.deltaTime;
+        }
+
+        Vector3 move = currentVelocity;
+        move.y = verticalVelocity;
+
+        controller.Move(move * Time.deltaTime);
+
+        if (controller.isGrounded && verticalVelocity < 0)
+        {
+            verticalVelocity = -2f;
+        }
+
+        if (tankSlope != null)
+        {
+            tankSlope.UpdateAlignment(currentVelocity);
+        }
+    }
+}

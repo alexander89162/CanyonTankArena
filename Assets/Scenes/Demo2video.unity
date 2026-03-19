@@ -560,6 +560,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5844828288039485532, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7189055554519954899, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      propertyPath: m_ActionEvents.Array.size
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 7189055554519954899, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      propertyPath: m_ActionEvents.Array.data[20].m_ActionId
+      value: 02b7ca90-a3af-4184-aadb-7d8ec10f6ea3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7189055554519954899, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      propertyPath: m_ActionEvents.Array.data[20].m_ActionName
+      value: 'Tanks/Pause[/Keyboard/escape]'
+      objectReference: {fileID: 0}
     - target: {fileID: 7944852702322325749, guid: f4afa433567604c41925f304aa343e9a, type: 3}
       propertyPath: m_Name
       value: minitank-v10-green t2
@@ -575,6 +591,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7944852702322325749, guid: f4afa433567604c41925f304aa343e9a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1833390452}
+    - targetCorrespondingSourceObject: {fileID: 7944852702322325749, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1833390463}
   m_SourcePrefab: {fileID: 100100000, guid: f4afa433567604c41925f304aa343e9a, type: 3}
 --- !u!1 &192043876
 GameObject:
@@ -3209,17 +3228,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1359039920150511767, guid: a7a5f83da0856ca4698a53a029ec4686, type: 3}
   m_PrefabInstance: {fileID: 1081424168}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1084471395 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5499701344724633602, guid: 58196ce7d8bbc634d8dc7d72f6ea3275, type: 3}
-  m_PrefabInstance: {fileID: 1290537223}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1001 &1096777939
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5340,8 +5348,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e16b359599c423b4884a436bbd6b894c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealthUI
-  healthSlider: {fileID: 1084471395}
-  playerHealth: {fileID: 1833390455}
 --- !u!4 &1651121015 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9163105107614280370, guid: dc1e36e9c3e8c78499e04030edd01ec8, type: 3}
@@ -6099,6 +6105,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d47d067757c1d34880247d113502b67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankController
+--- !u!114 &1833390458 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2234444833143071458, guid: f4afa433567604c41925f304aa343e9a, type: 3}
+  m_PrefabInstance: {fileID: 176427536}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833390443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a451f54df2adc344ab79c0be4ad96e19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankSlope
+--- !u!114 &1833390463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833390443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e71fb1978b3aebd418273956ea8547a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MovementController
+  maxSpeed: 100
+  accelerationTime: 0.9
+  decelerationTime: 0.4
+  backwardMultiplier: 0.5
+  rotationSpeed: 45
+  gravity: -75
+  moveInput: {x: 0, y: 0}
+  tankSlope: {fileID: 1833390458}
 --- !u!1001 &1853620209
 PrefabInstance:
   m_ObjectHideFlags: 0

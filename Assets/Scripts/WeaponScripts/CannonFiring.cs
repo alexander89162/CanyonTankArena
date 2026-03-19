@@ -42,8 +42,8 @@ public class CannonFiring : MonoBehaviour
 
         nextFireTime = Time.time + fireCooldown;
 
-        TankController tank = GetComponentInParent<TankController>();
-        Vector3 tankVelocity = tank != null ? tank.currentVelocityV : Vector3.zero;
+        MovementController movement = GetComponentInParent<MovementController>();
+        Vector3 tankVelocity = movement != null ? movement.currentVelocityV : Vector3.zero;
 
         GameObject shell = Instantiate(shellPrefab, muzzlePoint.position, muzzlePoint.rotation);
 
