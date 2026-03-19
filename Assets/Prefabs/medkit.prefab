@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 4270959110735286828}
   - component: {fileID: 7854040556810261573}
   - component: {fileID: 3499137344773116911}
+  - component: {fileID: 7554023272909781537}
+  - component: {fileID: 6312071284566420466}
   m_Layer: 0
   m_Name: medkit
   m_TagString: Untagged
@@ -106,3 +108,40 @@ MonoBehaviour:
   floatHeight: 1.1
   floatSpeed: 3.3
   rotationSpeed: 35
+--- !u!114 &7554023272909781537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8170426611450255586}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de7b40b62f92240499251e83238047c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HP_PickUp
+  healAmount: 30
+  destroyOnPickup: 1
+--- !u!136 &6312071284566420466
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8170426611450255586}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.31594977
+  m_Height: 0.63189965
+  m_Direction: 1
+  m_Center: {x: 0.0036529542, y: -0.001824236, z: 0.04932156}
