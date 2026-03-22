@@ -64,8 +64,7 @@ public class DronePathExporterWindow : EditorWindow
                 moveId = id,
                 position = child.position,
                 rotation = child.rotation.eulerAngles,
-                endVelocity = 40f,
-                accelerationType = id < 0 ? "n/a" : "linear",
+                endVelocity = 200f,
                 rotationType = id < 0 ? "n/a" : "linear"
             });
         }

@@ -12,8 +12,7 @@
                 "y": 196.61300659179688,
                 "z": 344.9014892578125
             },
-            "endVelocity": 40.0,
-            "accelerationType": "linear",
+            "endVelocity": 200.0,
             "rotationType": "linear"
         },
         {
@@ -28,8 +27,7 @@
                 "y": 196.6129913330078,
                 "z": 352.9075927734375
             },
-            "endVelocity": 40.0,
-            "accelerationType": "linear",
+            "endVelocity": 200.0,
             "rotationType": "linear"
         },
         {
@@ -44,8 +42,7 @@
                 "y": 196.6129913330078,
                 "z": 340.9140319824219
             },
-            "endVelocity": 40.0,
-            "accelerationType": "linear",
+            "endVelocity": 200.0,
             "rotationType": "linear"
         },
         {
@@ -60,8 +57,7 @@
                 "y": 196.6129913330078,
                 "z": 331.52886962890627
             },
-            "endVelocity": 40.0,
-            "accelerationType": "linear",
+            "endVelocity": 200.0,
             "rotationType": "linear"
         },
         {
@@ -76,8 +72,7 @@
                 "y": 239.13699340820313,
                 "z": 336.48895263671877
             },
-            "endVelocity": 40.0,
-            "accelerationType": "linear",
+            "endVelocity": 200.0,
             "rotationType": "linear"
         },
         {
@@ -92,8 +87,7 @@
                 "y": 267.11865234375,
                 "z": 347.4952087402344
             },
-            "endVelocity": 40.0,
-            "accelerationType": "linear",
+            "endVelocity": 200.0,
             "rotationType": "linear"
         },
         {
@@ -108,8 +102,7 @@
                 "y": 336.80242919921877,
                 "z": 13.839873313903809
             },
-            "endVelocity": 40.0,
-            "accelerationType": "linear",
+            "endVelocity": 200.0,
             "rotationType": "linear"
         },
         {
@@ -124,8 +117,7 @@
                 "y": 353.1019592285156,
                 "z": 4.375196933746338
             },
-            "endVelocity": 40.0,
-            "accelerationType": "linear",
+            "endVelocity": 200.0,
             "rotationType": "linear"
         },
         {
@@ -140,8 +132,7 @@
                 "y": 64.98201751708985,
                 "z": 0.0
             },
-            "endVelocity": 40.0,
-            "accelerationType": "linear",
+            "endVelocity": 200.0,
             "rotationType": "linear"
         }
     ],

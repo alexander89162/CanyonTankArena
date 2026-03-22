@@ -40,7 +40,6 @@ public class DroneController : MonoBehaviour
         public Vector3 position;
         public Quaternion rotation;
         public float endVelocity;
-        public AccelerationType accelerationType; // "linear" or "quadratic"
         public RotationType rotationType; // "linear" or "Slerp"
         public Move(MoveJson json)
         {
@@ -48,10 +47,6 @@ public class DroneController : MonoBehaviour
             position = json.position;
             rotation = Quaternion.Euler(json.rotation);
             endVelocity = json.endVelocity;
-
-            accelerationType =
-                System.Enum.TryParse(json.accelerationType, true, out AccelerationType a)
-                ? a : AccelerationType.Unknown;
 
             rotationType =
                 System.Enum.TryParse(json.rotationType, true, out RotationType r)
@@ -66,7 +61,6 @@ public class DroneController : MonoBehaviour
         public Vector3 position;
         public Vector3 rotation;
         public float endVelocity;
-        public string accelerationType;
         public string rotationType;
     }
 
@@ -90,13 +84,6 @@ public class DroneController : MonoBehaviour
         public int activationNode;
         public float startDelay;
         public float duration;
-    }
-
-    public enum AccelerationType
-    {
-        Unknown,
-        Linear,
-        Quadratic
     }
 
     public enum RotationType
@@ -232,11 +219,6 @@ public class DroneController : MonoBehaviour
         for (int i = 0; i < actions.movements.Length; i++)
         {
             var move = actions.movements[i];
-            if (!System.Enum.TryParse(move.accelerationType, true, out AccelerationType a) || a == AccelerationType.Unknown)
-            {
-                Debug.LogError("Acceleration type is invalid.");
-                return false;
-            }
 
             if (!System.Enum.TryParse(move.rotationType, true, out RotationType r) || r == RotationType.Unknown)
             {
