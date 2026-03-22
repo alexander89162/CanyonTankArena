@@ -33,8 +33,8 @@ public class AssaultGeneric : MonoBehaviour
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
-        agent.isStopped = true;
-        agent.velocity = Vector3.zero;
+        agent.updatePosition = false;  // movement system owns position
+        agent.updateRotation = false;  // optional, if your system handles turning
 
         // 
         Collider[] hits = Physics.OverlapSphere(transform.position, detectionRange, opponentLayer);
