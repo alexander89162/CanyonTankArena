@@ -33,6 +33,8 @@ public class AssaultGeneric : MonoBehaviour
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
 
         // 
         Collider[] hits = Physics.OverlapSphere(transform.position, detectionRange, opponentLayer);
@@ -40,12 +42,12 @@ public class AssaultGeneric : MonoBehaviour
         {
             // Optionally pick the closest one
             Transform closest = GetClosest(hits); // TODO: replace with smarter heuristic, and bias to pick player more often
-            SetDestination(closest.position);
+            SetTargetPosition(closest.position);
             SetState(UnitState.Chasing);
         }
         else
         {
-            SetDestination(GetNearestWaypoint());
+            SetTargetPosition(GetNearestWaypoint());
             SetState(UnitState.Wandering);
         }
         }
@@ -60,10 +62,9 @@ public class AssaultGeneric : MonoBehaviour
         }
     }
 
-    private void SetDestination(Vector3 pos)
+    private void SetTargetPosition(Vector3 pos)
     {
         targetPos = pos;
-        agent.SetDestination(pos);
     }
 
     private void FollowNextWaypoint()
@@ -72,7 +73,7 @@ public class AssaultGeneric : MonoBehaviour
         if (waypoints.Length == 0) return;
 
         currentWaypoint = (currentWaypoint + 1) % waypoints.Length;
-        SetDestination(waypoints[currentWaypoint]);
+        SetTargetPosition(waypoints[currentWaypoint]);
     }
 
     private Vector3 GetNearestWaypoint()
@@ -81,6 +82,7 @@ public class AssaultGeneric : MonoBehaviour
         {
             // no waypoints --> pick random position biased to cover new ground
             // TODO
+            return new Vector3(297, 29, 717); // temporary value
         }
 
         return waypoints.Aggregate((a, b) => // return closest
