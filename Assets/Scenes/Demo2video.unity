@@ -5361,12 +5361,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47b796e0e10a541f58cc896e02ebea8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinimapEnemyMarker
-  target: {fileID: 0}
-  playerReference: {fileID: 0}
-  radarOverlay: {fileID: 0}
-  edgePadding: 18
-  yawOffset: 0
-  hideWhenOutOfRange: 0
 --- !u!1 &1648427335 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4554361772154734052, guid: 58196ce7d8bbc634d8dc7d72f6ea3275, type: 3}
@@ -6513,15 +6507,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1539924060043123710, guid: 17d9cfc463d0c2c4eafc6849d3a6c5d8, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3190282756662520414, guid: 17d9cfc463d0c2c4eafc6849d3a6c5d8, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5073837405584811099, guid: 17d9cfc463d0c2c4eafc6849d3a6c5d8, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5906352079453872282, guid: 17d9cfc463d0c2c4eafc6849d3a6c5d8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6574,7 +6568,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 1931766728}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76eb60317b5a145449b3e49805230faa, type: 3}
   m_Name: 
@@ -7205,7 +7199,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 474680959954291918, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
       propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 474680959954291918, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
       propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -7214,6 +7208,14 @@ PrefabInstance:
     - target: {fileID: 474680959954291918, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
       propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: TogglePause
+      objectReference: {fileID: 0}
+    - target: {fileID: 474680959954291918, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
+      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PauseManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 474680959954291918, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
+      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1620810625669083874, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
       propertyPath: m_Name
