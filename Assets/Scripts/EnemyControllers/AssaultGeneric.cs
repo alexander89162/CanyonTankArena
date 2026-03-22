@@ -18,14 +18,19 @@ public class AssaultGeneric : MonoBehaviour
     public GameObject[] opponents;
     public LayerMask opponentLayer;
     public Vector3[] waypoints; // defaults for target when no unit target is seen
+    public float repathInterval = 0.8f;
     public float wanderingSpeed = 5f; // for when no opponents are detected
     public float chasingSpeed = 10f;
     public float detectionRange = 200f;
     public float playerBias = 0.5f; // -1 avoid player, 0 neutral, 0.5 tend to pick player more, 1 pick player always
 
     private NavMeshAgent agent;
+    private MovementController movementController;
     private UnitState currentState;
     private int currentWaypoint = 0;
+    private int pathIndex = 0;
+    private NavMeshPath currentPath;
+    private float repathTimer = 0f;
     private Vector3 targetPos; // this unit will move towards this point
     private int unitTargetId; // the ID of the unit we want this unit to attack
     private float currentSpeed;
@@ -33,6 +38,10 @@ public class AssaultGeneric : MonoBehaviour
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        movementController = GetComponent<MovementController>();
+
+        currentPath = new NavMeshPath();
+
         agent.updatePosition = false;  // movement system owns position
         agent.updateRotation = false;  // optional, if your system handles turning
 
@@ -54,17 +63,60 @@ public class AssaultGeneric : MonoBehaviour
 
     void Update()
     {
+        repathTimer += Time.deltaTime;
+        agent.nextPosition = transform.position;
+        
+        if (repathTimer >= repathInterval)
+        {
+            repathTimer = 0f;
+            RecalculatePath(targetPos);
+        }
+
+        if (currentPath.corners.Length > 0)
+        {
+            if (pathIndex < currentPath.corners.Length - 1)
+            {
+                Vector3 current = currentPath.corners[pathIndex];
+                Vector3 next = currentPath.corners[pathIndex + 1];
+
+                float distToCurrent = Vector3.Distance(transform.position, current);
+                float distToNext = Vector3.Distance(transform.position, next);
+
+                // Closer to next corner than current, and have overshot by at least 0.5f
+                if (distToNext < distToCurrent && distToCurrent > 0.5f)
+                    pathIndex++;
+
+                Vector3 toCorner = currentPath.corners[pathIndex] - transform.position;
+                toCorner.y = 0f;
+                Vector3 localDir = transform.InverseTransformDirection(toCorner.normalized);
+                movementController.moveInput = new Vector2(localDir.x, localDir.z);
+            }
+        }
+        else
+            movementController.moveInput = Vector2.zero;
+
         switch (currentState)
         {
-            case UnitState.Wandering: break;
-            case UnitState.Chasing: break;
+            case UnitState.Wandering: 
+                agent.speed = wanderingSpeed;
+                if (currentPath.status == NavMeshPathStatus.PathComplete &&
+                    pathIndex == currentPath.corners.Length - 1 &&
+                    Vector3.Distance(transform.position, targetPos) < 1f)
+                    FollowNextWaypoint();
+                break;
+            case UnitState.Chasing:
+                agent.speed = chasingSpeed;
+                break;
             case UnitState.Avoiding: break;
         }
+
+        Vector3 desiredVelocity = agent.desiredVelocity;
     }
 
     private void SetTargetPosition(Vector3 pos)
     {
         targetPos = pos;
+        RecalculatePath(pos);
     }
 
     private void FollowNextWaypoint()
@@ -99,6 +151,18 @@ public class AssaultGeneric : MonoBehaviour
             if (d < minDist) { minDist = d; closest = c.transform; }
         }
         return closest;
+    }
+
+    public void RecalculatePath(Vector3 destination)
+    {
+        agent.CalculatePath(destination, currentPath);
+        pathIndex = 0;
+    }
+
+    void OnCollisionEnter(Collision col) // TODO: might reset on every bullet hit?
+    {
+        RecalculatePath(targetPos);
+        repathTimer = 0f;
     }
 
     // Visualize detection range in editor
