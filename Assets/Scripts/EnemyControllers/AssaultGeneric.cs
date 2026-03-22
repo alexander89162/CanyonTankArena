@@ -45,7 +45,6 @@ public class AssaultGeneric : MonoBehaviour
         agent.updatePosition = false;  // movement system owns position
         agent.updateRotation = false;  // optional, if your system handles turning
 
-        // 
         Collider[] hits = Physics.OverlapSphere(transform.position, detectionRange, opponentLayer);
         if (hits.Length > 0)
         {
@@ -83,7 +82,7 @@ public class AssaultGeneric : MonoBehaviour
                 float distToNext = Vector3.Distance(transform.position, next);
 
                 // Closer to next corner than current, and have overshot by at least 0.5f
-                if (distToNext < distToCurrent && distToCurrent > 0.5f)
+                if (distToNext < distToCurrent && distToCurrent > 0.5f) // TODO: this logic is wrong
                     pathIndex++;
 
                 Vector3 toCorner = currentPath.corners[pathIndex] - transform.position;

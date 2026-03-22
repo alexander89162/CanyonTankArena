@@ -15,7 +15,7 @@ public class DroneController : MonoBehaviour
     private int currentNodeIndex = 1;
     ControllerState currentState = ControllerState.Forward;
     private float elapsedTime = 0f;
-    private float segmentDuration = 3f;
+    private float segmentDuration = 0f;
     private float segmentTimer = 0f;
 
     private enum ControllerState
@@ -123,21 +123,34 @@ public class DroneController : MonoBehaviour
                 elapsedTime += Time.deltaTime;
                 segmentTimer += Time.deltaTime;
 
-                float posFac = segmentTimer / segmentDuration;
-                posFac = Mathf.Clamp01(posFac);
-                float rotFac = segmentTimer / segmentDuration;
-                rotFac = Mathf.Clamp01(rotFac);
+                float t = segmentTimer / segmentDuration;
+                t = Mathf.Clamp01(t);
 
-                transform.position = Vector3.Lerp(moves[currentNodeIndex - 1].position, moves[currentNodeIndex].position, posFac);
-                transform.rotation = Quaternion.Slerp(moves[currentNodeIndex - 1].rotation, moves[currentNodeIndex].rotation, rotFac);
+                // position interpolation
+                Vector3 p0 = moves[Mathf.Max(currentNodeIndex - 2, 0)].position;
+                Vector3 p1 = moves[currentNodeIndex - 1].position;
+                Vector3 p2 = moves[currentNodeIndex].position;
+                Vector3 p3 = moves[Mathf.Min(currentNodeIndex + 1, moves.Count - 1)].position;
+                transform.position = CatmullRom(p0, p1, p2, p3, t);
+
+                // rotation interpolation
+                transform.rotation = Quaternion.Slerp(moves[currentNodeIndex - 1].rotation, moves[currentNodeIndex].rotation, t);
                 
-                if (posFac >= 1)
+                if (t >= 1)
                 {
                     segmentTimer = 0;
+
                     transform.position = moves[currentNodeIndex].position;
                     transform.rotation = moves[currentNodeIndex].rotation;
                     if (currentNodeIndex + 1 < moves.Count)
+                    {
                         currentNodeIndex++;
+                        segmentDuration = ComputeSegmentDuration(
+                            moves[currentNodeIndex - 1],
+                            moves[currentNodeIndex]
+                        );
+                    }
+
                     else
                         SetState(ControllerState.StabilizingFromStop);
                 }
@@ -196,7 +209,11 @@ public class DroneController : MonoBehaviour
         foreach (var m in actions.movements)
             moves.Add(new Move(m));
 
-        // 4) Done initializing
+        // 4) Final initialization work goes here
+        if (moves.Count >= 2)
+            segmentDuration = ComputeSegmentDuration(moves[0], moves[1]);
+
+        // 5) Done initializing
         if (debug) Debug.Log("DroneController finished initialization");
         SetState(ControllerState.Forward);
     }
@@ -232,14 +249,27 @@ public class DroneController : MonoBehaviour
         return true;
     }
 
-    private float ApplyAcceleration(float t, AccelerationType type)
+    private float ComputeSegmentDuration(Move a, Move b)
     {
-        switch (type)
-        {
-            case AccelerationType.Linear: return t;
-            case AccelerationType.Quadratic: return t * t;
-            default: return t;
-        }
+        float distance = Vector3.Distance(a.position, b.position);
+
+        // Simple version (constant speed assumption)
+        float avgVelocity = Mathf.Max(0.01f, (a.endVelocity + b.endVelocity) * 0.5f);
+
+        return distance / avgVelocity;
+    }
+
+    private Vector3 CatmullRom(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
+    {
+        float t2 = t * t;
+        float t3 = t2 * t;
+
+        return 0.5f * (
+            (2f * p1) +
+            (-p0 + p2) * t +
+            (2f*p0 - 5f*p1 + 4f*p2 - p3) * t2 +
+            (-p0 + 3f*p1 - 3f*p2 + p3) * t3
+        );
     }
 
     private void SetState(ControllerState newState){ if (debug) Debug.Log($"DroneController went from {currentState} to {newState}"); currentState = newState; }
