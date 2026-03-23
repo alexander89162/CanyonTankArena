@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements; 
 
-public class MainMenuController : MonoBehaviour
+public class StartMenuController : MonoBehaviour
 {
     private UIDocument uiDocument;
     [SerializeField] private GameObject loadingScreen;

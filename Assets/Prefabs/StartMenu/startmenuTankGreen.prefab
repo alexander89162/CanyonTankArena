@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 4370613797845503972}
   - component: {fileID: 7282980768123966504}
   m_Layer: 6
-  m_Name: mainmenuTankGreen
+  m_Name: startmenuTankGreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -439,8 +439,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2242553480301859750}
   - component: {fileID: 6325689628788686626}
-  - component: {fileID: 3863940031729284490}
   - component: {fileID: 4404314176172099462}
+  - component: {fileID: 7373768689031173572}
   m_Layer: 0
   m_Name: MinimapCamera
   m_TagString: Untagged
@@ -514,23 +514,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &3863940031729284490
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1404961928688033615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4316fe3d8b3c9848a2bb986e631a27b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MinimapCameraFollow
-  target: {fileID: 0}
-  offset: {x: 0, y: 35, z: 0}
-  rotateWithTarget: 1
-  prioritizePlayerTagTarget: 1
-  targetResolveInterval: 0.25
 --- !u!114 &4404314176172099462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,6 +558,23 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &7373768689031173572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1404961928688033615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f2b29446af9426eb9909ca09cc3e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MinimapCameraFollow
+  target: {fileID: 0}
+  offset: {x: 0, y: 35, z: 0}
+  rotateWithTarget: 1
+  prioritizePlayerTagTarget: 1
+  targetResolveInterval: 0.25
 --- !u!1 &1480971040030601888
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,10 +679,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4612821513068155262}
-  - component: {fileID: 3308850309397470989}
   - component: {fileID: 3076617318060953071}
   - component: {fileID: 460981089685104557}
   - component: {fileID: 7667679321172234464}
+  - component: {fileID: 4290965385899549828}
   m_Layer: 0
   m_Name: MiniMapTopLeft
   m_TagString: Untagged
@@ -716,65 +716,6 @@ RectTransform:
   m_AnchoredPosition: {x: 24, y: -24}
   m_SizeDelta: {x: 500, y: 500}
   m_Pivot: {x: 0, y: 1}
---- !u!114 &3308850309397470989
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1502349670034815171}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0303fcfe50dc94a59ab3976098aa8c31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MinimapRadarOverlay
-  minimapView: {fileID: 2001896533544236626}
-  trackingTarget: {fileID: 0}
-  useTopDownTextureMap: 1
-  autoTuneReadabilityForTopDown: 1
-  topDownMapTexture: {fileID: 0}
-  autoWorldBoundsFromActiveTerrain: 1
-  worldMinXZ: {x: -250, y: -250}
-  worldMaxXZ: {x: 250, y: 500}
-  mapZoomNormalized: 0.28
-  clampMapToBounds: 1
-  rotateMapWithPlayer: 1
-  mapYawOffset: 0
-  radarTintColor: {r: 1, g: 1, b: 1, a: 0.035}
-  crosshairColor: {r: 0.72, g: 0.88, b: 1, a: 0.2}
-  sweepColor: {r: 0.65, g: 0.9, b: 1, a: 0.08}
-  sweepSoftColor: {r: 0.65, g: 0.9, b: 1, a: 0.03}
-  borderColor: {r: 0, g: 0, b: 0, a: 0.9}
-  gridColor: {r: 0.72, g: 0.88, b: 1, a: 0.16}
-  cardinalColor: {r: 0.95, g: 0.98, b: 1, a: 1}
-  cardinalOutlineColor: {r: 0, g: 0, b: 0, a: 0.9}
-  cardinalFontSize: 28
-  cardinalVerticalInset: 24
-  cardinalHorizontalInset: 30
-  cardinalWestNudge: 3
-  cardinalEastNudge: -1
-  cardinalLabelWidth: 56
-  cardinalLabelHeight: 44
-  borderThickness: 0.06
-  circleTextureSize: 512
-  rotateCardinalsWithPlayer: 1
-  showCompassRing: 1
-  compassTickColor: {r: 0.86, g: 0.93, b: 1, a: 0.6}
-  compassLabelColor: {r: 0.95, g: 0.98, b: 1, a: 0.95}
-  compassLabelOutlineColor: {r: 0, g: 0, b: 0, a: 0.9}
-  compassTickWidth: 2
-  compassMinorTickLength: 8
-  compassMajorTickLength: 14
-  compassRadiusInset: 12
-  compassLabelInset: 10
-  compassDegreeFontSize: 14
-  compassDirectionFontSize: 18
-  sweepSpeedDegreesPerSecond: 40
-  sweepFillAmount: 0.17
-  softSweepFillAmount: 0.26
-  lowPolyUiMode: 0
-  showDiagonalGrid: 1
-  showRadarSweep: 1
 --- !u!222 &3076617318060953071
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -826,6 +767,65 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Mask
   m_ShowMaskGraphic: 0
+--- !u!114 &4290965385899549828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1502349670034815171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6d6f8efcc5544e5991d9dfe22329432, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MinimapRadarOverlay
+  minimapView: {fileID: 0}
+  trackingTarget: {fileID: 0}
+  useTopDownTextureMap: 1
+  autoTuneReadabilityForTopDown: 1
+  topDownMapTexture: {fileID: 0}
+  autoWorldBoundsFromActiveTerrain: 1
+  worldMinXZ: {x: -500, y: -500}
+  worldMaxXZ: {x: 500, y: 500}
+  mapZoomNormalized: 0.28
+  clampMapToBounds: 1
+  rotateMapWithPlayer: 1
+  mapYawOffset: 0
+  radarTintColor: {r: 0.25, g: 1, b: 0.35, a: 0.12}
+  crosshairColor: {r: 0.35, g: 1, b: 0.45, a: 0.2}
+  sweepColor: {r: 0.45, g: 1, b: 0.55, a: 0.2}
+  sweepSoftColor: {r: 0.45, g: 1, b: 0.55, a: 0.08}
+  borderColor: {r: 0, g: 0, b: 0, a: 0.9}
+  gridColor: {r: 0.4, g: 1, b: 0.55, a: 0.2}
+  cardinalColor: {r: 0.86, g: 1, b: 0.9, a: 1}
+  cardinalOutlineColor: {r: 0, g: 0, b: 0, a: 0.9}
+  cardinalFontSize: 28
+  cardinalVerticalInset: 24
+  cardinalHorizontalInset: 30
+  cardinalWestNudge: 3
+  cardinalEastNudge: -1
+  cardinalLabelWidth: 56
+  cardinalLabelHeight: 44
+  borderThickness: 0.06
+  circleTextureSize: 512
+  rotateCardinalsWithPlayer: 1
+  showCompassRing: 1
+  compassTickColor: {r: 0.85, g: 0.95, b: 1, a: 0.65}
+  compassLabelColor: {r: 0.92, g: 1, b: 0.96, a: 0.95}
+  compassLabelOutlineColor: {r: 0, g: 0, b: 0, a: 0.9}
+  compassTickWidth: 2
+  compassMinorTickLength: 8
+  compassMajorTickLength: 14
+  compassRadiusInset: 12
+  compassLabelInset: 10
+  compassDegreeFontSize: 14
+  compassDirectionFontSize: 18
+  sweepSpeedDegreesPerSecond: 40
+  sweepFillAmount: 0.17
+  softSweepFillAmount: 0.26
+  lowPolyUiMode: 0
+  showDiagonalGrid: 1
+  showRadarSweep: 1
 --- !u!1 &1541063275418031844
 GameObject:
   m_ObjectHideFlags: 0
@@ -1791,6 +1791,7 @@ MonoBehaviour:
   minimapRadarOverlay: {fileID: 0}
   use2DMinimap: 1
   minimap2DBackgroundColor: {r: 0.18, g: 0.28, b: 0.2, a: 1}
+  playerHealth: {fileID: 0}
   bulletCountOnRight: 1
   ammoScreenMargin: {x: 32, y: 28}
   useHealthColorGradient: 1
@@ -2556,7 +2557,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb391d96459754e008d28a4c1b275916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrosshairScript
-  targetingSystem: {fileID: 0}
   aimController: {fileID: 0}
   mainCamera: {fileID: 0}
   lockToCenter: 0
@@ -2566,11 +2566,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   showDebugRay: 0
+  aimResolveInterval: 0.5
   detectionLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
   detectionDistance: 500
   crosshairColor: {r: 1, g: 1, b: 1, a: 1}
+  crosshairSprite: {fileID: 0}
   enemyInnerRingColor: {r: 1, g: 0.18, b: 0.18, a: 1}
   obstacleInnerRingColor: {r: 0.62, g: 0.62, b: 0.62, a: 1}
   crosshairSize: 1
@@ -2649,85 +2651,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &3702601403741091167
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4693469789651462909}
-  - component: {fileID: 4157492124982069291}
-  - component: {fileID: 2851559557227983938}
-  m_Layer: 0
-  m_Name: EventSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4693469789651462909
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3702601403741091167}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -960, y: -540, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1132108688017134681}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4157492124982069291
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3702601403741091167}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventSystem
-  m_FirstSelected: {fileID: 0}
-  m_sendNavigationEvents: 1
-  m_DragThreshold: 10
---- !u!114 &2851559557227983938
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3702601403741091167}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule
-  m_SendPointerHoverToParent: 1
-  m_MoveRepeatDelay: 0.5
-  m_MoveRepeatRate: 0.1
-  m_XRTrackingOrigin: {fileID: 0}
-  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_PointAction: {fileID: -1654692200621890270, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_MoveAction: {fileID: -8784545083839296357, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_SubmitAction: {fileID: 392368643174621059, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_CancelAction: {fileID: 7727032971491509709, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_LeftClickAction: {fileID: 3001919216989983466, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_MiddleClickAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_RightClickAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-  m_DeselectOnBackgroundClick: 1
-  m_PointerBehavior: 0
-  m_CursorLockBehavior: 0
-  m_ScrollDeltaPerTick: 6
 --- !u!1 &3826509378968798803
 GameObject:
   m_ObjectHideFlags: 0
@@ -3255,7 +3178,6 @@ RectTransform:
   m_Children:
   - {fileID: 1684752363400682389}
   - {fileID: 2242553480301859750}
-  - {fileID: 4693469789651462909}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5890,7 +5812,7 @@ GameObject:
   - component: {fileID: 4297157462606609823}
   - component: {fileID: 125438325288606221}
   - component: {fileID: 3102468201984710559}
-  - component: {fileID: 1028114788334184260}
+  - component: {fileID: 4693155911845623862}
   m_Layer: 0
   m_Name: PlayerMarker
   m_TagString: Untagged
@@ -6017,7 +5939,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &1028114788334184260
+--- !u!114 &4693155911845623862
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6026,7 +5948,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8471917104666145615}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad83a4c68b3f49b4fa9278f7a497ce78, type: 3}
+  m_Script: {fileID: 11500000, guid: 2078275720d5d41218c9ee3dd53fef61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinimapPlayerMarker
   target: {fileID: 0}
