@@ -5236,12 +5236,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47b796e0e10a541f58cc896e02ebea8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinimapEnemyMarker
-  target: {fileID: 0}
-  playerReference: {fileID: 0}
-  radarOverlay: {fileID: 0}
-  edgePadding: 18
-  yawOffset: 0
-  hideWhenOutOfRange: 0
 --- !u!223 &1648427343 stripped
 Canvas:
   m_CorrespondingSourceObject: {fileID: 5067649758337368529, guid: a99027e159af2564990c081acc7f5e9b, type: 3}
@@ -6433,7 +6427,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 1931766728}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76eb60317b5a145449b3e49805230faa, type: 3}
   m_Name: 
@@ -7064,7 +7058,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 474680959954291918, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
       propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 474680959954291918, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
       propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -7073,6 +7067,14 @@ PrefabInstance:
     - target: {fileID: 474680959954291918, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
       propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: TogglePause
+      objectReference: {fileID: 0}
+    - target: {fileID: 474680959954291918, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
+      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PauseManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 474680959954291918, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
+      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1620810625669083874, guid: fc261b70e76be2f4c95e97003144f0eb, type: 3}
       propertyPath: m_Name
