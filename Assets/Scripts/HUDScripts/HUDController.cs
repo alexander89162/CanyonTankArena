@@ -15,6 +15,19 @@ public class HUDController : MonoBehaviour
     [SerializeField] private RectTransform ammoContainer;
     [SerializeField] private Camera minimapCamera;
     [SerializeField] private RawImage minimapImage;
+    [Header("Ammo Visuals")]
+    [SerializeField] private Sprite[] ammoTypeSprites = new Sprite[3];
+    [SerializeField] private Image[] ammoIconImages = new Image[3];
+    [SerializeField] private TMP_Text[] ammoCountTexts = new TMP_Text[3];
+    [SerializeField] private bool showAmmoIcons = true;
+
+    [Header("Ammo Layout")]
+    [SerializeField] private float ammoSlotWidth = 120f;
+    [SerializeField] private float ammoSlotHeight = 96f;
+    [SerializeField] private float ammoSlotSpacing = 16f;
+    [SerializeField] private float ammoIconSize = 48f;
+    [SerializeField] private float ammoSlotPadding = 12f;
+    [SerializeField] private Color ammoSlotBgColor = new Color(0.06f, 0.07f, 0.06f, 0.95f);
     [SerializeField] private MinimapRadarOverlay minimapRadarOverlay;
     [SerializeField] private bool use2DMinimap = true;
     [SerializeField] private Color minimap2DBackgroundColor = new Color(0.18f, 0.28f, 0.2f, 1f);
@@ -695,14 +708,141 @@ public class HUDController : MonoBehaviour
         if (healthText == null)
             healthText = FindTextByName("HealthText");
 
-        if (ammoText == null)
-            ammoText = FindTextByName("AmmoText");
+        // old single AmmoText intentionally not used (we use three boxed slots)
 
         if (ammoContainer == null)
         {
             Transform ammoRoot = transform.Find("AmmoBottom");
             if (ammoRoot != null)
                 ammoContainer = ammoRoot as RectTransform;
+        }
+
+        // Resolve the three boxed ammo slots (AmmoSlot1..AmmoSlot3) and their children
+        for (int i = 0; i < 3; i++)
+        {
+            Transform slot = null;
+            if (ammoContainer != null)
+                slot = ammoContainer.Find($"AmmoSlot{ i + 1 }");
+
+            // Icon image
+            if (slot != null)
+            {
+                Transform iconT = slot.Find("AmmoIcon");
+                if (iconT != null)
+                {
+                    Image img = iconT.GetComponent<Image>();
+                    if (img != null)
+                    {
+                        if (ammoIconImages == null || ammoIconImages.Length <= i)
+                            Array.Resize(ref ammoIconImages, 3);
+
+                        ammoIconImages[i] = img;
+
+                        if (ammoTypeSprites != null && i < ammoTypeSprites.Length && ammoTypeSprites[i] != null)
+                            ammoIconImages[i].sprite = ammoTypeSprites[i];
+
+                        ammoIconImages[i].gameObject.SetActive(showAmmoIcons && ammoIconImages[i].sprite != null);
+                    }
+                }
+
+                // Count text
+                Transform countT = slot.Find($"AmmoCount{ i + 1 }");
+                if (countT != null)
+                {
+                    TMP_Text txt = countT.GetComponent<TMP_Text>();
+                    if (txt != null)
+                    {
+                        if (ammoCountTexts == null || ammoCountTexts.Length <= i)
+                            Array.Resize(ref ammoCountTexts, 3);
+
+                        ammoCountTexts[i] = txt;
+                        ammoCountTexts[i].text = "?/ ?";
+                        ammoCountTexts[i].gameObject.SetActive(true);
+                    }
+                }
+            }
+        }
+
+        // Apply layout and visual settings from inspector to the resolved slots
+        for (int i = 0; i < 3; i++)
+        {
+            Transform slot = ammoContainer != null ? ammoContainer.Find($"AmmoSlot{ i + 1 }") : null;
+            if (slot == null)
+                continue;
+
+            RectTransform slotRect = slot as RectTransform;
+            if (slotRect != null)
+            {
+                slotRect.sizeDelta = new Vector2(ammoSlotWidth, ammoSlotHeight);
+                float x = -ammoSlotSpacing - (i * (ammoSlotWidth + ammoSlotSpacing));
+                slotRect.anchoredPosition = new Vector2(x, ammoScreenMargin.y);
+            }
+
+            Transform bgT = slot.Find("SlotBg");
+            if (bgT != null)
+            {
+                Image bgImg = bgT.GetComponent<Image>();
+                if (bgImg != null)
+                {
+                    bgImg.color = ammoSlotBgColor;
+                }
+            }
+
+            Transform iconT = slot.Find("AmmoIcon");
+            if (iconT != null)
+            {
+                RectTransform iconRect = iconT as RectTransform;
+                Image iconImg = iconT.GetComponent<Image>();
+                if (iconRect != null)
+                {
+                    iconRect.sizeDelta = new Vector2(ammoIconSize, ammoIconSize);
+                    // center near the top of the slot
+                    iconRect.anchoredPosition = new Vector2(0f, -ammoSlotPadding);
+                }
+                if (iconImg != null && ammoTypeSprites != null)
+                {
+                    int idx = i;
+                    if (idx < ammoTypeSprites.Length && ammoTypeSprites[idx] != null)
+                        iconImg.sprite = ammoTypeSprites[idx];
+                    iconImg.gameObject.SetActive(showAmmoIcons && iconImg.sprite != null);
+                }
+            }
+
+            Transform countT = slot.Find($"AmmoCount{ i + 1 }");
+            if (countT != null)
+            {
+                RectTransform countRect = countT as RectTransform;
+                TMP_Text txt = countT.GetComponent<TMP_Text>();
+                if (countRect != null)
+                {
+                    // center the text rect horizontally at the bottom of the slot
+                    countRect.anchorMin = new Vector2(0.5f, 0f);
+                    countRect.anchorMax = new Vector2(0.5f, 0f);
+                    countRect.pivot = new Vector2(0.5f, 0f);
+                    countRect.sizeDelta = new Vector2(ammoSlotWidth - ammoSlotPadding * 2f, 24f);
+                    // keep text inside the bottom of the slot
+                    countRect.anchoredPosition = new Vector2(0f, ammoSlotPadding);
+                }
+                if (txt != null)
+                {
+                    txt.text = "?/ ?";
+                    txt.alignment = TextAlignmentOptions.Bottom | TextAlignmentOptions.Center;
+                    txt.fontSize = Mathf.Max(16f, txt.fontSize);
+                    // ensure no extra TMP margins or wrapping push the text off-center
+                    try
+                    {
+                        txt.margin = Vector4.zero;
+                        txt.enableWordWrapping = false;
+                        RectTransform txtRect = txt.rectTransform;
+                        if (txtRect != null)
+                            txtRect.anchoredPosition = new Vector2(0f, ammoSlotPadding);
+                    }
+                    catch (System.Exception)
+                    {
+                        // ignore in environments without these properties available at edit-time
+                    }
+                }
+            }
         }
 
         if (minimapImage == null)
