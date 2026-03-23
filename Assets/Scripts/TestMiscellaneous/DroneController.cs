@@ -125,8 +125,9 @@ public class DroneController : MonoBehaviour
                 elapsedTime += Time.deltaTime;
                 segmentTimer += Time.deltaTime;
 
-                float t = segmentTimer / segmentDuration;
+                float t = Mathf.Clamp01(segmentTimer / segmentDuration);
                 t = ApplyAcceleration(t, moves[currentNodeIndex].accelerationType);
+                Debug.Log($"at nodeId={currentNodeIndex}, we have t={t} before clamp");
                 t = Mathf.Clamp01(t);
 
                 // position interpolation
@@ -138,23 +139,34 @@ public class DroneController : MonoBehaviour
 
                 // rotation interpolation
                 transform.rotation = Quaternion.Slerp(moves[currentNodeIndex - 1].rotation, moves[currentNodeIndex].rotation, t);
-                
-                if (t >= 1)
-                {
-                    segmentTimer = 0;
 
+                if (t < 0f)
+                {
+                    if (debug) Debug.Log($"'t' was negative at nodeId={currentNodeIndex}. Ending interpolation phase immediately.");
+                    SetState(ControllerState.StabilizingFromStop);
+                }
+                else if (t >= 1)
+                {
+                    if (debug) Debug.Log($"t>=1 so we snap to currentNodeIndex position and rotation at currentNodeIndex={currentNodeIndex}");
+                    segmentTimer = 0;
                     transform.position = moves[currentNodeIndex].position;
                     transform.rotation = moves[currentNodeIndex].rotation;
+
                     if (currentNodeIndex + 1 < moves.Count)
                     {
                         currentNodeIndex++;
+                        if (debug) Debug.Log($"Incremented currentNodeIndex to currentNodeIndex={currentNodeIndex}");
                         segmentDuration = ComputeSegmentDuration(
                             moves[currentNodeIndex - 1],
                             moves[currentNodeIndex]
                         );
                     }
                     else
+                    {
+                        if (debug) Debug.Log($"(passed last node) segmentTimer/segmentDuration={segmentTimer/segmentDuration}");
                         SetState(ControllerState.StabilizingFromStop);
+                    }
+
                 }
                 
                 break;
