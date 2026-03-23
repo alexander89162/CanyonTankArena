@@ -65,11 +65,19 @@ public class DronePathExporterWindow : EditorWindow
                 position = child.position,
                 rotation = child.rotation.eulerAngles,
                 endVelocity = 200f,
+                accelerationType = id < 0 ? "n/a" : "linear",
                 rotationType = id < 0 ? "n/a" : "linear"
             });
         }
 
         moves = moves.OrderBy(m => m.moveId).ToList();
+
+        if (moves.Count > 0)
+        {
+            var lastNode = moves[moves.Count - 1];
+            lastNode.endVelocity *= 0.2f;
+            moves[moves.Count - 1] = lastNode;
+        }
 
         string folderPath = Path.Combine(Application.streamingAssetsPath, "DroneActions");
         if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);

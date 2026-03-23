@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Splines.ExtrusionShapes;
 
 /*Given a series of Move instructions, this component automatically moves 
 and animates the drone
@@ -14,9 +15,9 @@ public class DroneController : MonoBehaviour
     private List<DeploymentAction> deploymentActions;
     private int currentNodeIndex = 1;
     ControllerState currentState = ControllerState.Forward;
-    private float elapsedTime = 0f;
+    private float elapsedTime = 0f; // time from drone spawn--NEVER reset, used for deployment events and attack patterns
+    private float segmentTimer = 0f; // reset on move to next segment
     private float segmentDuration = 0f;
-    private float segmentTimer = 0f;
 
     private enum ControllerState
     {
@@ -40,6 +41,7 @@ public class DroneController : MonoBehaviour
         public Vector3 position;
         public Quaternion rotation;
         public float endVelocity;
+        public AccelerationType accelerationType; // "linear" or "quadratic"
         public RotationType rotationType; // "linear" or "Slerp"
         public Move(MoveJson json)
         {
@@ -47,6 +49,10 @@ public class DroneController : MonoBehaviour
             position = json.position;
             rotation = Quaternion.Euler(json.rotation);
             endVelocity = json.endVelocity;
+
+            accelerationType =
+                System.Enum.TryParse(json.accelerationType, true, out AccelerationType a)
+                ? a : AccelerationType.Unknown;
 
             rotationType =
                 System.Enum.TryParse(json.rotationType, true, out RotationType r)
@@ -61,6 +67,7 @@ public class DroneController : MonoBehaviour
         public Vector3 position;
         public Vector3 rotation;
         public float endVelocity;
+        public string accelerationType;
         public string rotationType;
     }
 
@@ -84,6 +91,14 @@ public class DroneController : MonoBehaviour
         public int activationNode;
         public float startDelay;
         public float duration;
+    }
+
+    public enum AccelerationType
+    {
+        Unknown, // fails on validation
+        Linear, // constant acceleration
+        QuadraticIncreasing, // increasingly fast shift
+        QuadraticDecreasing // decreasingly fast shift
     }
 
     public enum RotationType
@@ -111,6 +126,7 @@ public class DroneController : MonoBehaviour
                 segmentTimer += Time.deltaTime;
 
                 float t = segmentTimer / segmentDuration;
+                t = ApplyAcceleration(t, moves[currentNodeIndex].accelerationType);
                 t = Mathf.Clamp01(t);
 
                 // position interpolation
@@ -137,7 +153,6 @@ public class DroneController : MonoBehaviour
                             moves[currentNodeIndex]
                         );
                     }
-
                     else
                         SetState(ControllerState.StabilizingFromStop);
                 }
@@ -219,6 +234,11 @@ public class DroneController : MonoBehaviour
         for (int i = 0; i < actions.movements.Length; i++)
         {
             var move = actions.movements[i];
+            if (!System.Enum.TryParse(move.accelerationType, true, out AccelerationType a) || a == AccelerationType.Unknown)
+            {
+                Debug.LogError("Acceleration type is invalid.");
+                return false;
+            }
 
             if (!System.Enum.TryParse(move.rotationType, true, out RotationType r) || r == RotationType.Unknown)
             {
@@ -234,8 +254,6 @@ public class DroneController : MonoBehaviour
     private float ComputeSegmentDuration(Move a, Move b)
     {
         float distance = Vector3.Distance(a.position, b.position);
-
-        // Simple version (constant speed assumption)
         float avgVelocity = Mathf.Max(0.01f, (a.endVelocity + b.endVelocity) * 0.5f);
 
         return distance / avgVelocity;
@@ -252,6 +270,19 @@ public class DroneController : MonoBehaviour
             (2f*p0 - 5f*p1 + 4f*p2 - p3) * t2 +
             (-p0 + 3f*p1 - 3f*p2 + p3) * t3
         );
+    }
+
+    private float ApplyAcceleration(float t, AccelerationType type)
+    {
+        switch (type)
+        {
+            case AccelerationType.Linear: return t;
+            case AccelerationType.QuadraticIncreasing: return t*t;
+            case AccelerationType.QuadraticDecreasing: return t * (2 - t);
+            default: 
+                Debug.LogWarning($"ApplyAcceleration defaulted to returning 't' at nodeId={moves[currentNodeIndex].moveId} because accelerationType did not match any enum entry");
+                return t;
+        }
     }
 
     private void SetState(ControllerState newState){ if (debug) Debug.Log($"DroneController went from {currentState} to {newState}"); currentState = newState; }
