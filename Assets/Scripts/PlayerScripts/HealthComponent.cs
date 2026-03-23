@@ -53,7 +53,7 @@ public class HealthComponent : MonoBehaviour
 
                 if (gameObject.CompareTag("Player"))
                 {
-                    SceneManager.LoadScene("MainMenu"); // Reload current scene on player death
+                    SceneManager.LoadScene("StartMenu"); // Reload current scene on player death
                 }
             }
         }
