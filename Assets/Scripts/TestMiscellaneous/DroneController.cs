@@ -127,7 +127,7 @@ public class DroneController : MonoBehaviour
 
                 float t = Mathf.Clamp01(segmentTimer / segmentDuration);
                 t = ApplyAcceleration(t, moves[currentNodeIndex].accelerationType);
-                Debug.Log($"at nodeId={currentNodeIndex}, we have t={t} before clamp");
+                if (debug) Debug.Log($"at nodeId={currentNodeIndex}, we have t={t} before clamp");
                 t = Mathf.Clamp01(t);
 
                 // position interpolation
