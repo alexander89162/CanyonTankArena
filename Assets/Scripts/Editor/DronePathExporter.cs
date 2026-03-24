@@ -11,6 +11,7 @@ public class DronePathExporterWindow : EditorWindow
 {
     private Transform arrowParent;
     private string jsonFileName = "dronePath1";
+    private float defaultVelocity = 200f;
 
     [MenuItem("Tools/Drone/Path Exporter")]
     public static void ShowWindow()
@@ -31,6 +32,7 @@ public class DronePathExporterWindow : EditorWindow
 
         arrowParent = (Transform)EditorGUILayout.ObjectField("Arrow Parent", arrowParent, typeof(Transform), true);
         jsonFileName = EditorGUILayout.TextField("JSON File Name", jsonFileName);
+        defaultVelocity = EditorGUILayout.FloatField("Default velocity", defaultVelocity);
 
         if (GUILayout.Button("Export Path"))
         {
@@ -64,7 +66,7 @@ public class DronePathExporterWindow : EditorWindow
                 moveId = id,
                 position = child.position,
                 rotation = child.rotation.eulerAngles,
-                endVelocity = 200f,
+                endVelocity = defaultVelocity,
                 accelerationType = id < 0 ? "n/a" : "linear",
                 rotationType = id < 0 ? "n/a" : "linear"
             });
@@ -76,6 +78,7 @@ public class DronePathExporterWindow : EditorWindow
         {
             var lastNode = moves[moves.Count - 1];
             lastNode.endVelocity *= 0.2f;
+            lastNode.accelerationType = "quadraticDecreasing";
             moves[moves.Count - 1] = lastNode;
         }
 
