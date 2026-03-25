@@ -147,22 +147,22 @@
     ],
     "brakingManeuvers": [
         {
-            "rotation": {
-                "x": 0.0,
-                "y": 45.0,
+            "targetTilt": {
+                "x": 45.0,
+                "y": 0.0,
                 "z": 0.0
             },
             "duration": 1.5,
-            "outwardMove": 3.200000047683716
+            "outwardMove": 150
         },
         {
-            "rotation": {
-                "x": 0.0,
-                "y": -30.0,
+            "targetTilt": {
+                "x": -45.0,
+                "y": 0.0,
                 "z": 0.0
             },
-            "duration": 0.800000011920929,
-            "outwardMove": 1.5
+            "duration": 0.8,
+            "outwardMove": -150
         }
     ],
     "deploymentActions": [

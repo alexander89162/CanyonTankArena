@@ -79,13 +79,13 @@ public class DroneController : MonoBehaviour
     [System.Serializable]
     public struct BrakingManeuver
     {
-        public Vector3 rotation;
+        public Vector3 targetTilt;
         public float duration;
         public float outwardMove;
 
         public Quaternion GetRotation()
         {
-            return Quaternion.Euler(rotation);
+            return Quaternion.Euler(targetTilt);
         }
     }
 
@@ -331,10 +331,11 @@ public class DroneController : MonoBehaviour
         maneuverStartPos = transform.position;
         maneuverStartRot = transform.rotation;
 
-        Vector3 direction = maneuverStartRot * Quaternion.Euler(maneuver.rotation) * Vector3.forward;
+        Vector3 baseDirection = (moves[moves.Count - 1].position - moves[moves.Count - 2].position).normalized;
+        Quaternion moveDirection = Quaternion.LookRotation(baseDirection);
 
-        maneuverEndPos = maneuverStartPos + direction * maneuver.outwardMove;
-        maneuverEndRot = maneuverStartRot * Quaternion.Euler(maneuver.rotation);
+        maneuverEndPos = maneuverStartPos + baseDirection * maneuver.outwardMove;
+        maneuverEndRot = maneuverStartRot * Quaternion.Euler(maneuver.targetTilt);
     }
 
     private void SetState(ControllerState newState)
@@ -347,16 +348,8 @@ public class DroneController : MonoBehaviour
         if (newState == ControllerState.StabilizingFromStop)
         {
             brakingIndex = 0;
-            segmentDuration = brakingManeuvers.Count > 0 ? brakingManeuvers[0].duration : 0f;
-
-            maneuverStartPos = transform.position;
-            maneuverStartRot = transform.rotation;
-            maneuverEndPos = brakingManeuvers.Count > 0 
-                ? maneuverStartPos + (maneuverStartRot * Quaternion.Euler(brakingManeuvers[0].rotation) * Vector3.forward * brakingManeuvers[0].outwardMove)
-                : maneuverStartPos;
-            maneuverEndRot = brakingManeuvers.Count > 0 
-                ? maneuverStartRot * Quaternion.Euler(brakingManeuvers[0].rotation)
-                : maneuverStartRot;
+            if (brakingManeuvers.Count > 0)
+                UpdateBrakingManeuverValues(0);
         }
     }
 }
