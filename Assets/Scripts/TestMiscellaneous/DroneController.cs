@@ -1,12 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.Splines.ExtrusionShapes;
 
-/*Given a series of Move instructions, this component automatically moves 
-and animates the drone
-Note: drone armature needs to be Rotation {-90, 0, 0} for this to work.*/
+/*Given a series of instructions via json, this component automatically guides 
+the drone's movement, rotation, attack pattern, and troop deployment*/
 public class DroneController : MonoBehaviour
 {
     public string droneActions; // the file containing the specific actions this drone will follow
@@ -15,9 +15,14 @@ public class DroneController : MonoBehaviour
     private List<DeploymentAction> deploymentActions;
     private int currentNodeIndex = 1;
     ControllerState currentState = ControllerState.Forward;
-    private float elapsedTime = 0f; // time from drone spawn--NEVER reset, used for deployment events and attack patterns
+    private float elapsedTime = 0f; // time from drone spawn. NEVER reset, used for deployment events and attack patterns
     private float segmentTimer = 0f; // reset on move to next segment
     private float segmentDuration = 0f;
+    private int brakingIndex = 0;
+    private Vector3 maneuverStartPos;
+    private Quaternion maneuverStartRot;
+    private Vector3 maneuverEndPos;
+    private Quaternion maneuverEndRot;
 
     private enum ControllerState
     {
@@ -147,7 +152,7 @@ public class DroneController : MonoBehaviour
                 }
                 else if (t >= 1)
                 {
-                    if (debug) Debug.Log($"t>=1 so we snap to currentNodeIndex position and rotation at currentNodeIndex={currentNodeIndex}");
+                    if (debug) Debug.Log($"t>=1 so we snap to current position and rotation at currentNodeIndex={currentNodeIndex}");
                     segmentTimer = 0;
                     transform.position = moves[currentNodeIndex].position;
                     transform.rotation = moves[currentNodeIndex].rotation;
@@ -172,6 +177,25 @@ public class DroneController : MonoBehaviour
                 break;
             case ControllerState.StabilizingFromStop:
                 elapsedTime += Time.deltaTime;
+                segmentTimer += Time.deltaTime;
+
+                t = segmentTimer / segmentDuration;
+                t = Mathf.Clamp01(t);
+
+                transform.position = Vector3.Lerp(maneuverStartPos, maneuverEndPos, t);
+                transform.rotation = Quaternion.Slerp(maneuverStartRot, maneuverEndRot, t);
+
+                if (t >= 1)
+                {
+                    if (brakingIndex + 1 < brakingManeuvers.Count)
+                    {
+                        brakingIndex++;
+                        UpdateBrakingManeuverValues(brakingIndex);
+                    }
+                    else
+                        SetState(ControllerState.Idle);
+                } 
+
                 break;
             case ControllerState.Idle:
                 elapsedTime += Time.deltaTime;
@@ -297,5 +321,42 @@ public class DroneController : MonoBehaviour
         }
     }
 
-    private void SetState(ControllerState newState){ if (debug) Debug.Log($"DroneController went from {currentState} to {newState}"); currentState = newState; }
+    void UpdateBrakingManeuverValues(int index)
+    {
+        var maneuver = brakingManeuvers[index];
+
+        segmentTimer = 0f;
+        segmentDuration = Mathf.Max(0.0001f, maneuver.duration);
+
+        maneuverStartPos = transform.position;
+        maneuverStartRot = transform.rotation;
+
+        Vector3 direction = maneuverStartRot * Quaternion.Euler(maneuver.rotation) * Vector3.forward;
+
+        maneuverEndPos = maneuverStartPos + direction * maneuver.outwardMove;
+        maneuverEndRot = maneuverStartRot * Quaternion.Euler(maneuver.rotation);
+    }
+
+    private void SetState(ControllerState newState)
+    {
+        if (debug) Debug.Log($"DroneController went from {currentState} to {newState}");
+        currentState = newState;
+
+        segmentTimer = 0f;
+
+        if (newState == ControllerState.StabilizingFromStop)
+        {
+            brakingIndex = 0;
+            segmentDuration = brakingManeuvers.Count > 0 ? brakingManeuvers[0].duration : 0f;
+
+            maneuverStartPos = transform.position;
+            maneuverStartRot = transform.rotation;
+            maneuverEndPos = brakingManeuvers.Count > 0 
+                ? maneuverStartPos + (maneuverStartRot * Quaternion.Euler(brakingManeuvers[0].rotation) * Vector3.forward * brakingManeuvers[0].outwardMove)
+                : maneuverStartPos;
+            maneuverEndRot = brakingManeuvers.Count > 0 
+                ? maneuverStartRot * Quaternion.Euler(brakingManeuvers[0].rotation)
+                : maneuverStartRot;
+        }
+    }
 }
