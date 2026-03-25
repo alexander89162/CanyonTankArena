@@ -24,6 +24,10 @@ public class DroneController : MonoBehaviour
     private Vector3 maneuverEndPos;
     private Quaternion maneuverEndRot;
 
+    [Header("Rigging")]
+    public Transform[] propellers;
+    public float propellerSpeed = 1800f;
+
     private enum ControllerState
     {
         InitializingController, // not ready to move or animate yet
@@ -123,6 +127,11 @@ public class DroneController : MonoBehaviour
 
     void Update()
     {
+        // 1) Rotate propellers
+        foreach (var p in propellers)
+        p.Rotate(Vector3.up, propellerSpeed * Time.deltaTime, Space.Self);
+
+        // 2) Movement and rotation of drone as a whole
         switch (currentState)
         {
             case ControllerState.InitializingController: break;
