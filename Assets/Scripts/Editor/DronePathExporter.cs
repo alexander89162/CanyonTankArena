@@ -12,10 +12,10 @@ public class DronePathExporterWindow : EditorWindow
     private Transform arrowParent;
     private string jsonFileName = "dronePath1";
     private float defaultVelocity = 200f;
-    private bool overrideBrakingManeuvers = false;
+    private bool overrideBrakingManeuvers = true;
     private float brakingRecoilDistance = 20f;
-    private float brakingRecoilDuration = 0.5f;
-    private float brakingSettleDuration = 0.7f;
+    private float brakingRecoilDuration = 0.4f;
+    private float brakingSettleDuration = 0.6f;
 
     [MenuItem("Tools/Drone/Path Exporter")]
     public static void ShowWindow()
@@ -139,20 +139,20 @@ public class DronePathExporterWindow : EditorWindow
         // Derive the approach direction from the last two nodes
         Vector3 lastDir = (moves[moves.Count - 1].position - moves[moves.Count - 2].position).normalized;
 
-        // Maneuver 0: recoil backward against travel direction
+        // Maneuver 0: overshoot final node based on travel direction
         maneuvers.Add(new BrakingManeuver
         {
             targetTilt = Vector3.zero,
             duration = brakingRecoilDuration,
-            outwardMove = -brakingRecoilDistance  // negative = backward along lastDir
+            outwardMove = brakingRecoilDistance  // negative = backward along lastDir
         });
 
-        // Maneuver 1: settle forward back to stop position
+        // Maneuver 1: settle back to stop position
         maneuvers.Add(new BrakingManeuver
         {
             targetTilt = Vector3.zero,
             duration = brakingSettleDuration,
-            outwardMove = brakingRecoilDistance   // return to where we came from
+            outwardMove = -brakingRecoilDistance   // return to where we came from
         });
 
         return maneuvers;
