@@ -736,6 +736,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: startmenuTankGreen
       objectReference: {fileID: 0}
+    - target: {fileID: 5836809122959254879, guid: a14eede82652a3a45acf91c2502c1657, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6076697006033304801, guid: a14eede82652a3a45acf91c2502c1657, type: 3}
       propertyPath: m_LocalPosition.x
       value: -22.4
@@ -776,13 +780,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8232717111274983255, guid: a14eede82652a3a45acf91c2502c1657, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 4322644592802320816, guid: a14eede82652a3a45acf91c2502c1657, type: 3}
-    - {fileID: 3540655318608795074, guid: a14eede82652a3a45acf91c2502c1657, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

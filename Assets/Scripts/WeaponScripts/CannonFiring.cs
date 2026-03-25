@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 public class CannonFiring : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class CannonFiring : MonoBehaviour
 
     [Header("Input")]
     [SerializeField] private InputActionReference fireAction;
+
+    public AudioClip fireSound;
+    public float volume = 1.0f;
 
     private float nextFireTime;
 
@@ -37,10 +41,12 @@ public class CannonFiring : MonoBehaviour
 
     private void TryFire()
     {
+        
         if (Time.time < nextFireTime) return;
         if (shellPrefab == null || muzzlePoint == null) return;
 
         nextFireTime = Time.time + fireCooldown;
+        AudioSource.PlayClipAtPoint(fireSound, Camera.main.transform.position, volume);
 
         MovementController movement = GetComponentInParent<MovementController>();
         Vector3 tankVelocity = movement != null ? movement.currentVelocityV : Vector3.zero;
@@ -51,7 +57,6 @@ public class CannonFiring : MonoBehaviour
         SimpleProjectile proj = shell.GetComponent<SimpleProjectile>();
         if (proj != null)
         {
-            // You can expose speed in SimpleProjectile and set it here if you want per-shot variation
             // proj.speed = muzzleVelocity;
             proj.initialVelocity = muzzlePoint.forward * muzzleVelocity + tankVelocity;
         }
@@ -59,5 +64,7 @@ public class CannonFiring : MonoBehaviour
         // Muzzle flash / sound
         // muzzleFlash.Play();
         // AudioSource.PlayClipAtPoint(fireSound, muzzlePoint.position);
+        
+        
     }
 }

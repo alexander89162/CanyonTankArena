@@ -374,7 +374,6 @@ GameObject:
   - component: {fileID: 3052485253306320225}
   - component: {fileID: 517278641209727581}
   - component: {fileID: 1415339706145447546}
-  - component: {fileID: 602118546751520830}
   m_Layer: 0
   m_Name: minitank-v10-red
   m_TagString: Untagged
@@ -439,7 +438,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19bc73e8f4cb44246bfb6bb287d048e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
-  maxHealth: 100
+  maxHealth: 75
   destroyOnDeath: 1
   deathDelay: 0.1
   OnHealthChanged:
@@ -563,20 +562,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageController
   health: {fileID: 7238636229218141712}
---- !u!114 &602118546751520830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8931809357140288130}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47b796e0e10a541f58cc896e02ebea8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MinimapEnemyMarker
-  target: {fileID: 8460799042929922628}
-  playerReference: {fileID: 0}
-  radarOverlay: {fileID: 0}
-  edgePadding: 18
-  yawOffset: 0

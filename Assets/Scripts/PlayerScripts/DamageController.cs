@@ -20,9 +20,8 @@ public class DamageController : MonoBehaviour
         if (health.IsDead)
         {
             
-            //health.SetFullHealth();
+            //health.SetFullHealth();  // Reset health to max for testing purposes
             Debug.Log($"[DamageController] {gameObject.name} has been destroyed!");
-            // Optional: Add death effects, disable tank controls, etc.
             
         }
     }

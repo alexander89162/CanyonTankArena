@@ -107,11 +107,8 @@ public class HUDController : MonoBehaviour
 
     void UpdateHealthAndAmmo(HealthComponent controller)
     {
-        //float maxHealth = Mathf.Max(1f, controller.MaxHealth);
-        //float currentHealth = Mathf.Clamp(controller.CurrentHealth, 0f, maxHealth);
         float maxHealth = playerHealth.MaxHealth;
         float currentHealth = playerHealth.CurrentHealth;
-        //float health01 = currentHealth / maxHealth;
 
         if (healthBar != null)
         {
