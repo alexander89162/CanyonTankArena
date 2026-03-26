@@ -22,6 +22,130 @@ public static class BattleUISceneSetup
         SetupInActiveSceneInternal(true);
     }
 
+    [MenuItem("Tools/Battle UI/Setup Mobile UI")]
+    public static void SetupMobileUI()
+    {
+        // Create the standard UI first, then tweak layout for mobile
+        SetupInActiveSceneInternal(false);
+
+        GameObject battleUiRoot = GameObject.Find("BattleUI");
+        if (battleUiRoot == null)
+            return;
+
+        Transform healthRoot = battleUiRoot.transform.Find("HealthTopRight");
+        Transform ammoRoot = battleUiRoot.transform.Find("AmmoBottom");
+        Transform minimapRoot = battleUiRoot.transform.Find("MiniMapTopLeft");
+
+        RectTransform healthRect = healthRoot != null ? EnsureRectTransform(healthRoot.gameObject) : null;
+        RectTransform ammoRect = ammoRoot != null ? EnsureRectTransform(ammoRoot.gameObject) : null;
+        RectTransform minimapRect = minimapRoot != null ? EnsureRectTransform(minimapRoot.gameObject) : null;
+
+        // Move health to top-left, minimap to top-right, and ammo below health on left
+        if (healthRect != null)
+        {
+            healthRect.anchorMin = new Vector2(0f, 1f);
+            healthRect.anchorMax = new Vector2(0f, 1f);
+            healthRect.pivot = new Vector2(0f, 1f);
+            // make health area a bit wider/taller for mobile
+            healthRect.sizeDelta = new Vector2(360f, 90f);
+            healthRect.anchoredPosition = new Vector2(24f, -24f);
+
+            // If a HealthBar exists inside, increase its visual height immediately
+            Transform healthSliderT = healthRoot.Find("HealthBar");
+            if (healthSliderT != null)
+            {
+                RectTransform sliderRect = healthSliderT.GetComponent<RectTransform>();
+                if (sliderRect != null)
+                {
+                    sliderRect.anchorMin = new Vector2(0f, 0f);
+                    sliderRect.anchorMax = new Vector2(1f, 0f);
+                    sliderRect.pivot = new Vector2(0.5f, 0f);
+                    sliderRect.sizeDelta = new Vector2(0f, 48f);
+                    sliderRect.anchoredPosition = new Vector2(0f, 8f);
+                }
+            }
+
+            // Move health text inside the bar
+            Transform healthTextT = healthRoot.Find("HealthText");
+            if (healthTextT != null)
+            {
+                RectTransform htRect = healthTextT.GetComponent<RectTransform>();
+                TextMeshProUGUI ht = healthTextT.GetComponent<TextMeshProUGUI>();
+                if (htRect != null)
+                {
+                    htRect.anchorMin = new Vector2(0f, 0f);
+                    htRect.anchorMax = new Vector2(1f, 1f);
+                    htRect.pivot = new Vector2(0.5f, 0.5f);
+                    htRect.sizeDelta = Vector2.zero;
+                    htRect.anchoredPosition = Vector2.zero;
+                }
+                if (ht != null)
+                {
+                    ht.alignment = TextAlignmentOptions.Center;
+                    ht.fontSize = Mathf.Max(20, ht.fontSize);
+                }
+            }
+        }
+
+        if (minimapRect != null)
+        {
+            // move minimap to the top-right where health previously sat
+            minimapRect.anchorMin = new Vector2(1f, 1f);
+            minimapRect.anchorMax = new Vector2(1f, 1f);
+            minimapRect.pivot = new Vector2(1f, 1f);
+            minimapRect.sizeDelta = new Vector2(500f, 500f);
+            minimapRect.anchoredPosition = new Vector2(-24f, -24f);
+        }
+
+        if (ammoRect != null && healthRect != null)
+        {
+            // Anchor ammo to top-left as well and position directly below health
+            ammoRect.anchorMin = new Vector2(0f, 1f);
+            ammoRect.anchorMax = new Vector2(0f, 1f);
+            ammoRect.pivot = new Vector2(0f, 1f);
+            float gap = 8f;
+            ammoRect.sizeDelta = new Vector2(340f, 92f);
+            float healthTopY = healthRect.anchoredPosition.y;
+            float healthHeight = healthRect.sizeDelta.y;
+            float ammoTopY = healthTopY - healthHeight - gap;
+            ammoRect.anchoredPosition = new Vector2(healthRect.anchoredPosition.x, ammoTopY);
+        }
+
+        HUDController hudController = battleUiRoot.GetComponent<HUDController>();
+        if (hudController != null)
+        {
+            SerializedObject serializedHud = new SerializedObject(hudController);
+            // Tweak default slot sizes for mobile
+            serializedHud.FindProperty("ammoSlotWidth").floatValue = 120f;
+            serializedHud.FindProperty("ammoSlotHeight").floatValue = 84f;
+            serializedHud.FindProperty("ammoSlotSpacing").floatValue = 12f;
+            serializedHud.FindProperty("ammoIconSize").floatValue = 44f;
+            serializedHud.FindProperty("ammoSlotPadding").floatValue = 10f;
+            // mark HUD as mobile so runtime layout code doesn't override editor placement
+            SerializedProperty mobileProp = serializedHud.FindProperty("mobileUiLayout");
+            if (mobileProp != null)
+                mobileProp.boolValue = true;
+            // make health bar larger and move health text inside at runtime
+            SerializedProperty healthBarHeightProp = serializedHud.FindProperty("healthBarHeight");
+            if (healthBarHeightProp != null)
+                healthBarHeightProp.floatValue = 48f;
+            SerializedProperty healthTextOffsetProp = serializedHud.FindProperty("healthTextOffsetBelowBar");
+            if (healthTextOffsetProp != null)
+                healthTextOffsetProp.floatValue = 0f;
+            // place ammo to left, not right
+            SerializedProperty bulletSideProp = serializedHud.FindProperty("bulletCountOnRight");
+            if (bulletSideProp != null)
+                bulletSideProp.boolValue = false;
+            serializedHud.ApplyModifiedPropertiesWithoutUndo();
+
+            EditorUtility.SetDirty(hudController);
+        }
+
+        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        Selection.activeGameObject = battleUiRoot;
+        Debug.Log("Mobile Battle UI setup complete in active scene.");
+    }
+
     static void SetupInActiveSceneInternal(bool lowPolyMode)
     {
         Canvas canvas = GetOrCreateCanvas();

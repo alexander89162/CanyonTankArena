@@ -40,6 +40,7 @@ public class HUDController : MonoBehaviour
     [Header("Layout")]
     [SerializeField] private bool bulletCountOnRight = true;
     [SerializeField] private Vector2 ammoScreenMargin = new Vector2(32f, 28f);
+    [SerializeField] private bool mobileUiLayout = false;
 
     [Header("Health Bar Style")]
     [SerializeField] private bool useHealthColorGradient = true;
@@ -677,6 +678,11 @@ public class HUDController : MonoBehaviour
         if (ammoContainer == null)
             return;
 
+        // If the HUD has been configured for a dedicated mobile layout, do not override
+        // the anchor/position that the scene setup assigned.
+        if (mobileUiLayout)
+            return;
+
         if (bulletCountOnRight)
         {
             ammoContainer.anchorMin = new Vector2(1f, 0f);
@@ -774,8 +780,29 @@ public class HUDController : MonoBehaviour
             if (slotRect != null)
             {
                 slotRect.sizeDelta = new Vector2(ammoSlotWidth, ammoSlotHeight);
-                float x = -ammoSlotSpacing - (i * (ammoSlotWidth + ammoSlotSpacing));
-                slotRect.anchoredPosition = new Vector2(x, ammoScreenMargin.y);
+
+                bool containerAnchoredTop = ammoContainer != null && ammoContainer.anchorMax.y > 0.5f;
+
+                if (bulletCountOnRight)
+                {
+                    // Right-side layout (default)
+                    slotRect.anchorMin = new Vector2(1f, containerAnchoredTop ? 1f : 0f);
+                    slotRect.anchorMax = slotRect.anchorMin;
+                    slotRect.pivot = new Vector2(1f, containerAnchoredTop ? 1f : 0f);
+                    float x = -ammoSlotSpacing - (i * (ammoSlotWidth + ammoSlotSpacing));
+                    float y = containerAnchoredTop ? -ammoScreenMargin.y : ammoScreenMargin.y;
+                    slotRect.anchoredPosition = new Vector2(x, y);
+                }
+                else
+                {
+                    // Left-side layout for mobile: position slots left-to-right under the top-aligned container
+                    slotRect.anchorMin = new Vector2(0f, containerAnchoredTop ? 1f : 0f);
+                    slotRect.anchorMax = slotRect.anchorMin;
+                    slotRect.pivot = new Vector2(0f, containerAnchoredTop ? 1f : 0f);
+                    float x = ammoSlotSpacing + (i * (ammoSlotWidth + ammoSlotSpacing));
+                    float y = containerAnchoredTop ? -ammoScreenMargin.y : ammoScreenMargin.y;
+                    slotRect.anchoredPosition = new Vector2(x, y);
+                }
             }
 
             Transform bgT = slot.Find("SlotBg");
@@ -815,18 +842,19 @@ public class HUDController : MonoBehaviour
                 TMP_Text txt = countT.GetComponent<TMP_Text>();
                 if (countRect != null)
                 {
-                    // center the text rect horizontally at the bottom of the slot
-                    countRect.anchorMin = new Vector2(0.5f, 0f);
-                    countRect.anchorMax = new Vector2(0.5f, 0f);
+                    // stretch horizontally across the slot and pin to the bottom
+                    countRect.anchorMin = new Vector2(0f, 0f);
+                    countRect.anchorMax = new Vector2(1f, 0f);
                     countRect.pivot = new Vector2(0.5f, 0f);
-                    countRect.sizeDelta = new Vector2(ammoSlotWidth - ammoSlotPadding * 2f, 24f);
+                    countRect.sizeDelta = new Vector2(0f, 24f);
                     // keep text inside the bottom of the slot
                     countRect.anchoredPosition = new Vector2(0f, ammoSlotPadding);
                 }
                 if (txt != null)
                 {
                     txt.text = "?/ ?";
-                    txt.alignment = TextAlignmentOptions.Bottom | TextAlignmentOptions.Center;
+                    // center text both horizontally and vertically within the bottom area
+                    txt.alignment = TextAlignmentOptions.Center;
                     txt.fontSize = Mathf.Max(16f, txt.fontSize);
                     // ensure no extra TMP margins or wrapping push the text off-center
                     try
