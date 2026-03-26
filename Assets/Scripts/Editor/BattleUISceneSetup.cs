@@ -22,6 +22,130 @@ public static class BattleUISceneSetup
         SetupInActiveSceneInternal(true);
     }
 
+    [MenuItem("Tools/Battle UI/Setup Mobile UI")]
+    public static void SetupMobileUI()
+    {
+        // Create the standard UI first, then tweak layout for mobile
+        SetupInActiveSceneInternal(false);
+
+        GameObject battleUiRoot = GameObject.Find("BattleUI");
+        if (battleUiRoot == null)
+            return;
+
+        Transform healthRoot = battleUiRoot.transform.Find("HealthTopRight");
+        Transform ammoRoot = battleUiRoot.transform.Find("AmmoBottom");
+        Transform minimapRoot = battleUiRoot.transform.Find("MiniMapTopLeft");
+
+        RectTransform healthRect = healthRoot != null ? EnsureRectTransform(healthRoot.gameObject) : null;
+        RectTransform ammoRect = ammoRoot != null ? EnsureRectTransform(ammoRoot.gameObject) : null;
+        RectTransform minimapRect = minimapRoot != null ? EnsureRectTransform(minimapRoot.gameObject) : null;
+
+        // Move health to top-left, minimap to top-right, and ammo below health on left
+        if (healthRect != null)
+        {
+            healthRect.anchorMin = new Vector2(0f, 1f);
+            healthRect.anchorMax = new Vector2(0f, 1f);
+            healthRect.pivot = new Vector2(0f, 1f);
+            // make health area a bit wider/taller for mobile
+            healthRect.sizeDelta = new Vector2(360f, 90f);
+            healthRect.anchoredPosition = new Vector2(24f, -24f);
+
+            // If a HealthBar exists inside, increase its visual height immediately
+            Transform healthSliderT = healthRoot.Find("HealthBar");
+            if (healthSliderT != null)
+            {
+                RectTransform sliderRect = healthSliderT.GetComponent<RectTransform>();
+                if (sliderRect != null)
+                {
+                    sliderRect.anchorMin = new Vector2(0f, 0f);
+                    sliderRect.anchorMax = new Vector2(1f, 0f);
+                    sliderRect.pivot = new Vector2(0.5f, 0f);
+                    sliderRect.sizeDelta = new Vector2(0f, 48f);
+                    sliderRect.anchoredPosition = new Vector2(0f, 8f);
+                }
+            }
+
+            // Move health text inside the bar
+            Transform healthTextT = healthRoot.Find("HealthText");
+            if (healthTextT != null)
+            {
+                RectTransform htRect = healthTextT.GetComponent<RectTransform>();
+                TextMeshProUGUI ht = healthTextT.GetComponent<TextMeshProUGUI>();
+                if (htRect != null)
+                {
+                    htRect.anchorMin = new Vector2(0f, 0f);
+                    htRect.anchorMax = new Vector2(1f, 1f);
+                    htRect.pivot = new Vector2(0.5f, 0.5f);
+                    htRect.sizeDelta = Vector2.zero;
+                    htRect.anchoredPosition = Vector2.zero;
+                }
+                if (ht != null)
+                {
+                    ht.alignment = TextAlignmentOptions.Center;
+                    ht.fontSize = Mathf.Max(20, ht.fontSize);
+                }
+            }
+        }
+
+        if (minimapRect != null)
+        {
+            // move minimap to the top-right where health previously sat
+            minimapRect.anchorMin = new Vector2(1f, 1f);
+            minimapRect.anchorMax = new Vector2(1f, 1f);
+            minimapRect.pivot = new Vector2(1f, 1f);
+            minimapRect.sizeDelta = new Vector2(500f, 500f);
+            minimapRect.anchoredPosition = new Vector2(-24f, -24f);
+        }
+
+        if (ammoRect != null && healthRect != null)
+        {
+            // Anchor ammo to top-left as well and position directly below health
+            ammoRect.anchorMin = new Vector2(0f, 1f);
+            ammoRect.anchorMax = new Vector2(0f, 1f);
+            ammoRect.pivot = new Vector2(0f, 1f);
+            float gap = 8f;
+            ammoRect.sizeDelta = new Vector2(340f, 92f);
+            float healthTopY = healthRect.anchoredPosition.y;
+            float healthHeight = healthRect.sizeDelta.y;
+            float ammoTopY = healthTopY - healthHeight - gap;
+            ammoRect.anchoredPosition = new Vector2(healthRect.anchoredPosition.x, ammoTopY);
+        }
+
+        HUDController hudController = battleUiRoot.GetComponent<HUDController>();
+        if (hudController != null)
+        {
+            SerializedObject serializedHud = new SerializedObject(hudController);
+            // Tweak default slot sizes for mobile
+            serializedHud.FindProperty("ammoSlotWidth").floatValue = 120f;
+            serializedHud.FindProperty("ammoSlotHeight").floatValue = 84f;
+            serializedHud.FindProperty("ammoSlotSpacing").floatValue = 12f;
+            serializedHud.FindProperty("ammoIconSize").floatValue = 44f;
+            serializedHud.FindProperty("ammoSlotPadding").floatValue = 10f;
+            // mark HUD as mobile so runtime layout code doesn't override editor placement
+            SerializedProperty mobileProp = serializedHud.FindProperty("mobileUiLayout");
+            if (mobileProp != null)
+                mobileProp.boolValue = true;
+            // make health bar larger and move health text inside at runtime
+            SerializedProperty healthBarHeightProp = serializedHud.FindProperty("healthBarHeight");
+            if (healthBarHeightProp != null)
+                healthBarHeightProp.floatValue = 48f;
+            SerializedProperty healthTextOffsetProp = serializedHud.FindProperty("healthTextOffsetBelowBar");
+            if (healthTextOffsetProp != null)
+                healthTextOffsetProp.floatValue = 0f;
+            // place ammo to left, not right
+            SerializedProperty bulletSideProp = serializedHud.FindProperty("bulletCountOnRight");
+            if (bulletSideProp != null)
+                bulletSideProp.boolValue = false;
+            serializedHud.ApplyModifiedPropertiesWithoutUndo();
+
+            EditorUtility.SetDirty(hudController);
+        }
+
+        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        Selection.activeGameObject = battleUiRoot;
+        Debug.Log("Mobile Battle UI setup complete in active scene.");
+    }
+
     static void SetupInActiveSceneInternal(bool lowPolyMode)
     {
         Canvas canvas = GetOrCreateCanvas();
@@ -128,13 +252,97 @@ public static class BattleUISceneSetup
         ammoRootRect.sizeDelta = new Vector2(280f, 44f);
         ammoRootRect.anchoredPosition = new Vector2(-24f, 24f);
 
-        TextMeshProUGUI ammoText = GetOrCreateTMPText(ammoRoot.transform, "AmmoText", "Ammo 30/30", 28, TextAlignmentOptions.BottomRight);
-        RectTransform ammoTextRect = ammoText.GetComponent<RectTransform>();
-        ammoTextRect.anchorMin = new Vector2(0f, 0f);
-        ammoTextRect.anchorMax = new Vector2(1f, 1f);
-        ammoTextRect.pivot = new Vector2(1f, 0f);
-        ammoTextRect.sizeDelta = Vector2.zero;
-        ammoTextRect.anchoredPosition = Vector2.zero;
+        // Remove the single overlaying ammo text and create three boxed ammo slots
+        ammoRootRect.sizeDelta = new Vector2(340f, 92f);
+
+        int slotCount = 3;
+        float slotWidth = 120f;
+        float slotHeight = 140f; // tallish rectangle
+        float slotSpacing = 16f;
+
+        for (int i = 0; i < slotCount; i++)
+        {
+            string slotName = $"AmmoSlot{ i + 1 }";
+            Transform existingSlot = ammoRoot.transform.Find(slotName);
+            GameObject slotObj = null;
+            if (existingSlot != null)
+                slotObj = existingSlot.gameObject;
+
+            if (slotObj == null)
+            {
+                slotObj = new GameObject(slotName, typeof(RectTransform));
+                slotObj.transform.SetParent(ammoRoot.transform, false);
+            }
+
+            RectTransform slotRect = slotObj.GetComponent<RectTransform>();
+            slotRect.anchorMin = new Vector2(1f, 0f);
+            slotRect.anchorMax = new Vector2(1f, 0f);
+            slotRect.pivot = new Vector2(1f, 0f);
+            slotRect.sizeDelta = new Vector2(slotWidth, slotHeight);
+            slotRect.anchoredPosition = new Vector2(-slotSpacing - (i * (slotWidth + slotSpacing)), slotSpacing);
+
+            // Background box
+            Transform bgTransform = slotObj.transform.Find("SlotBg");
+            Image bgImage = null;
+            if (bgTransform != null)
+                bgImage = bgTransform.GetComponent<Image>();
+
+            if (bgImage == null)
+            {
+                GameObject bgObj = new GameObject("SlotBg", typeof(RectTransform), typeof(Image));
+                bgObj.transform.SetParent(slotObj.transform, false);
+                bgImage = bgObj.GetComponent<Image>();
+            }
+
+            RectTransform bgRect = bgImage.GetComponent<RectTransform>();
+            bgRect.anchorMin = Vector2.zero;
+            bgRect.anchorMax = Vector2.one;
+            bgRect.offsetMin = Vector2.zero;
+            bgRect.offsetMax = Vector2.zero;
+            bgImage.color = new Color(0.06f, 0.07f, 0.06f, 0.95f);
+            bgImage.raycastTarget = false;
+
+            // Icon (top)
+            Transform iconTransform = slotObj.transform.Find("AmmoIcon");
+            Image iconImage = null;
+            if (iconTransform != null)
+                iconImage = iconTransform.GetComponent<Image>();
+
+            if (iconImage == null)
+            {
+                GameObject iconObj = new GameObject("AmmoIcon", typeof(RectTransform), typeof(Image));
+                iconObj.transform.SetParent(slotObj.transform, false);
+                iconImage = iconObj.GetComponent<Image>();
+            }
+
+            RectTransform iconRect = iconImage.GetComponent<RectTransform>();
+            iconRect.anchorMin = new Vector2(0.5f, 1f);
+            iconRect.anchorMax = new Vector2(0.5f, 1f);
+            iconRect.pivot = new Vector2(0.5f, 1f);
+            iconRect.sizeDelta = new Vector2(48f, 48f);
+            // centered near the top inside the box
+            iconRect.anchoredPosition = new Vector2(0f, -12f);
+            iconImage.type = Image.Type.Simple;
+            iconImage.preserveAspect = true;
+            iconImage.color = Color.white;
+            iconImage.raycastTarget = false;
+
+            Sprite defaultIcon = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+            if (iconImage.sprite == null && defaultIcon != null)
+                iconImage.sprite = defaultIcon;
+
+            // Count text (bottom)
+            TextMeshProUGUI countText = GetOrCreateTMPText(slotObj.transform, $"AmmoCount{ i + 1 }", "?/ ?", 20, TextAlignmentOptions.Bottom | TextAlignmentOptions.Center);
+            RectTransform countRect = countText.GetComponent<RectTransform>();
+            // center the text rect horizontally at the bottom of the slot
+            countRect.anchorMin = new Vector2(0.5f, 0f);
+            countRect.anchorMax = new Vector2(0.5f, 0f);
+            countRect.pivot = new Vector2(0.5f, 0f);
+            countRect.sizeDelta = new Vector2(slotWidth - 16f, 24f);
+            // positioned near the bottom inside the box
+            countRect.anchoredPosition = new Vector2(0f, 12f);
+            countText.color = Color.white;
+        }
 
         Camera minimapCamera = GetOrCreateMinimapCamera();
         Transform playerTransform = FindPlayerTransform();
@@ -165,8 +373,41 @@ public static class BattleUISceneSetup
         if (healthSlider.fillRect != null)
             serializedHud.FindProperty("healthFillImage").objectReferenceValue = healthSlider.fillRect.GetComponent<Image>();
         serializedHud.FindProperty("healthText").objectReferenceValue = healthText;
-        serializedHud.FindProperty("ammoText").objectReferenceValue = ammoText;
         serializedHud.FindProperty("ammoContainer").objectReferenceValue = ammoRootRect;
+
+        // Set default ammo layout values in HUDController so they are editable in inspector
+        serializedHud.FindProperty("ammoSlotWidth").floatValue = 140f;
+        serializedHud.FindProperty("ammoSlotHeight").floatValue = 104f;
+        serializedHud.FindProperty("ammoSlotSpacing").floatValue = 18f;
+        serializedHud.FindProperty("ammoIconSize").floatValue = 52f;
+        serializedHud.FindProperty("ammoSlotPadding").floatValue = 12f;
+        serializedHud.FindProperty("ammoSlotBgColor").colorValue = new Color(0.06f, 0.07f, 0.06f, 0.95f);
+
+        // Populate HUDController arrays for icons and counts
+        SerializedProperty iconArray = serializedHud.FindProperty("ammoIconImages");
+        SerializedProperty countArray = serializedHud.FindProperty("ammoCountTexts");
+        iconArray.arraySize = 3;
+        countArray.arraySize = 3;
+        for (int i = 0; i < 3; i++)
+        {
+            string slotName = $"AmmoSlot{ i + 1 }";
+            Transform slot = ammoRoot.transform.Find(slotName);
+            Image icon = null;
+            TextMeshProUGUI countText = null;
+            if (slot != null)
+            {
+                Transform iconT = slot.Find("AmmoIcon");
+                if (iconT != null)
+                    icon = iconT.GetComponent<Image>();
+
+                Transform countT = slot.Find($"AmmoCount{ i + 1 }");
+                if (countT != null)
+                    countText = countT.GetComponent<TextMeshProUGUI>();
+            }
+
+                iconArray.GetArrayElementAtIndex(i).objectReferenceValue = icon;
+                countArray.GetArrayElementAtIndex(i).objectReferenceValue = countText;
+        }
         serializedHud.FindProperty("minimapCamera").objectReferenceValue = minimapCamera;
         serializedHud.FindProperty("minimapImage").objectReferenceValue = minimapImage;
         serializedHud.FindProperty("use2DMinimap").boolValue = true;
