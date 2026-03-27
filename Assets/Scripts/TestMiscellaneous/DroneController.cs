@@ -128,7 +128,7 @@ public class DroneController : MonoBehaviour
     void Update()
     {
         // 1) Rotate propellers
-        foreach (var p in propellers)
+        foreach (Transform p in propellers)
         p.Rotate(Vector3.up, propellerSpeed * Time.deltaTime, Space.Self);
 
         // 2) Movement and rotation of drone as a whole

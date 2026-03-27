@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 284.2197
+      value: 320.99194
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 33.283566
+      value: 23.826715
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 104.18158
+      value: 700.6725
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
       propertyPath: m_LocalRotation.w
@@ -30,7 +30,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
       propertyPath: m_LocalRotation.z
@@ -54,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -62,138 +62,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5908621671888700848}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6389854361587587389}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8078096324699375160}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3426727782727469524}
+      addedObject: {fileID: 5311493600048287474}
   m_SourcePrefab: {fileID: 100100000, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
 --- !u!1 &1844108838242212397 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: d47fdb3337795bd4da867a8dc60d4a21, type: 3}
   m_PrefabInstance: {fileID: 1537696587169982332}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5908621671888700848
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1844108838242212397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19bc73e8f4cb44246bfb6bb287d048e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
-  maxHealth: 25
-  destroyOnDeath: 1
-  deathDelay: 0.1
-  OnHealthChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  OnDeath:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &6389854361587587389
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1844108838242212397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbfda828bb8b84349a83dd119381bbfa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageController
-  health: {fileID: 0}
---- !u!114 &8078096324699375160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1844108838242212397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ae97e5853cb6b84eaa627164fc930d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HPdebugger
-  damageReceiver: {fileID: 0}
-  heightOffset: 2.5
-  style:
-    m_Name: 
-    m_Normal:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_Hover:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_Active:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_Focused:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_OnNormal:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_OnHover:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_OnActive:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_OnFocused:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_Border:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Margin:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Padding:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Overflow:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Font: {fileID: 0}
-    m_FontSize: 25
-    m_FontStyle: 0
-    m_Alignment: 0
-    m_WordWrap: 0
-    m_RichText: 1
-    m_TextClipping: 0
-    m_ImagePosition: 0
-    m_ContentOffset: {x: 0, y: 0}
-    m_FixedWidth: 0
-    m_FixedHeight: 0
-    m_StretchWidth: 1
-    m_StretchHeight: 0
---- !u!65 &3426727782727469524
+--- !u!65 &5311493600048287474
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -208,9 +84,9 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.22298087, y: 0.20754401, z: 0.67923105}
-  m_Center: {x: 0.00647274, y: 0.011389366, z: 0.33083373}
+  m_Size: {x: 0.086427, y: 0.098088436, z: 0.67923105}
+  m_Center: {x: -0.0076861572, y: -0.017256776, z: 0.3308336}
