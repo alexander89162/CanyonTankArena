@@ -152,8 +152,8 @@
                 "y": 0.0,
                 "z": 0.0
             },
-            "duration": 0.4000000059604645,
-            "outwardMove": 20.0
+            "duration": 0.1,
+            "outwardMove": 5.0
         },
         {
             "targetTilt": {
@@ -161,8 +161,8 @@
                 "y": 0.0,
                 "z": 0.0
             },
-            "duration": 0.6000000238418579,
-            "outwardMove": -20.0
+            "duration": 0.1,
+            "outwardMove": -5.0
         }
     ],
     "deploymentActions": [

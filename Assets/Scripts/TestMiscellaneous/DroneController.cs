@@ -24,6 +24,13 @@ public class DroneController : MonoBehaviour
     private Vector3 maneuverEndPos;
     private Quaternion maneuverEndRot;
 
+    [Header("Idle Hover")]
+    public float hoverAmplitude = 5.0f;   // vertical travel in world units
+    public float hoverFrequency = 0.4f;   // oscillations per second
+
+    private Vector3 hoverOrigin;
+
+
     [Header("Rigging")]
     public Transform[] propellers;
     public float propellerSpeed = 1800f;
@@ -208,6 +215,10 @@ public class DroneController : MonoBehaviour
                 break;
             case ControllerState.Idle:
                 elapsedTime += Time.deltaTime;
+                segmentTimer+= Time.deltaTime;
+
+                float hoverOffset = Mathf.Sin(segmentTimer * hoverFrequency * Mathf.PI * 2f) * hoverAmplitude;
+                transform.position = hoverOrigin + Vector3.up * hoverOffset;
                 break;
         }
     }
@@ -359,6 +370,14 @@ public class DroneController : MonoBehaviour
             brakingIndex = 0;
             if (brakingManeuvers.Count > 0)
                 UpdateBrakingManeuverValues(0);
+            else
+                SetState(ControllerState.Idle);
         }
+        else if (newState == ControllerState.Idle)
+        {
+            hoverOrigin = transform.position;
+            if (debug) Debug.Log($"entered Idle state, hoverOrigin initialized to {hoverOrigin}");
+        }
+        
     }
 }
