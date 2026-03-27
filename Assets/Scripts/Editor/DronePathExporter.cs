@@ -133,6 +133,7 @@ public class DronePathExporterWindow : EditorWindow
     private List<BrakingManeuver> BuildBrakingManeuvers(List<MoveJson> moves)
     {
         var maneuvers = new List<BrakingManeuver>();
+        return maneuvers; // disable maneuver creation for now--due to time constraints, we discard this feature
 
         if (moves.Count < 2) return maneuvers;
 
