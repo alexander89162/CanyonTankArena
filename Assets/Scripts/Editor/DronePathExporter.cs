@@ -135,28 +135,28 @@ public class DronePathExporterWindow : EditorWindow
         var maneuvers = new List<BrakingManeuver>();
         return maneuvers; // disable maneuver creation for now--due to time constraints, we discard this feature
 
-        if (moves.Count < 2) return maneuvers;
+        // if (moves.Count < 2) return maneuvers;
 
-        // Derive the approach direction from the last two nodes
-        Vector3 lastDir = (moves[moves.Count - 1].position - moves[moves.Count - 2].position).normalized;
+        // // Derive the approach direction from the last two nodes
+        // Vector3 lastDir = (moves[moves.Count - 1].position - moves[moves.Count - 2].position).normalized;
 
-        // Maneuver 0: overshoot final node based on travel direction
-        maneuvers.Add(new BrakingManeuver
-        {
-            targetTilt = Vector3.zero,
-            duration = brakingRecoilDuration,
-            outwardMove = brakingRecoilDistance  // negative = backward along lastDir
-        });
+        // // Maneuver 0: overshoot final node based on travel direction
+        // maneuvers.Add(new BrakingManeuver
+        // {
+        //     targetTilt = Vector3.zero,
+        //     duration = brakingRecoilDuration,
+        //     outwardMove = brakingRecoilDistance  // negative = backward along lastDir
+        // });
 
-        // Maneuver 1: settle back to stop position
-        maneuvers.Add(new BrakingManeuver
-        {
-            targetTilt = Vector3.zero,
-            duration = brakingSettleDuration,
-            outwardMove = -brakingRecoilDistance   // return to where we came from
-        });
+        // // Maneuver 1: settle back to stop position
+        // maneuvers.Add(new BrakingManeuver
+        // {
+        //     targetTilt = Vector3.zero,
+        //     duration = brakingSettleDuration,
+        //     outwardMove = -brakingRecoilDistance   // return to where we came from
+        // });
 
-        return maneuvers;
+        // return maneuvers;
     }
 
     [System.Serializable]
