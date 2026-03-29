@@ -256,7 +256,7 @@ public class DroneController : MonoBehaviour
         moves = new List<Move>(actions.movements.Length);
         brakingManeuvers = new List<BrakingManeuver>(actions.brakingManeuvers);
         deploymentActions = new List<DeploymentAction>(actions.deploymentActions);
-        if (!ValidateDroneActions(actions)) // TODO: fix validation, it does nothing right now
+        if (!ValidateDroneActions(actions))
         {
             Debug.LogError($"DroneController on {name} received invalid action data. Destroying drone.");
             Destroy(gameObject);
@@ -307,6 +307,7 @@ public class DroneController : MonoBehaviour
         return true;
     }
 
+    ///<summary>Returns the duration of a segment based on its initial and final velocities.</summary>
     private float ComputeSegmentDuration(Move a, Move b)
     {
         float distance = Vector3.Distance(a.position, b.position);
@@ -315,6 +316,7 @@ public class DroneController : MonoBehaviour
         return distance / avgVelocity;
     }
 
+    ///<summary>Given the interpolation factor t, return the new position at the given frame</summary>
     private Vector3 CatmullRom(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
     {
         float t2 = t * t;
@@ -328,6 +330,7 @@ public class DroneController : MonoBehaviour
         );
     }
 
+    ///<summary>Skews the interpolation factor t to simulate accelerated movement. Keeps the segment's time duration the same.</summary>
     private float ApplyAcceleration(float t, AccelerationType type)
     {
         switch (type)
@@ -341,6 +344,7 @@ public class DroneController : MonoBehaviour
         }
     }
 
+    ///<summary>Update state of all values related to braking maneuvers to match current index</summary>
     void UpdateBrakingManeuverValues(int index)
     {
         var maneuver = brakingManeuvers[index];

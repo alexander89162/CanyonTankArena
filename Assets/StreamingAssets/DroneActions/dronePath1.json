@@ -145,26 +145,7 @@
             "rotationType": "linear"
         }
     ],
-    "brakingManeuvers": [
-        {
-            "targetTilt": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "duration": 0.1,
-            "outwardMove": 5.0
-        },
-        {
-            "targetTilt": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "duration": 0.1,
-            "outwardMove": -5.0
-        }
-    ],
+    "brakingManeuvers": [],
     "deploymentActions": [
         {
             "action": "open-door",
