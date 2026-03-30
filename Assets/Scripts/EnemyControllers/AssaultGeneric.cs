@@ -26,7 +26,8 @@ public class AssaultGeneric : MonoBehaviour
     private NavMeshAgent agent;
     private UnitState currentState;
     private float repathTimer = 0f;
-    public Transform target;
+    public Transform enemyTarget; // enemy to attack
+    public Vector3 moveDestination; // position to go towards
     private float currentSpeed;
     private TankSlope tankSlope;
     private Vector3 lastPosition;
@@ -44,8 +45,6 @@ public class AssaultGeneric : MonoBehaviour
 
     void Update()
     {
-        agent.SetDestination(target.position);
-
         Vector3 vel = (transform.position - lastPosition) / Time.deltaTime;
         tankSlope.UpdateAlignment(vel);
         lastPosition = transform.position;
@@ -55,8 +54,22 @@ public class AssaultGeneric : MonoBehaviour
         
         if (repathTimer >= repathInterval)
         {
+            Repath();
             repathTimer = 0f;
         }
+    }
+
+    void OnCollisionEnter(Collision col) // TODO: might reset on every bullet hit?
+    {
+        Repath();
+        repathTimer = 0f;
+    }
+
+    ///<summary>Recompute the enemyTarget, moveDestination, and agent's path. 
+    /// The current state effects the results.</summary>
+    void Repath()
+    {
+        // TODO: set moveDestination based on state
 
         switch (currentState)
         {
@@ -64,12 +77,12 @@ public class AssaultGeneric : MonoBehaviour
             case UnitState.Chasing: break;
             case UnitState.Avoiding: break;
         }
+
+        moveDestination = enemyTarget.position;
+        agent.SetDestination(moveDestination);
     }
 
-    void OnCollisionEnter(Collision col) // TODO: might reset on every bullet hit?
-    {
-        repathTimer = 0f;
-    }
-
+    ///<summary>Set the unit's current state to alter behavior. This method also 
+    /// handles initialization logic for the new state</summary>
     private void SetState(UnitState newState) { currentState = newState; }
 }

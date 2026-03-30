@@ -363,9 +363,9 @@ public static class BattleUISceneSetup
         minimapCamera.targetTexture = minimapTexture;
         minimapImage.texture = minimapTexture;
 
-        BaseController playerController = null;
+        TankController playerController = null;
         if (playerTransform != null)
-            playerController = playerTransform.GetComponent<BaseController>();
+            playerController = playerTransform.GetComponent<TankController>();
 
         SerializedObject serializedHud = new SerializedObject(hudController);
         serializedHud.FindProperty("playerController").objectReferenceValue = playerController;
@@ -671,7 +671,7 @@ public static class BattleUISceneSetup
         if (taggedPlayer != null)
             return taggedPlayer.transform;
 
-        BaseController playerController = Object.FindFirstObjectByType<BaseController>();
+        TankController playerController = Object.FindFirstObjectByType<TankController>();
         if (playerController != null)
             return playerController.transform;
 
