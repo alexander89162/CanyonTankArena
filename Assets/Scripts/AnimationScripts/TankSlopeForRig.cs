@@ -4,35 +4,45 @@ public class TankSlopeForRig : MonoBehaviour
 {
     [Header("Slope Settings")]
     public float alignSpeed = 5f;
+    public float alignRefreshRate = 0.15f;
     public float rayDistance = 1.5f;
     public LayerMask groundLayer;
     public float minMoveSpeedToAlign = 0.2f;
     public bool debug = false;
 
     [Header("References")]
-    public Transform tankRoot;       // Root: used for raycasting
-    public Transform tankBodyBone;   // Drag the 'tank-body' bone here
+    public Transform tankRoot; // Root is used for raycasting
+    public Transform tankBodyBone;
+    private Transform boneParent;
 
-    private Quaternion boneRestRotation;
-    private Vector3 currentVelocity;
+    private float alignRefreshTimer = 0f;
 
     void Awake()
     {
         if (groundLayer == 0) groundLayer = LayerMask.GetMask("Ground");
+        if (tankBodyBone != null) boneParent = tankBodyBone.parent;
 
-        // Cache the bone's default local rotation so we can offset from it
-        if (tankBodyBone != null)
-            boneRestRotation = tankBodyBone.localRotation;
+        alignRefreshTimer = Random.Range(0, alignRefreshRate); // offset timer so tanks align at different frames (load balance optimization)
     }
 
-    // Call this method to update alignment every frame in controller
-    public void UpdateAlignment(Vector3 velocity)
+    void Update()
     {
-        currentVelocity = velocity;
+        alignRefreshTimer += Time.deltaTime;
+    }
 
-        if (currentVelocity.magnitude < minMoveSpeedToAlign)
+    // Call this method every frame in controller to update alignment
+    public void UpdateAlignment(Vector3 currentVelocity)
+    {
+        if (alignRefreshTimer < alignRefreshRate) return;
+
+        alignRefreshTimer = 0f;
+
+        if (currentVelocity.sqrMagnitude < minMoveSpeedToAlign)
         {
+            #if UNITY_EDITOR
             if (debug) Debug.Log($"Skipped AlignToSlope; velocity below minMoveSpeedToAlign");
+            #endif
+
             return;
         }
 
@@ -41,7 +51,10 @@ public class TankSlopeForRig : MonoBehaviour
 
     void AlignToSlope()
     {
+        #if UNITY_EDITOR
         if (debug) Debug.Log($"AlignToSlope was called.");
+        #endif
+
         Vector3 rayStart = tankRoot.position + Vector3.up * 1f;
 
         if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, rayDistance, groundLayer))
@@ -53,7 +66,7 @@ public class TankSlopeForRig : MonoBehaviour
             Quaternion worldTarget = Quaternion.LookRotation(forwardOnSlope, groundNormal);
 
             // Convert to local space relative to the bone's parent
-            Quaternion localTarget = Quaternion.Inverse(tankBodyBone.parent.rotation) * worldTarget;
+            Quaternion localTarget = Quaternion.Inverse(boneParent.rotation) * worldTarget;
 
             // Slerp from current local rotation toward the target
             tankBodyBone.localRotation = Quaternion.Slerp(
@@ -61,7 +74,10 @@ public class TankSlopeForRig : MonoBehaviour
                 localTarget,
                 alignSpeed * Time.deltaTime
             );
+
+            #if UNITY_EDITOR
             if (debug) Debug.Log($"localRotation of tankBodyBone: {tankBodyBone.localRotation}, localTarget = {localTarget}");
+            #endif
         }
     }
 
