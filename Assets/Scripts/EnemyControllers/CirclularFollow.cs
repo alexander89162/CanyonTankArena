@@ -5,7 +5,7 @@ using UnityEngine.AI;
 /*Circle an opponent once spotting them. Using probabilities, the unit explores 
 the map in Wandering mode (slower movement and shorter vision range) until finding 
 an opponent. There is support for multiple units on enemy and ally teams*/
-public class AssaultGeneric : MonoBehaviour
+public class CircularFollow : MonoBehaviour
 {
     private enum UnitState
     {
