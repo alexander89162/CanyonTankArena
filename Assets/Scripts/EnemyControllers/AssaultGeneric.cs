@@ -10,7 +10,8 @@ public class AssaultGeneric : MonoBehaviour
     private enum UnitState
     {
         Wandering,
-        Chasing,
+        CatchingUp,
+        Circling,
         Avoiding
     }
 
@@ -43,7 +44,7 @@ public class AssaultGeneric : MonoBehaviour
         currentForward = transform.forward;
         agent.updateUpAxis = false;
 
-        SetState(UnitState.Chasing);
+        SetState(UnitState.CatchingUp);
     }
 
     void Update()
@@ -71,23 +72,32 @@ public class AssaultGeneric : MonoBehaviour
         switch (currentState)
         {
             case UnitState.Wandering: break;
-            case UnitState.Chasing:
-                // 1) Pick direction the AI will move towards
-                Vector3 toTarget = enemyTarget.position - transform.position;
+            case UnitState.CatchingUp:
+                Vector3 toEnemy = enemyTarget.position - transform.position;
+                Vector3 toSelf = -toEnemy;
 
-                // Treat relative direction differences as a Vector2
-                Vector3 flatForward = new Vector3(toTarget.x, toTarget.y, 0f);
-                flatForward.Normalize();
-                Vector3 side = new Vector3(-flatForward.y, flatForward.x, 0f); // Perpendicular
-                
-                float sideDot = Vector3.Dot(transform.right, toTarget);
-                float currentSideSign = (sideDot > 0f) ? 1f : -1f; // Decide direction
-                Vector3 desiredDir = (flatForward + side * currentSideSign).normalized;
-                
-                // 2) Build our first guess at next target position
+                float sideDot = Vector3.Dot(toSelf.normalized, enemyTarget.right);
+                float orbitSign = sideDot >= 0f ? 1f : -1f;
+                Vector3 sidePoint = enemyTarget.position + enemyTarget.right * orbitSign * idealCircleRadius;
+
+                if (Vector3.Distance(transform.position, sidePoint) < idealCircleRadius)
+                {
+                    //SetState(UnitState.Circling);
+                    break;
+                } 
+
+                Vector3 desiredDir = (sidePoint - transform.position).normalized;
                 Vector3 desiredTarget = transform.position + (desiredDir * moveStep);
-
                 moveDestination = desiredTarget;
+                break;
+            case UnitState.Circling:
+                float distToEnemy = Vector3.Distance(transform.position, enemyTarget.position);
+                if (distToEnemy > idealCircleRadius * 1.2f)
+                {
+                    SetState(UnitState.CatchingUp);
+                    break;
+                }
+                // circling logic here
                 break;
             case UnitState.Avoiding: break;
         }
