@@ -17,10 +17,13 @@ public class AssaultGeneric : MonoBehaviour
     public LayerMask opponentLayer;
     public GameObject[] opponents;
     public float repathInterval = 0.8f;
-    public float wanderingSpeed = 5f; // for when no opponents are detected
-    public float chasingSpeed = 10f;
+    public float wanderingSpeed = 7f; // for when no opponents are detected
+    public float chasingSpeed = 15f;
     public float detectionRange = 80f;
     public float playerBias = 0.5f; // -1 avoid player, 0 neutral, 0.5 tend to pick player more, 1 pick player always
+    public float idealCircleRadius = 50f; // AI will try to circle at this distance
+    public float moveStep = 20f;
+    public float angularSpeed = 10f;
 
     private NavMeshAgent agent;
     private UnitState currentState;
@@ -29,6 +32,7 @@ public class AssaultGeneric : MonoBehaviour
     public Vector3 moveDestination; // position to go towards
     private TankSlopeForRig tankSlope;
     private Vector3 lastPosition;
+    private Vector3 currentForward;
 
     void Awake()
     {
@@ -36,6 +40,7 @@ public class AssaultGeneric : MonoBehaviour
         tankSlope = GetComponent<TankSlopeForRig>();
 
         lastPosition = transform.position;
+        currentForward = transform.forward;
         agent.updateUpAxis = false;
 
         SetState(UnitState.Chasing);
@@ -45,8 +50,8 @@ public class AssaultGeneric : MonoBehaviour
     {
         Vector3 vel = (transform.position - lastPosition) / Time.deltaTime;
         tankSlope.UpdateAlignment(vel);
-        lastPosition = transform.position;
 
+        lastPosition = transform.position;
         repathTimer += Time.deltaTime;
         transform.position = agent.nextPosition;
         
@@ -61,11 +66,28 @@ public class AssaultGeneric : MonoBehaviour
     /// The current state effects the results.</summary>
     void Repath()
     {
+        currentForward = agent.velocity.normalized; // lazy update of state variables
+
         switch (currentState)
         {
             case UnitState.Wandering: break;
             case UnitState.Chasing:
-                moveDestination = enemyTarget.position;
+                // 1) Pick direction the AI will move towards
+                Vector3 toTarget = enemyTarget.position - transform.position;
+
+                // Treat relative direction differences as a Vector2
+                Vector3 flatForward = new Vector3(toTarget.x, toTarget.y, 0f);
+                flatForward.Normalize();
+                Vector3 side = new Vector3(-flatForward.y, flatForward.x, 0f); // Perpendicular
+                
+                float sideDot = Vector3.Dot(transform.right, toTarget);
+                float currentSideSign = (sideDot > 0f) ? 1f : -1f; // Decide direction
+                Vector3 desiredDir = (flatForward + side * currentSideSign).normalized;
+                
+                // 2) Build our first guess at next target position
+                Vector3 desiredTarget = transform.position + (desiredDir * moveStep);
+
+                moveDestination = desiredTarget;
                 break;
             case UnitState.Avoiding: break;
         }
