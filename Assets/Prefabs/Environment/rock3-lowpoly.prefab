@@ -65,6 +65,10 @@ PrefabInstance:
       value: rock3-lowpoly
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 72028d29a883b33438f5d63b18d226e8, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 72028d29a883b33438f5d63b18d226e8, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
@@ -74,15 +78,15 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 72028d29a883b33438f5d63b18d226e8, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2272267010745928339}
+      addedObject: {fileID: 924030710750457329}
   m_SourcePrefab: {fileID: 100100000, guid: 72028d29a883b33438f5d63b18d226e8, type: 3}
 --- !u!1 &8386321670936915976 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 72028d29a883b33438f5d63b18d226e8, type: 3}
   m_PrefabInstance: {fileID: 8692891698706500953}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &2272267010745928339
-BoxCollider:
+--- !u!135 &924030710750457329
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -100,5 +104,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.6566419, y: 0.61490375, z: 0.82989687}
-  m_Center: {x: -0.13365588, y: -0.051039852, z: 0.276747}
+  m_Radius: 0.42
+  m_Center: {x: -0.10346502, y: -0.07, z: 0.15}

@@ -9,7 +9,7 @@ public class SpikeballController : MonoBehaviour
     public Transform enemyTarget;
     public float movementSpeed = 20f;
     public float repathInterval = 0.8f;
-    public float moveStep = 20f;
+    public float moveStep = 40f;
     public float minChargeDistance = 40f;
     public float liftingTime = 4f;
     public float liftingHeight = 30f;
@@ -17,6 +17,7 @@ public class SpikeballController : MonoBehaviour
     public float radius = 9f;
 
     private NavMeshAgent agent;
+    private Rigidbody rb;
     private AttackState currentState;
     private Vector3 moveDestination;
     private Vector3 liftingStartPos;
@@ -37,6 +38,9 @@ public class SpikeballController : MonoBehaviour
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        rb = GetComponent<Rigidbody>();
+        rb.isKinematic = true; // rb only used for Launching state
+        moveDestination = transform.position;
 
         SetState(AttackState.Approaching);
     }
@@ -49,14 +53,14 @@ public class SpikeballController : MonoBehaviour
         if (currentState == AttackState.Lifting)
         {
             liftingTimer += Time.deltaTime;
-            if (liftingTimer > liftingTime)
+            float t = liftingTimer / liftingTime;
+            t = Mathf.Clamp01(t);
+            transform.position = Vector3.Lerp(liftingStartPos, liftingEndPos, t);
+
+            if (t >= 1)
             {
                 SetState(AttackState.Launching);
                 liftingTimer = 0f;
-            }
-            else
-            {
-                //
             }
         }
         else if (currentState == AttackState.Launching)
@@ -69,7 +73,6 @@ public class SpikeballController : MonoBehaviour
             repathTimer = 0f;
         }
 
-        agent.SetDestination(moveDestination);
         AnimateSelf();
     }
 
@@ -97,6 +100,7 @@ public class SpikeballController : MonoBehaviour
                 moveDestination = desiredTarget;
                 break;
         }
+        agent.SetDestination(moveDestination);
     }
 
     private void AnimateSelf()
