@@ -176,6 +176,7 @@ public class TargetingSystem : MonoBehaviour
     }
 
     /// <summary>Debug visualization</summary>
+    
     void OnDrawGizmosSelected()
     {
         if (mainCamera == null) return;

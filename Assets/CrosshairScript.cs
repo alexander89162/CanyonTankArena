@@ -220,15 +220,29 @@ public class CrosshairScript : MonoBehaviour
             // Simple mode: keep crosshair at screen center
             CenterCrosshair();
         }
-        else
+        /*else
         {
             // Advanced mode: project target to screen
             ProjectTargetToScreen();
         }
 
         UpdateDynamicInnerRingColor();
+        */
     }
-    
+
+    void LateUpdate()
+    {
+        if (rectTransform == null || mainCamera == null)
+            return; 
+
+        if (!lockToCenter)
+        {
+            ProjectTargetToScreen();
+        }
+
+        UpdateDynamicInnerRingColor();
+    }
+
     void CenterCrosshair()
     {
         // Position at center of the screen
