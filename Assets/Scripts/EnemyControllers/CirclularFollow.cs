@@ -18,13 +18,16 @@ public class CircularFollow : MonoBehaviour
     public LayerMask opponentLayer;
     public GameObject[] opponents;
     public float repathInterval = 0.8f;
-    public float wanderingSpeed = 7f; // for when no opponents are detected
+    public float wanderingSpeed = 7f;
     public float chasingSpeed = 15f;
     public float detectionRange = 80f;
     public float playerBias = 0.5f; // -1 avoid player, 0 neutral, 0.5 tend to pick player more, 1 pick player always
     public float idealCircleRadius = 50f; // AI will try to circle at this distance
     public float moveStep = 20f;
     public float angularSpeed = 10f;
+
+    [Tooltip("When off, the unit stops when close enough instead of circling.")]
+    public bool circlesOpponentAfterCatchup = true;
 
     private NavMeshAgent agent;
     private UnitState currentState;
@@ -78,11 +81,11 @@ public class CircularFollow : MonoBehaviour
 
                 float sideDot = Vector3.Dot(toSelf.normalized, enemyTarget.right);
                 float orbitSign = sideDot >= 0f ? 1f : -1f;
-                Vector3 sidePoint = enemyTarget.position + enemyTarget.right * orbitSign * idealCircleRadius;
+                Vector3 sidePoint = enemyTarget.position + enemyTarget.right * (orbitSign * idealCircleRadius);
 
                 if (Vector3.Distance(transform.position, sidePoint) < idealCircleRadius)
                 {
-                    //SetState(UnitState.Circling);
+                    if (circlesOpponentAfterCatchup) SetState(UnitState.Circling);
                     break;
                 } 
 
