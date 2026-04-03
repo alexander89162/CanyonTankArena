@@ -113,7 +113,7 @@ public class SpikeballController : MonoBehaviour
                     liftingStartPos = transform.position;
                     liftingEndPos = liftingStartPos + new Vector3(0, liftingHeight, 0);
                     SetState(AttackState.Lifting);
-                    break;
+                    return;
                 }
                 Vector3 desiredDir = (sidePoint - transform.position).normalized;
                 Vector3 desiredTarget = transform.position + (desiredDir * moveStep);
