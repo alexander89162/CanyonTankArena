@@ -11,14 +11,17 @@ public class SpikeballController : MonoBehaviour
     public float movementSpeed = 20f;
     public float repathInterval = 0.8f;
     public float moveStep = 40f;
-    public float minChargeDistance = 40f;
+    public float minChargeDistance = 80f;
     public float liftingTime = 4f;
     public float liftingHeight = 30f;
-    public float launchRechargeTime = 3f;
-    public float launchStrengthMultiplier = 1f;
+    public float launchRechargeTime = 7f;
+    public float launchStrengthMultiplier = 200f;
+    public float returnForceMultiplier = 15f;
+    public float launchArcBias = 0.15f;
+    public float bounceMomentumLoss = 0.6f; // 1 = no loss, 0 = full stop
     public float gravityMultiplier = 1f;
-    public float exitFreeRoamVel = 3f; // when velocity drops this amount, exit FreeRoam state and return to NavMesh
-    public float minFreeRoamTime = 0.5f;
+    public float exitFreeRoamVel = 12f; // when velocity drops this amount, exit FreeRoam state and return to NavMesh
+    public float minFreeRoamTime = 6f;
     public float radius = 9f;
 
     private NavMeshAgent agent;
@@ -30,6 +33,8 @@ public class SpikeballController : MonoBehaviour
     private float repathTimer = 0f;
     private float liftingTimer = 0f;
     private float freeRoamTimer = 0f;
+    private float launchRechargeTimer = 0f;
+    private bool hasBouncedThisLaunch = false;
     private Vector3 lastPos;
 
     public bool debug = false;
@@ -55,10 +60,17 @@ public class SpikeballController : MonoBehaviour
     void Update()
     {
         repathTimer += Time.deltaTime;
+        launchRechargeTimer += Time.deltaTime;
 
-        /* Manually handle all time-sensitive states first, if none of 
-        these then go to general Repath()*/
-        if (currentState == AttackState.Lifting)
+        if (currentState == AttackState.Approaching)
+        {
+            float sqrDist = (enemyTarget.position - transform.position).sqrMagnitude;
+            if (launchRechargeTimer > launchRechargeTime && sqrDist < minChargeDistance * minChargeDistance)
+                SetState(AttackState.Lifting);
+            else if (repathTimer > repathInterval)
+                Repath();
+        }
+        else if (currentState == AttackState.Lifting)
         {
             liftingTimer += Time.deltaTime;
             float t = liftingTimer / liftingTime;
@@ -76,27 +88,30 @@ public class SpikeballController : MonoBehaviour
 
             if (freeRoamTimer >= minFreeRoamTime)
             {
-                float currentVelocity = Vector3.Distance(transform.position, lastPos) / Time.deltaTime;
-                if (currentVelocity < exitFreeRoamVel)
+                if (rb.linearVelocity.magnitude < exitFreeRoamVel)
                 {
                     if (debug) Debug.Log($"Exited {currentState} because the spikeball was moving below {exitFreeRoamVel} m/s.");
                     SetState(AttackState.Approaching);
                 }
             }
         }
-        else if (repathTimer > repathInterval) // general Repath case
-        {
-            Repath();
-        }
 
         lastPos = transform.position;
         AnimateSelf();
     }
 
+    void FixedUpdate()
+    {
+        if (currentState == AttackState.FreeRoam && (enemyTarget.position - transform.position).sqrMagnitude > minChargeDistance * 2)
+        {
+            Vector3 toTarget = (enemyTarget.position - transform.position).normalized;
+            rb.AddForce(toTarget * returnForceMultiplier, ForceMode.Acceleration);
+        }
+    }
+
     private void Repath()
     {
         repathTimer = 0f;
-        if (debug) Debug.Log($"Repath() called when in the {currentState} state");
         
         switch (currentState) // some states are handled in Update() instead of here since they're more time-sensitive
         {
@@ -110,8 +125,6 @@ public class SpikeballController : MonoBehaviour
 
                 if (Vector3.Distance(transform.position, sidePoint) < minChargeDistance)
                 {
-                    liftingStartPos = transform.position;
-                    liftingEndPos = liftingStartPos + new Vector3(0, liftingHeight, 0);
                     SetState(AttackState.Lifting);
                     return;
                 }
@@ -121,6 +134,15 @@ public class SpikeballController : MonoBehaviour
                 break;
         }
         agent.SetDestination(moveDestination);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (currentState == AttackState.FreeRoam && !hasBouncedThisLaunch)
+        {
+            rb.linearVelocity *= bounceMomentumLoss;
+            hasBouncedThisLaunch = true;
+        }
     }
 
     private void AnimateSelf()
@@ -141,6 +163,12 @@ public class SpikeballController : MonoBehaviour
     ///<summary>Set the current state and handle all state changes for the specified transition</summary>
     public void SetState(AttackState newState)
     {
+        switch (currentState)
+        {
+            case AttackState.Approaching: break;
+            case AttackState.Lifting: break;
+            case AttackState.FreeRoam: break;
+        }
         switch (newState)
         {
             case AttackState.Approaching:
@@ -151,6 +179,8 @@ public class SpikeballController : MonoBehaviour
             case AttackState.Lifting:
                 agent.enabled = false;
                 liftingTimer = 0f;
+                liftingStartPos = transform.position;
+                liftingEndPos = liftingStartPos + new Vector3(0, liftingHeight, 0);
                 break;
             case AttackState.FreeRoam:
                 // Deactivate NavMesh agent and prepare RigidBody
@@ -158,12 +188,13 @@ public class SpikeballController : MonoBehaviour
                 rb.isKinematic = false;
                 rb.linearVelocity = Vector3.zero;
                 freeRoamTimer = 0f;
+                launchRechargeTimer = 0f;
+                hasBouncedThisLaunch = false;
 
                 // Find direction to player, aim and launch
                 Vector3 toTarget = (enemyTarget.position - transform.position).normalized;
-                Vector3 launchDir = new Vector3(toTarget.x, toTarget.y + 1.2f, toTarget.z).normalized;
+                Vector3 launchDir = new Vector3(toTarget.x, toTarget.y + launchArcBias, toTarget.z).normalized;
                 rb.AddForce(launchDir * rb.mass * launchStrengthMultiplier, ForceMode.Impulse);
-
                 break;
         }
 
