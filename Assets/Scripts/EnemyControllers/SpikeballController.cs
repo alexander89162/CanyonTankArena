@@ -14,12 +14,12 @@ public class SpikeballController : MonoBehaviour
     public float minChargeDistance = 80f;
     public float liftingTime = 4f;
     public float liftingHeight = 30f;
+    public float liftSpinSpeed = 150f;
     public float launchRechargeTime = 7f;
     public float launchStrengthMultiplier = 200f;
     public float returnForceMultiplier = 15f;
     public float launchArcBias = 0.15f;
     public float bounceMomentumLoss = 0.6f; // 1 = no loss, 0 = full stop
-    public float gravityMultiplier = 1.3f;
     public float airControlMultiplier = 0.4f;
     public float exitFreeRoamVel = 12f; // when velocity drops this amount, exit FreeRoam state and return to NavMesh
     public float minFreeRoamTime = 6f;
@@ -36,6 +36,7 @@ public class SpikeballController : MonoBehaviour
     private float freeRoamTimer = 0f;
     private float launchRechargeTimer = 0f;
     private bool hasBouncedThisLaunch = false;
+    private bool isGrounded = false;
     private Vector3 lastPos;
 
     public bool debug = false;
@@ -103,12 +104,14 @@ public class SpikeballController : MonoBehaviour
 
     void FixedUpdate()
     {
+        isGrounded = false;
+
         if (currentState == AttackState.FreeRoam && 
             (enemyTarget.position - transform.position).sqrMagnitude > minChargeDistance * 2)
         {
             Vector3 toTarget = (enemyTarget.position - transform.position).normalized;
             rb.AddForce(toTarget * returnForceMultiplier * 
-                (IsGrounded() ? 1f : airControlMultiplier), ForceMode.Acceleration);
+                (isGrounded ? 1f : airControlMultiplier), ForceMode.Acceleration);
         }
     }
 
@@ -148,11 +151,12 @@ public class SpikeballController : MonoBehaviour
         }
     }
 
-    ///<summary>Returns whether or not spikeball is grounded based on root.position</summary>
-    bool IsGrounded()
+    void OnCollisionStay(Collision collision)
     {
-        return Physics.Raycast(transform.position, Vector3.down, radius + 0.2f);
+        isGrounded = true;
     }
+
+    ///<summary>Returns whether or not spikeball is grounded based on root.position</summary>
 
     private void AnimateSelf()
     {
@@ -164,7 +168,18 @@ public class SpikeballController : MonoBehaviour
                 Vector3 moveDir = (transform.position - lastPos).normalized;
                 spikeballRenderer.Rotate(Vector3.Cross(moveDir, Vector3.up), -rotationAngle, Space.World);
                 break;
-            case AttackState.Lifting: break;
+            case AttackState.Lifting:
+                float t = liftingTimer / liftingTime;
+
+                // accelerate over time (quadratic)
+                float spinSpeed = liftSpinSpeed +  2 * liftSpinSpeed * (t * t);
+
+                // axis perpendicular to desired movement direction
+                Vector3 toTarget = (enemyTarget.position - transform.position).normalized;
+                Vector3 axis = Vector3.Cross(toTarget, Vector3.down);
+
+                spikeballRenderer.Rotate(axis, spinSpeed * Time.deltaTime, Space.World);
+                break;
             case AttackState.FreeRoam: break;
         }
     }
