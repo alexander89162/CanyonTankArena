@@ -2,13 +2,13 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /*This script handles the AI and animation logic all in one.
-AI: 3 stages; move near player, rising into air/launching self, and recharge
-Animation: basic roll on the ground, spin slowly when lifting and fast when launched*/
+AI: 3 stages; move near player, rising into air/launching self, and recharge.
+Animation: basic roll on the ground, spin increasingly fast when lifting and 
+slowly when launched*/
 public class SpikeballController : MonoBehaviour
 {
     public Transform enemyTarget;
     public Transform spikeballRenderer;
-    public float movementSpeed = 20f;
     public float repathInterval = 0.8f;
     public float moveStep = 40f;
     public float minChargeDistance = 80f;
@@ -19,7 +19,8 @@ public class SpikeballController : MonoBehaviour
     public float returnForceMultiplier = 15f;
     public float launchArcBias = 0.15f;
     public float bounceMomentumLoss = 0.6f; // 1 = no loss, 0 = full stop
-    public float gravityMultiplier = 1f;
+    public float gravityMultiplier = 1.3f;
+    public float airControlMultiplier = 0.4f;
     public float exitFreeRoamVel = 12f; // when velocity drops this amount, exit FreeRoam state and return to NavMesh
     public float minFreeRoamTime = 6f;
     public float radius = 9f;
@@ -96,16 +97,18 @@ public class SpikeballController : MonoBehaviour
             }
         }
 
-        lastPos = transform.position;
         AnimateSelf();
+        lastPos = transform.position;
     }
 
     void FixedUpdate()
     {
-        if (currentState == AttackState.FreeRoam && (enemyTarget.position - transform.position).sqrMagnitude > minChargeDistance * 2)
+        if (currentState == AttackState.FreeRoam && 
+            (enemyTarget.position - transform.position).sqrMagnitude > minChargeDistance * 2)
         {
             Vector3 toTarget = (enemyTarget.position - transform.position).normalized;
-            rb.AddForce(toTarget * returnForceMultiplier, ForceMode.Acceleration);
+            rb.AddForce(toTarget * returnForceMultiplier * 
+                (IsGrounded() ? 1f : airControlMultiplier), ForceMode.Acceleration);
         }
     }
 
@@ -141,8 +144,14 @@ public class SpikeballController : MonoBehaviour
         if (currentState == AttackState.FreeRoam && !hasBouncedThisLaunch)
         {
             rb.linearVelocity *= bounceMomentumLoss;
-            hasBouncedThisLaunch = true;
+            hasBouncedThisLaunch = true; // we want only the first bounce to lose momentum
         }
+    }
+
+    ///<summary>Returns whether or not spikeball is grounded based on root.position</summary>
+    bool IsGrounded()
+    {
+        return Physics.Raycast(transform.position, Vector3.down, radius + 0.2f);
     }
 
     private void AnimateSelf()
@@ -163,12 +172,6 @@ public class SpikeballController : MonoBehaviour
     ///<summary>Set the current state and handle all state changes for the specified transition</summary>
     public void SetState(AttackState newState)
     {
-        switch (currentState)
-        {
-            case AttackState.Approaching: break;
-            case AttackState.Lifting: break;
-            case AttackState.FreeRoam: break;
-        }
         switch (newState)
         {
             case AttackState.Approaching:
