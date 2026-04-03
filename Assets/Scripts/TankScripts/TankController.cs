@@ -5,8 +5,6 @@ public class TankController : MonoBehaviour
 {
     //Movement tank Func
     public MovementController movement;
-    //Slope Align Tank Func
-    public TankSlope tankSlope;
 
     //To place tank turrents to array for cycling
     public Transform[] turrets = new Transform[3];
@@ -25,10 +23,13 @@ public class TankController : MonoBehaviour
         {
             movement = GetComponent<MovementController>();
         }
+    }
 
-        if (tankSlope != null)
+    void Update()
+    {
+        if (movement != null)
         {
-            tankSlope.tankRoot = transform;  // Pass root reference
+            movement.moveInput = moveInput;  // Pass input to movement controller
         }
     }
 
@@ -45,16 +46,6 @@ public class TankController : MonoBehaviour
             SwitchToTurret(turretIndex);
         }
     }
-
-    void Update()
-    {
-        if (movement != null)
-        {
-            movement.moveInput = moveInput;  // Pass input to movement controller
-        }
-    }
-
-
 
     void SwitchToTurret(int index)
     {

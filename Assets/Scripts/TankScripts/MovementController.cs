@@ -18,16 +18,15 @@ public class MovementController : MonoBehaviour
     private float verticalVelocity = 0f;
     public Vector3 currentVelocityV = Vector3.zero;
 
-    public TankSlope tankSlope;
+    private TankSlopeForRig tankSlope;
 
     void Awake()
     {
         controller = GetComponent<CharacterController>();
+        tankSlope = GetComponent<TankSlopeForRig>();
 
         if (tankSlope != null)
-        {
             tankSlope.tankRoot = transform;
-        }
     }
 
     void Update()

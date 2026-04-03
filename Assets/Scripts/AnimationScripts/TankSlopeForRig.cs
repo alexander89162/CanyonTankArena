@@ -4,7 +4,7 @@ public class TankSlopeForRig : MonoBehaviour
 {
     [Header("Slope Settings")]
     public float alignSpeed = 5f;
-    public float alignRefreshRate = 0.15f;
+    public float alignRefreshRate = 0.05f;
     public float rayDistance = 1.5f;
     public LayerMask groundLayer;
     public float minMoveSpeedToAlign = 0.2f;
@@ -19,6 +19,10 @@ public class TankSlopeForRig : MonoBehaviour
 
     void Awake()
     {
+        #if UNITY_EDITOR
+        Debug.Log("Awake was called in TankSlopeForRig");
+        #endif
+
         if (groundLayer == 0) groundLayer = LayerMask.GetMask("Ground");
         if (tankBodyBone != null) boneParent = tankBodyBone.parent;
 
@@ -59,6 +63,7 @@ public class TankSlopeForRig : MonoBehaviour
 
         if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, rayDistance, groundLayer))
         {
+            if (debug) Debug.Log($"The raycast hit at {hit.point}");
             Vector3 groundNormal = hit.normal;
             Vector3 forwardOnSlope = Vector3.ProjectOnPlane(tankRoot.forward, groundNormal).normalized;
 
