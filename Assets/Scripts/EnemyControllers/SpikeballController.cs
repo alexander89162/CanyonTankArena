@@ -17,10 +17,11 @@ public class SpikeballController : MonoBehaviour
     public float liftSpinSpeed = 150f;
     public float launchSpinSpeed = 500f;
     public float launchRechargeTime = 5.5f;
-    public float launchStrengthMultiplier = 200f;
+    public float launchStrengthMultiplier = 370f;
     public float returnForceMultiplier = 15f;
-    public float launchArcBias = 0.15f;
+    public float launchArcBias = 0.05f;
     public float bounceMomentumLoss = 0.6f; // 1 = no loss, 0 = full stop
+    public float gravityMultiplier = 6f;
     public float groundedCooloffTime = 0.1f;
     public float airControlMultiplier = 0.4f;
     public float exitFreeRoamVel = 12f; // when velocity drops this amount, exit FreeRoam state and return to NavMesh
@@ -42,22 +43,22 @@ public class SpikeballController : MonoBehaviour
     private bool hasBouncedThisLaunch = false;
     private float lastGroundedTimer = 0f;
     private Vector3 lastPos;
-
+    [Space(12)]
     public bool debug = false;
 
     public enum AttackState
     {
         Approaching, // roll towards target with NavMesh
         Lifting, // Lerp position
-        FreeRoam // free roam with physics using rigidbody until most momentum is lost (velocity < exitFreeRoamVel). This state handles both launching and bouncing
+        FreeRoam // free roam with rigidbody until most momentum is lost (velocity < exitFreeRoamVel). This state handles both launching and bouncing
     }
 
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true; // rb only used for Launching state
-        rb.useGravity = true;
+        rb.isKinematic = true;
+        rb.useGravity = false;
         moveDestination = transform.position;
 
         SetState(AttackState.Approaching);
@@ -96,7 +97,9 @@ public class SpikeballController : MonoBehaviour
             {
                 if (rb.linearVelocity.sqrMagnitude < exitFreeRoamVel * exitFreeRoamVel)
                 {
+                    #if UNITY_EDITOR
                     if (debug) Debug.Log($"Exited {currentState} because the spikeball was moving below {exitFreeRoamVel} m/s.");
+                    #endif
                     SetState(AttackState.Approaching);
                 }
             }
@@ -110,12 +113,26 @@ public class SpikeballController : MonoBehaviour
     {
         lastGroundedTimer -= Time.deltaTime;
 
-        if (currentState == AttackState.FreeRoam && 
-            (enemyTarget.position - transform.position).sqrMagnitude > minChargeDistance * minChargeDistance * 4)
+        if (currentState == AttackState.FreeRoam)
         {
-            Vector3 toTarget = (enemyTarget.position - transform.position).normalized;
-            rb.AddForce(toTarget * returnForceMultiplier * 
-                (lastGroundedTimer > 0f ? 1f : airControlMultiplier), ForceMode.Acceleration);
+            if (lastGroundedTimer < -10f)
+            {
+                if ((transform.position - enemyTarget.position).sqrMagnitude > 40000f)
+                {
+                    // destroy spikeball; probably went off the arena
+                    // TODO: signal death to UnitManager
+                    Destroy(gameObject);
+                }
+            }
+
+            if (hasBouncedThisLaunch && lastGroundedTimer < 0f) rb.AddForce(Physics.gravity * gravityMultiplier, ForceMode.Acceleration);
+
+            if ((enemyTarget.position - transform.position).sqrMagnitude > minChargeDistance * minChargeDistance * 4)
+            {
+                Vector3 toTarget = (enemyTarget.position - transform.position).normalized;
+                rb.AddForce(toTarget * returnForceMultiplier * 
+                    (lastGroundedTimer > 0f ? 1f : airControlMultiplier), ForceMode.Acceleration);
+            }
         }
     }
 
@@ -140,7 +157,8 @@ public class SpikeballController : MonoBehaviour
                 }
                 Vector3 desiredDir = (sidePoint - transform.position).normalized;
                 Vector3 desiredTarget = transform.position + (desiredDir * moveStep);
-                moveDestination = desiredTarget;
+                if (NavMesh.SamplePosition(desiredTarget, out NavMeshHit hit, moveStep * 3, NavMesh.AllAreas))
+                    moveDestination = hit.position;
                 break;
         }
         agent.SetDestination(moveDestination);
@@ -185,7 +203,7 @@ public class SpikeballController : MonoBehaviour
             case AttackState.FreeRoam:
                 if (!hasBouncedThisLaunch)
                 {
-                    // rotate along launchDir downwards and launchDir right
+                    // rotate along launchDir (forward) and also sideways
                     spikeballRenderer.Rotate(launchDir, launchSpinSpeed * Time.deltaTime, Space.World);
                     spikeballRenderer.Rotate(rightOfLaunchDir, launchSpinSpeed * Time.deltaTime * 0.4f, Space.World);
                 }
@@ -199,8 +217,10 @@ public class SpikeballController : MonoBehaviour
         switch (newState)
         {
             case AttackState.Approaching:
-                agent.enabled = true;
                 rb.isKinematic = true;
+                agent.enabled = true;
+                if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
+                    agent.Warp(hit.position);
                 repathTimer = 0f;
                 break;
             case AttackState.Lifting:
@@ -226,7 +246,9 @@ public class SpikeballController : MonoBehaviour
                 break;
         }
 
+        #if UNITY_EDITOR
         if (debug) Debug.Log($"Changed from {currentState} to {newState}");
+        #endif
         currentState = newState;
     }
 }
