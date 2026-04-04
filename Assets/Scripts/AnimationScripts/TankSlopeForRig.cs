@@ -20,7 +20,7 @@ public class TankSlopeForRig : MonoBehaviour
     void Awake()
     {
         #if UNITY_EDITOR
-        Debug.Log("Awake was called in TankSlopeForRig");
+        if (debug) Debug.Log("Awake was called in TankSlopeForRig");
         #endif
 
         if (groundLayer == 0) groundLayer = LayerMask.GetMask("Ground");

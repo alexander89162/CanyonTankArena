@@ -15,11 +15,13 @@ public class SpikeballController : MonoBehaviour
     public float liftingTime = 4f;
     public float liftingHeight = 30f;
     public float liftSpinSpeed = 150f;
-    public float launchRechargeTime = 7f;
+    public float launchSpinSpeed = 500f;
+    public float launchRechargeTime = 5.5f;
     public float launchStrengthMultiplier = 200f;
     public float returnForceMultiplier = 15f;
     public float launchArcBias = 0.15f;
     public float bounceMomentumLoss = 0.6f; // 1 = no loss, 0 = full stop
+    public float groundedCooloffTime = 0.1f;
     public float airControlMultiplier = 0.4f;
     public float exitFreeRoamVel = 12f; // when velocity drops this amount, exit FreeRoam state and return to NavMesh
     public float minFreeRoamTime = 6f;
@@ -31,12 +33,14 @@ public class SpikeballController : MonoBehaviour
     private Vector3 moveDestination;
     private Vector3 liftingStartPos;
     private Vector3 liftingEndPos;
+    private Vector3 launchDir;
+    private Vector3 rightOfLaunchDir;
     private float repathTimer = 0f;
     private float liftingTimer = 0f;
     private float freeRoamTimer = 0f;
     private float launchRechargeTimer = 0f;
     private bool hasBouncedThisLaunch = false;
-    private bool isGrounded = false;
+    private float lastGroundedTimer = 0f;
     private Vector3 lastPos;
 
     public bool debug = false;
@@ -90,7 +94,7 @@ public class SpikeballController : MonoBehaviour
 
             if (freeRoamTimer >= minFreeRoamTime)
             {
-                if (rb.linearVelocity.magnitude < exitFreeRoamVel)
+                if (rb.linearVelocity.sqrMagnitude < exitFreeRoamVel * exitFreeRoamVel)
                 {
                     if (debug) Debug.Log($"Exited {currentState} because the spikeball was moving below {exitFreeRoamVel} m/s.");
                     SetState(AttackState.Approaching);
@@ -104,14 +108,14 @@ public class SpikeballController : MonoBehaviour
 
     void FixedUpdate()
     {
-        isGrounded = false;
+        lastGroundedTimer -= Time.deltaTime;
 
         if (currentState == AttackState.FreeRoam && 
-            (enemyTarget.position - transform.position).sqrMagnitude > minChargeDistance * 2)
+            (enemyTarget.position - transform.position).sqrMagnitude > minChargeDistance * minChargeDistance * 4)
         {
             Vector3 toTarget = (enemyTarget.position - transform.position).normalized;
             rb.AddForce(toTarget * returnForceMultiplier * 
-                (isGrounded ? 1f : airControlMultiplier), ForceMode.Acceleration);
+                (lastGroundedTimer > 0f ? 1f : airControlMultiplier), ForceMode.Acceleration);
         }
     }
 
@@ -129,7 +133,7 @@ public class SpikeballController : MonoBehaviour
                 float orbitSign = sideDot >= 0f ? 1f : -1f;
                 Vector3 sidePoint = enemyTarget.position + enemyTarget.right * (orbitSign * minChargeDistance);
 
-                if (Vector3.Distance(transform.position, sidePoint) < minChargeDistance)
+                if ((transform.position - sidePoint).sqrMagnitude < minChargeDistance * minChargeDistance)
                 {
                     SetState(AttackState.Lifting);
                     return;
@@ -153,10 +157,8 @@ public class SpikeballController : MonoBehaviour
 
     void OnCollisionStay(Collision collision)
     {
-        isGrounded = true;
+        lastGroundedTimer = groundedCooloffTime;
     }
-
-    ///<summary>Returns whether or not spikeball is grounded based on root.position</summary>
 
     private void AnimateSelf()
     {
@@ -180,7 +182,14 @@ public class SpikeballController : MonoBehaviour
 
                 spikeballRenderer.Rotate(axis, spinSpeed * Time.deltaTime, Space.World);
                 break;
-            case AttackState.FreeRoam: break;
+            case AttackState.FreeRoam:
+                if (!hasBouncedThisLaunch)
+                {
+                    // rotate along launchDir downwards and launchDir right
+                    spikeballRenderer.Rotate(launchDir, launchSpinSpeed * Time.deltaTime, Space.World);
+                    spikeballRenderer.Rotate(rightOfLaunchDir, launchSpinSpeed * Time.deltaTime * 0.4f, Space.World);
+                }
+                break;
         }
     }
 
@@ -211,7 +220,8 @@ public class SpikeballController : MonoBehaviour
 
                 // Find direction to player, aim and launch
                 Vector3 toTarget = (enemyTarget.position - transform.position).normalized;
-                Vector3 launchDir = new Vector3(toTarget.x, toTarget.y + launchArcBias, toTarget.z).normalized;
+                launchDir = new Vector3(toTarget.x, toTarget.y + launchArcBias, toTarget.z).normalized;
+                rightOfLaunchDir = Vector3.Cross(launchDir, Vector3.up);
                 rb.AddForce(launchDir * rb.mass * launchStrengthMultiplier, ForceMode.Impulse);
                 break;
         }
