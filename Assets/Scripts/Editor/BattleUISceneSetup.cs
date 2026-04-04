@@ -28,6 +28,15 @@ public static class BattleUISceneSetup
         // Create the standard UI first, then tweak layout for mobile
         SetupInActiveSceneInternal(false);
 
+        const float mobileHudMargin = 20f;
+        const float mobileHealthTopOffset = 12f;
+        const float mobileMinimapSize = 500f;
+        const float mobileHealthAmmoGap = 1f;
+        const float mobileAmmoSlotWidth = 124f;
+        const float mobileAmmoSlotSpacing = 6f;
+        const float mobileAmmoContainerHeight = 96f;
+        float mobileAmmoContainerWidth = (mobileAmmoSlotWidth * 3f) + (mobileAmmoSlotSpacing * 4f);
+
         GameObject battleUiRoot = GameObject.Find("BattleUI");
         if (battleUiRoot == null)
             return;
@@ -46,9 +55,9 @@ public static class BattleUISceneSetup
             healthRect.anchorMin = new Vector2(0f, 1f);
             healthRect.anchorMax = new Vector2(0f, 1f);
             healthRect.pivot = new Vector2(0f, 1f);
-            // make health area a bit wider/taller for mobile
-            healthRect.sizeDelta = new Vector2(360f, 90f);
-            healthRect.anchoredPosition = new Vector2(24f, -24f);
+            // make health area compact and aligned for mobile
+            healthRect.sizeDelta = new Vector2(420f, 112f);
+            healthRect.anchoredPosition = new Vector2(mobileHudMargin, -mobileHealthTopOffset);
 
             // If a HealthBar exists inside, increase its visual height immediately
             Transform healthSliderT = healthRoot.Find("HealthBar");
@@ -57,11 +66,11 @@ public static class BattleUISceneSetup
                 RectTransform sliderRect = healthSliderT.GetComponent<RectTransform>();
                 if (sliderRect != null)
                 {
-                    sliderRect.anchorMin = new Vector2(0f, 0f);
-                    sliderRect.anchorMax = new Vector2(1f, 0f);
-                    sliderRect.pivot = new Vector2(0.5f, 0f);
-                    sliderRect.sizeDelta = new Vector2(0f, 48f);
-                    sliderRect.anchoredPosition = new Vector2(0f, 8f);
+                    sliderRect.anchorMin = new Vector2(0f, 1f);
+                    sliderRect.anchorMax = new Vector2(1f, 1f);
+                    sliderRect.pivot = new Vector2(0.5f, 1f);
+                    sliderRect.sizeDelta = new Vector2(0f, 56f);
+                    sliderRect.anchoredPosition = new Vector2(0f, -4f);
                 }
             }
 
@@ -82,7 +91,7 @@ public static class BattleUISceneSetup
                 if (ht != null)
                 {
                     ht.alignment = TextAlignmentOptions.Center;
-                    ht.fontSize = Mathf.Max(20, ht.fontSize);
+                    ht.fontSize = Mathf.Max(22, ht.fontSize);
                 }
             }
         }
@@ -93,8 +102,8 @@ public static class BattleUISceneSetup
             minimapRect.anchorMin = new Vector2(1f, 1f);
             minimapRect.anchorMax = new Vector2(1f, 1f);
             minimapRect.pivot = new Vector2(1f, 1f);
-            minimapRect.sizeDelta = new Vector2(500f, 500f);
-            minimapRect.anchoredPosition = new Vector2(-24f, -24f);
+            minimapRect.sizeDelta = new Vector2(mobileMinimapSize, mobileMinimapSize);
+            minimapRect.anchoredPosition = new Vector2(-mobileHudMargin, -mobileHudMargin);
         }
 
         if (ammoRect != null && healthRect != null)
@@ -103,12 +112,13 @@ public static class BattleUISceneSetup
             ammoRect.anchorMin = new Vector2(0f, 1f);
             ammoRect.anchorMax = new Vector2(0f, 1f);
             ammoRect.pivot = new Vector2(0f, 1f);
-            float gap = 8f;
-            ammoRect.sizeDelta = new Vector2(340f, 92f);
+            float gap = mobileHealthAmmoGap;
+            ammoRect.sizeDelta = new Vector2(mobileAmmoContainerWidth, mobileAmmoContainerHeight);
             float healthTopY = healthRect.anchoredPosition.y;
             float healthHeight = healthRect.sizeDelta.y;
             float ammoTopY = healthTopY - healthHeight - gap;
-            ammoRect.anchoredPosition = new Vector2(healthRect.anchoredPosition.x, ammoTopY);
+            float ammoLeftX = mobileHudMargin + Mathf.Max(0f, (healthRect.sizeDelta.x - mobileAmmoContainerWidth) * 0.5f);
+            ammoRect.anchoredPosition = new Vector2(ammoLeftX, ammoTopY);
         }
 
         HUDController hudController = battleUiRoot.GetComponent<HUDController>();
@@ -116,11 +126,17 @@ public static class BattleUISceneSetup
         {
             SerializedObject serializedHud = new SerializedObject(hudController);
             // Tweak default slot sizes for mobile
-            serializedHud.FindProperty("ammoSlotWidth").floatValue = 120f;
-            serializedHud.FindProperty("ammoSlotHeight").floatValue = 84f;
-            serializedHud.FindProperty("ammoSlotSpacing").floatValue = 12f;
-            serializedHud.FindProperty("ammoIconSize").floatValue = 44f;
+            serializedHud.FindProperty("ammoSlotWidth").floatValue = mobileAmmoSlotWidth;
+            serializedHud.FindProperty("ammoSlotHeight").floatValue = 88f;
+            serializedHud.FindProperty("ammoSlotSpacing").floatValue = mobileAmmoSlotSpacing;
+            serializedHud.FindProperty("ammoIconSize").floatValue = 48f;
             serializedHud.FindProperty("ammoSlotPadding").floatValue = 10f;
+            SerializedProperty ammoMarginProp = serializedHud.FindProperty("ammoScreenMargin");
+            if (ammoMarginProp != null)
+                ammoMarginProp.vector2Value = new Vector2(10f, 8f);
+            SerializedProperty minimapSizeProp = serializedHud.FindProperty("minimapSize");
+            if (minimapSizeProp != null)
+                minimapSizeProp.vector2Value = new Vector2(mobileMinimapSize, mobileMinimapSize);
             // mark HUD as mobile so runtime layout code doesn't override editor placement
             SerializedProperty mobileProp = serializedHud.FindProperty("mobileUiLayout");
             if (mobileProp != null)
@@ -128,10 +144,10 @@ public static class BattleUISceneSetup
             // make health bar larger and move health text inside at runtime
             SerializedProperty healthBarHeightProp = serializedHud.FindProperty("healthBarHeight");
             if (healthBarHeightProp != null)
-                healthBarHeightProp.floatValue = 48f;
+                healthBarHeightProp.floatValue = 56f;
             SerializedProperty healthTextOffsetProp = serializedHud.FindProperty("healthTextOffsetBelowBar");
             if (healthTextOffsetProp != null)
-                healthTextOffsetProp.floatValue = 0f;
+                healthTextOffsetProp.floatValue = 6f;
             // place ammo to left, not right
             SerializedProperty bulletSideProp = serializedHud.FindProperty("bulletCountOnRight");
             if (bulletSideProp != null)
@@ -363,9 +379,13 @@ public static class BattleUISceneSetup
         minimapCamera.targetTexture = minimapTexture;
         minimapImage.texture = minimapTexture;
 
-        BaseController playerController = null;
+        TankController playerController = null;
         if (playerTransform != null)
-            playerController = playerTransform.GetComponent<BaseController>();
+        {
+            playerController = playerTransform.GetComponent<TankController>();
+            if (playerController == null)
+                playerController = playerTransform.GetComponentInChildren<TankController>(true);
+        }
 
         SerializedObject serializedHud = new SerializedObject(hudController);
         serializedHud.FindProperty("playerController").objectReferenceValue = playerController;
@@ -640,42 +660,60 @@ public static class BattleUISceneSetup
 
     static Transform FindPlayerTransform()
     {
-        GameObject preferredGreenTank = GameObject.Find("minitank-v10-green 1");
-        if (preferredGreenTank != null)
-            return preferredGreenTank.transform;
-
-        GameObject greenTank = GameObject.Find("minitank-v10-green");
-        if (greenTank != null)
-            return greenTank.transform;
-
-        GameObject namedTank = GameObject.Find("minitank-processed-v3 (1)");
+        Transform namedTank = FindFirstExistingTransform(
+            "minitank-v10-green 1",
+            "minitank-v10-green",
+            "minitank-processed-v3 (1)",
+            "minitank-processed-v3 (1) Variant Variant 1");
         if (namedTank != null)
-            return namedTank.transform;
+            return namedTank;
 
-        GameObject namedVariantTank = GameObject.Find("minitank-processed-v3 (1) Variant Variant 1");
-        if (namedVariantTank != null)
-            return namedVariantTank.transform;
-
-        TankController[] tanks = Object.FindObjectsByType<TankController>(FindObjectsSortMode.None);
+        TankController[] tanks = Object.FindObjectsByType<TankController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         for (int i = 0; i < tanks.Length; i++)
         {
             if (tanks[i] == null)
                 continue;
 
-            string tankName = tanks[i].gameObject.name;
-            if (!string.IsNullOrEmpty(tankName) && tankName.ToLowerInvariant().Contains("minitank-processed-v3"))
+            if (IsPreferredMiniTankName(tanks[i].gameObject.name))
                 return tanks[i].transform;
         }
 
         GameObject taggedPlayer = GameObject.FindGameObjectWithTag("Player");
         if (taggedPlayer != null)
-            return taggedPlayer.transform;
+        {
+            TankController taggedTank = taggedPlayer.GetComponent<TankController>();
+            if (taggedTank == null)
+                taggedTank = taggedPlayer.GetComponentInChildren<TankController>(true);
 
-        BaseController playerController = Object.FindFirstObjectByType<BaseController>();
+            if (taggedTank != null)
+                return taggedTank.transform;
+        }
+
+        TankController playerController = Object.FindFirstObjectByType<TankController>();
         if (playerController != null)
             return playerController.transform;
 
         return null;
+    }
+
+    static Transform FindFirstExistingTransform(params string[] objectNames)
+    {
+        for (int i = 0; i < objectNames.Length; i++)
+        {
+            GameObject candidate = GameObject.Find(objectNames[i]);
+            if (candidate != null)
+                return candidate.transform;
+        }
+
+        return null;
+    }
+
+    static bool IsPreferredMiniTankName(string objectName)
+    {
+        if (string.IsNullOrEmpty(objectName))
+            return false;
+
+        return objectName.ToLowerInvariant().Contains("minitank-processed-v3");
     }
 
     static void RemoveRadarVisuals(Transform minimapRoot)
