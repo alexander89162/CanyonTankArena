@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3363a61afd4004993b1486fa0fba54ae, type: 3}
+  m_Name: Node_2
+  m_EditorClassIdentifier: Assembly-CSharp::TechTreeNode
+  id: fc33c3bc-aafc-487f-b2b7-e1cc73783205
+  nodeName: Node_2
+  description: 
+  cost: 0
+  icon: {fileID: 0}
+  position: {x: 384, y: 192}
+  locked: 0
+  column: 1
+  row: 0

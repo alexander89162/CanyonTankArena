@@ -1,12 +1,20 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEditor.Experimental.GraphView;
+using UnityEngine.SceneManagement;
 
 public class TechTreeEditorWindow : EditorWindow
 {
+    const float NodeWidth = 180f;
+    const float NodeHeight = 80f;
+    const float ColumnSpacing = 260f;
+    const float RowSpacing = 140f;
+    const float GridSpacing = 32f;
+    const float SnapSpacing = 32f;
+    const float CanvasMargin = 60f;
+
     TechTreeData data;
     Vector2 scroll;
     TechTreeNode selectedNode;
@@ -19,16 +27,183 @@ public class TechTreeEditorWindow : EditorWindow
 
     // connection state
     string connectSourceId = null;
+    string connectTargetId = null;
 
-    [MenuItem("Tools/Tech Tree Editor")]
+    [MenuItem("Tools/TechTree/Open Editor")]
     public static void ShowWindow()
     {
         GetWindow<TechTreeEditorWindow>("Tech Tree Editor");
     }
 
+    [MenuItem("Tools/TechTree/Setup Current Scene")]
+    public static void SetupCurrentScene()
+    {
+        SetupCurrentScene(GetDefaultDataAsset());
+    }
+
+    public static void SetupCurrentScene(TechTreeData data)
+    {
+        if (data == null)
+        {
+            EditorUtility.DisplayDialog("Tech Tree Setup", "Assign or create a TechTreeData asset first.", "OK");
+            return;
+        }
+
+        TechTreeSceneView[] sceneViews = Object.FindObjectsByType<TechTreeSceneView>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        TechTreeSceneView sceneView = sceneViews.Length > 0 ? sceneViews[0] : null;
+        if (sceneView == null)
+        {
+            GameObject sceneViewObject = new GameObject("TechTreeSceneView");
+            sceneView = sceneViewObject.AddComponent<TechTreeSceneView>();
+        }
+
+        sceneView.SetData(data);
+        EditorUtility.SetDirty(sceneView);
+        EditorUtility.SetDirty(data);
+        EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+        Selection.activeGameObject = sceneView.gameObject;
+        Debug.Log("TechTree setup complete in the active scene.");
+    }
+
+    static TechTreeData GetDefaultDataAsset()
+    {
+        string[] guids = AssetDatabase.FindAssets("t:TechTreeData");
+        if (guids == null || guids.Length == 0)
+            return null;
+
+        string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+        return AssetDatabase.LoadAssetAtPath<TechTreeData>(path);
+    }
+
     void OnEnable()
     {
         nodeRects = new Dictionary<string, Rect>();
+    }
+
+    void EnsureNodeIds()
+    {
+        if (data == null)
+            return;
+
+        foreach (var node in data.nodes)
+        {
+            if (node == null)
+                continue;
+
+            if (string.IsNullOrEmpty(node.id))
+            {
+                node.id = System.Guid.NewGuid().ToString();
+                EditorUtility.SetDirty(node);
+            }
+        }
+    }
+
+    void SaveData()
+    {
+        if (data == null)
+            return;
+
+        EditorUtility.SetDirty(data);
+        foreach (var node in data.nodes)
+        {
+            if (node != null)
+                EditorUtility.SetDirty(node);
+        }
+        AssetDatabase.SaveAssets();
+    }
+
+    Vector2 SnapToGrid(Vector2 position)
+    {
+        return new Vector2(
+            Mathf.Round(position.x / SnapSpacing) * SnapSpacing,
+            Mathf.Round(position.y / SnapSpacing) * SnapSpacing);
+    }
+
+    void EnsureStarterTree()
+    {
+        if (data == null || data.nodes.Count > 0)
+            return;
+
+        float startX = 120f;
+        float startY = 120f;
+
+        for (int i = 0; i < 3; i++)
+        {
+            var node = CreateNodeAssetAt(new Vector2(startX, startY + (i * RowSpacing)));
+            node.nodeName = $"Node_{i + 1}";
+            data.nodes.Add(node);
+        }
+
+        SaveData();
+        Repaint();
+    }
+
+    Rect GetNodeRect(TechTreeNode node, Rect canvas)
+    {
+        if (node == null)
+            return new Rect();
+
+        if (!nodeRects.TryGetValue(node.id, out Rect rect))
+        {
+            rect = new Rect(canvas.x + node.position.x, canvas.y + node.position.y, NodeWidth, NodeHeight);
+            nodeRects[node.id] = rect;
+        }
+
+        return rect;
+    }
+
+    void UpdateNodeRect(TechTreeNode node, Rect rect)
+    {
+        if (node == null || string.IsNullOrEmpty(node.id))
+            return;
+
+        nodeRects[node.id] = rect;
+    }
+
+    bool TryCreateEdge(string fromId, string toId)
+    {
+        if (data == null || string.IsNullOrEmpty(fromId) || string.IsNullOrEmpty(toId) || fromId == toId)
+            return false;
+
+        if (data.edges.Exists(edge => edge.fromId == fromId && edge.toId == toId))
+            return false;
+
+        var fromNode = data.GetNodeById(fromId);
+        var toNode = data.GetNodeById(toId);
+        if (fromNode == null || toNode == null)
+            return false;
+
+        if (toNode.position.x <= fromNode.position.x)
+        {
+            EditorUtility.DisplayDialog("Invalid Connection", "Connections must go from left to right.", "OK");
+            return false;
+        }
+
+        data.edges.Add(new TechTreeData.Edge { fromId = fromId, toId = toId });
+        EditorUtility.SetDirty(data);
+        return true;
+    }
+
+    TechTreeNode CreateNodeToRightOf(TechTreeNode anchorNode)
+    {
+        Vector2 position = new Vector2(120f, 120f);
+
+        if (anchorNode != null)
+        {
+            position = anchorNode.position + new Vector2(ColumnSpacing, 0f);
+            int childCount = data.edges.FindAll(edge => edge.fromId == anchorNode.id).Count;
+            position.y = anchorNode.position.y + (childCount * 24f);
+        }
+
+        position = SnapToGrid(position);
+
+        var node = CreateNodeAssetAt(position);
+        data.nodes.Add(node);
+
+        if (anchorNode != null)
+            TryCreateEdge(anchorNode.id, node.id);
+
+        return node;
     }
 
     void OnGUI()
@@ -55,21 +230,32 @@ public class TechTreeEditorWindow : EditorWindow
                     AssetDatabase.CreateAsset(dt, path);
                     AssetDatabase.SaveAssets();
                     data = dt;
+                    selectedNode = null;
+                    nodeRects.Clear();
+                    EnsureStarterTree();
                 }
             }
         }
 
         if (GUILayout.Button("Save Data", GUILayout.Width(100)))
         {
-            EditorUtility.SetDirty(data);
-            AssetDatabase.SaveAssets();
+            SaveData();
         }
+        EditorGUI.BeginDisabledGroup(data == null);
         if (GUILayout.Button("Auto Layout", GUILayout.Width(100)))
         {
             AutoLayoutNodes();
-            EditorUtility.SetDirty(data);
-            AssetDatabase.SaveAssets();
+            SaveData();
         }
+        if (GUILayout.Button("Seed Starter Tree", GUILayout.Width(130)))
+        {
+            EnsureStarterTree();
+        }
+        if (GUILayout.Button("Setup Current Scene", GUILayout.Width(150)))
+        {
+            SetupCurrentScene(data);
+        }
+        EditorGUI.EndDisabledGroup();
 
         EditorGUILayout.EndHorizontal();
 
@@ -87,6 +273,9 @@ public class TechTreeEditorWindow : EditorWindow
         if (GUILayout.Toggle(mode == Mode.Add, "Add Node", "Button")) mode = Mode.Add;
         if (GUILayout.Toggle(mode == Mode.Connect, "Connect", "Button")) mode = Mode.Connect;
         if (GUILayout.Toggle(mode == Mode.Pan, "Pan", "Button")) mode = Mode.Pan;
+        GUILayout.Space(10f);
+        GUILayout.Label("Grid:", GUILayout.Width(30f));
+        GUILayout.Label(SnapSpacing + " px", GUILayout.Width(52f));
         if (GUILayout.Button("Center View", GUILayout.Width(90))) scroll = Vector2.zero;
         EditorGUILayout.EndHorizontal();
 
@@ -98,25 +287,24 @@ public class TechTreeEditorWindow : EditorWindow
         Rect canvas = GUILayoutUtility.GetRect(Mathf.Max(1200, position.width - 20), Mathf.Max(800, position.height - 150));
         GUI.Box(canvas, "");
 
+        EnsureNodeIds();
+
         // draw grid
-        DrawGrid(canvas, 32, new Color(0.15f, 0.15f, 0.15f));
+        DrawGrid(canvas, GridSpacing, new Color(0.18f, 0.18f, 0.18f));
 
         // ensure rects exist for nodes
         foreach (var n in data.nodes)
         {
             if (n == null) continue;
-            if (!nodeRects.ContainsKey(n.id)) nodeRects[n.id] = new Rect(canvas.x + n.position.x, canvas.y + n.position.y, 180, 80);
+            if (!nodeRects.ContainsKey(n.id)) nodeRects[n.id] = new Rect(canvas.x + n.position.x, canvas.y + n.position.y, NodeWidth, NodeHeight);
         }
 
-        // ensure all nodes have ids
-        foreach (var n in data.nodes)
+        if (!string.IsNullOrEmpty(connectSourceId) && nodeRects.TryGetValue(connectSourceId, out Rect sourceRect))
         {
-            if (n == null) continue;
-                if (string.IsNullOrEmpty(n.id))
-                {
-                    n.id = System.Guid.NewGuid().ToString();
-                    EditorUtility.SetDirty(n);
-                }
+            Handles.BeginGUI();
+            Handles.color = Color.yellow;
+            Handles.DrawSolidDisc(sourceRect.center, Vector3.forward, 7f);
+            Handles.EndGUI();
         }
 
         // draw edges first
@@ -152,28 +340,14 @@ public class TechTreeEditorWindow : EditorWindow
         foreach (var n in data.nodes)
         {
             if (n == null) continue;
-            Rect r = nodeRects[n.id];
+            Rect r = GetNodeRect(n, canvas);
             r = GUI.Window(winId++, r, id => DrawNodeWindow((string)id.ToString(), n), n.nodeName);
-            nodeRects[n.id] = r;
-            // update stored node position (relative to canvas)
-            n.position = new Vector2(r.x - canvas.x, r.y - canvas.y);
+            UpdateNodeRect(n, r);
 
-            // snap to three rows (top/mid/bottom)
-            float topY = canvas.height * 0.18f;
-            float midY = canvas.height * 0.5f;
-            float botY = canvas.height * 0.82f;
-            float y = n.position.y;
-            float distTop = Mathf.Abs(y - topY);
-            float distMid = Mathf.Abs(y - midY);
-            float distBot = Mathf.Abs(y - botY);
-            if (distTop <= distMid && distTop <= distBot) n.position.y = topY;
-            else if (distMid <= distTop && distMid <= distBot) n.position.y = midY;
-            else n.position.y = botY;
-
-            // compute column from x and store lightly
-            float columnWidth = 260f;
-            int colIndex = Mathf.RoundToInt(n.position.x / columnWidth);
-            n.column = Mathf.Max(0, colIndex);
+            n.position = SnapToGrid(new Vector2(r.x - canvas.x, r.y - canvas.y));
+            n.position.x = Mathf.Max(0f, n.position.x);
+            n.position.y = Mathf.Max(0f, n.position.y);
+            n.column = Mathf.Max(0, Mathf.RoundToInt(n.position.x / ColumnSpacing));
         }
         EndWindows();
 
@@ -263,6 +437,9 @@ public class TechTreeEditorWindow : EditorWindow
 
     void AutoLayoutNodes()
     {
+        if (data == null)
+            return;
+
         // compute columns by traversing edges (parents -> children)
         var nodes = data.nodes;
         Dictionary<string, int> col = new Dictionary<string, int>();
@@ -287,7 +464,7 @@ public class TechTreeEditorWindow : EditorWindow
                 if (string.IsNullOrEmpty(e.fromId) || string.IsNullOrEmpty(e.toId)) continue;
                 int fromCol = col.ContainsKey(e.fromId) ? col[e.fromId] : 0;
                 int toCol = col.ContainsKey(e.toId) ? col[e.toId] : -1;
-                int desired = Math.Max(toCol, fromCol + 1);
+                int desired = Mathf.Max(toCol, fromCol + 1);
                 if (!col.ContainsKey(e.toId) || col[e.toId] < desired)
                 {
                     col[e.toId] = desired;
@@ -297,8 +474,8 @@ public class TechTreeEditorWindow : EditorWindow
         }
 
         // apply columns and place nodes on canvas grid
-        float columnWidth = 260f;
-        float startX = 60f;
+        float columnWidth = ColumnSpacing;
+        float startX = CanvasMargin;
         float topY = position.height * 0.18f;
         float midY = position.height * 0.5f;
         float botY = position.height * 0.82f;
@@ -320,10 +497,10 @@ public class TechTreeEditorWindow : EditorWindow
             else rowIndex = 2;
             n.row = rowIndex;
             float py = rowIndex == 0 ? topY : (rowIndex == 1 ? midY : botY);
-            n.position = new Vector2(x, py);
+            n.position = SnapToGrid(new Vector2(x, py));
             EditorUtility.SetDirty(n);
             // update rect
-            if (nodeRects.ContainsKey(n.id)) nodeRects[n.id] = new Rect(n.position.x + 50, n.position.y + 50, 180, 80);
+            if (nodeRects.ContainsKey(n.id)) nodeRects[n.id] = new Rect(n.position.x + 50, n.position.y + 50, NodeWidth, NodeHeight);
         }
     }
 
@@ -364,15 +541,54 @@ public class TechTreeEditorWindow : EditorWindow
         EditorGUILayout.EndVertical();
         EditorGUILayout.EndHorizontal();
 
-        // clicking inside window selects it
+        // clicking inside the window selects it or sets up a connection
         if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
         {
-            selectedNode = node;
+            HandleNodeClick(node);
+            Event.current.Use();
             Repaint();
         }
 
         GUI.DragWindow();
         GUI.backgroundColor = prev;
+    }
+
+    void HandleNodeClick(TechTreeNode node)
+    {
+        if (node == null)
+            return;
+
+        if (mode != Mode.Connect)
+        {
+            selectedNode = node;
+            return;
+        }
+
+        if (connectSourceId == null)
+        {
+            connectSourceId = node.id;
+            connectTargetId = null;
+            selectedNode = node;
+            return;
+        }
+
+        if (connectSourceId == node.id)
+        {
+            connectSourceId = null;
+            connectTargetId = null;
+            selectedNode = node;
+            return;
+        }
+
+        connectTargetId = node.id;
+        if (TryCreateEdge(connectSourceId, connectTargetId))
+        {
+            selectedNode = node;
+            SaveData();
+        }
+
+        connectSourceId = null;
+        connectTargetId = null;
     }
 
     void HandleCanvasInput(Rect canvas)
@@ -382,56 +598,20 @@ public class TechTreeEditorWindow : EditorWindow
 
         if (mode == Mode.Add && e.type == EventType.MouseDown && e.button == 0 && canvas.Contains(mouse))
         {
-            // add node at mouse position
             Vector2 local = mouse - new Vector2(canvas.x, canvas.y);
-            var node = CreateNodeAssetAt(local);
-            data.nodes.Add(node);
-            EditorUtility.SetDirty(data);
+            var node = CreateNodeToRightOf(selectedNode);
+
+            if (selectedNode == null)
+            {
+                node.position = SnapToGrid(new Vector2(Mathf.Max(0f, local.x), Mathf.Max(0f, local.y)));
+                node.column = Mathf.Max(0, Mathf.RoundToInt(node.position.x / ColumnSpacing));
+                UpdateNodeRect(node, new Rect(canvas.x + node.position.x, canvas.y + node.position.y, NodeWidth, NodeHeight));
+            }
+
+            selectedNode = node;
+            SaveData();
             Repaint();
             e.Use();
-        }
-
-        if (mode == Mode.Connect && e.type == EventType.MouseDown && e.button == 0)
-        {
-            // check node clicked
-            foreach (var kv in nodeRects)
-            {
-                if (kv.Value.Contains(mouse))
-                {
-                    if (connectSourceId == null)
-                    {
-                        connectSourceId = kv.Key;
-                    }
-                    else
-                    {
-                        // create edge from source -> target (only allow left->right)
-                        if (connectSourceId != kv.Key)
-                        {
-                            var a = data.GetNodeById(connectSourceId);
-                            var b = data.GetNodeById(kv.Key);
-                            if (a != null && b != null)
-                            {
-                                // require target to be to the right of source (based on x)
-                                float ax = nodeRects[a.id].x;
-                                float bx = nodeRects[b.id].x;
-                                if (bx <= ax)
-                                {
-                                    EditorUtility.DisplayDialog("Invalid Connection", "Connections must go from left to right. Move the target to the right first.", "OK");
-                                }
-                                else
-                                {
-                                    var edge = new TechTreeData.Edge { fromId = connectSourceId, toId = kv.Key };
-                                    data.edges.Add(edge);
-                                    EditorUtility.SetDirty(data);
-                                }
-                            }
-                        }
-                        connectSourceId = null;
-                    }
-                    e.Use();
-                    break;
-                }
-            }
         }
     }
 
@@ -454,7 +634,7 @@ public class TechTreeEditorWindow : EditorWindow
         AssetDatabase.SaveAssets();
 
         // create runtime rect
-        nodeRects[node.id] = new Rect(pos.x + 50, pos.y + 50, 180, 80);
+        nodeRects[node.id] = new Rect(pos.x + 50, pos.y + 50, NodeWidth, NodeHeight);
 
         return node;
     }
