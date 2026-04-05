@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7c5cefac831d43d3a3251b96422000e, type: 3}
+  m_Name: TechTreeData
+  m_EditorClassIdentifier: Assembly-CSharp::TechTreeData
+  nodes:
+  - {fileID: 11400000, guid: b2a430a27e6354affb4a13581d508747, type: 2}
+  - {fileID: 11400000, guid: fdf587bdfcd55453aa2dc5111f48c545, type: 2}
+  - {fileID: 11400000, guid: fec26ed50266147b3abb6b1007c4d8b9, type: 2}
+  - {fileID: 11400000, guid: e6b2a500316174c30ab70e769d564b2b, type: 2}
+  - {fileID: 11400000, guid: dd0150a5e077a4cde9fdea281408c073, type: 2}
+  - {fileID: 11400000, guid: e5e0a0cfe92534c598ca29ff37c81f06, type: 2}
+  - {fileID: 11400000, guid: 9fe371198f0c74f2882aba442b0334d8, type: 2}
+  edges:
+  - fromId: 45ea9002-ffb0-4b54-b327-7c32f99ce9e2
+    toId: fc33c3bc-aafc-487f-b2b7-e1cc73783205
+  - fromId: fc33c3bc-aafc-487f-b2b7-e1cc73783205
+    toId: 96a4870e-6758-4780-80cb-c04b3c54f687
+  - fromId: 9ead87ee-6615-4d26-9c6e-d7be3e7ea370
+    toId: cc7a94b6-4e8c-4a14-b509-0dca3e9492da
+  - fromId: d58947a8-4166-404e-8b21-99492d880400
+    toId: b092d250-fc05-4548-8fee-141222d8dbee
