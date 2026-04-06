@@ -2,8 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /*Chases with prediction by approaching the nearest side of the target
-relative to itself. Fully controls movement. Animation is handled automatically
-by external components*/
+relative to itself. Fully controls movement and partially animation.*/
 public class PredictionChase : MonoBehaviour
 {
     public Transform enemyTarget;
@@ -13,6 +12,7 @@ public class PredictionChase : MonoBehaviour
     public float sideStepGrowthRate = 0.5f; // how fast moveDestination moves away (sideways) from target as distance to target increases
 
     private NavMeshAgent agent;
+    private TankSlopeForRig tankSlope;
     private AttackState currentState;
     private float repathTimer = 0f;
     private Vector3 moveDestination;
@@ -20,6 +20,7 @@ public class PredictionChase : MonoBehaviour
     private Vector3 toEnemy;
     private Vector3 sidePoint;
     private Vector3 desiredDir;
+    private Vector3 lastPos;
     private NavMeshHit hit;
     private float dist = 0f;
 
@@ -36,15 +37,22 @@ public class PredictionChase : MonoBehaviour
 
     void Awake()
     {
+        tankSlope = GetComponent<TankSlopeForRig>();
         agent = GetComponent<NavMeshAgent>();
+        agent.updateUpAxis = false;
         agent.autoBraking = false;
         moveDestination = transform.position;
+
+        lastPos = transform.position;
 
         SetState(AttackState.Circling);
     }
 
     void Update()
     {
+        Vector3 vel = (transform.position - lastPos) / Time.deltaTime;
+        tankSlope.UpdateAlignment(vel);
+
         repathTimer += Time.deltaTime;
 
         if (currentState == AttackState.CatchingUp 
@@ -73,7 +81,7 @@ public class PredictionChase : MonoBehaviour
 
                 float sideDot = Vector3.Dot(toSelf.normalized, enemyTarget.right);
                 orbitSign = sideDot >= 0f ? 1f : -1f;
-                sidePoint = enemyTarget.position + enemyTarget.right * (orbitSign * idealCircleRadius);
+                sidePoint = enemyTarget.position + enemyTarget.right * orbitSign * idealCircleRadius;
 
                 desiredDir = (sidePoint - transform.position).normalized;
                 Vector3 desiredTarget = transform.position + (desiredDir * moveStep);
@@ -113,7 +121,6 @@ public class PredictionChase : MonoBehaviour
 
                 if (NavMesh.SamplePosition(moveDestination, out hit, moveStep, NavMesh.AllAreas))
                     moveDestination = hit.position;
-                if (debug) Debug.Log($"SamplePosition hit.position: {hit.position}");
 
                 agent.SetDestination(moveDestination);
 
@@ -122,7 +129,7 @@ public class PredictionChase : MonoBehaviour
                     SetState(AttackState.CatchingUp);
                     return;
                 }
-                if (debug) Debug.Log($"dist:{dist} sideOffset:{sideOffset} orbitSign:{orbitSign} sidePoint:{sidePoint} desiredDir:{desiredDir}");
+                //if (debug) Debug.Log($"dist:{dist} sideOffset:{sideOffset} orbitSign:{orbitSign} sidePoint:{sidePoint} desiredDir:{desiredDir}");
 
                 break;
         }
