@@ -10,6 +10,8 @@ public class PredictionChase : MonoBehaviour
     public float moveStep = 40f;
     public float idealCircleRadius = 50f; // AI will try to circle at this distance
     public float sideStepGrowthRate = 0.5f; // how fast moveDestination moves away (sideways) from target as distance to target increases
+    public float collisionAvoidanceMultiplier = 2f;
+    public float sampleFallbackRadius = 100f;
 
     private NavMeshAgent agent;
     private TankSlopeForRig tankSlope;
@@ -111,15 +113,15 @@ public class PredictionChase : MonoBehaviour
                 desiredDir = (sidePoint - transform.position).normalized;
 
                 // turn away from collision course if moving into enemy
-                float urgency = Mathf.Clamp01(Vector3.Dot(transform.forward, toEnemy.normalized)) * 1.5f;
+                float urgency = Mathf.Clamp01(Vector3.Dot(transform.forward, toEnemy.normalized)) * collisionAvoidanceMultiplier;
                 float bestOrbitSign = Vector3.Dot(transform.forward, right) >= 0f ? 1f : -1f;
-                Vector3 tangent = right * (urgency > 0.7f ? bestOrbitSign : orbitSign);
-                if (dist > idealCircleRadius) urgency = 0;
+                Vector3 tangent = right * bestOrbitSign;
+                if (dist > idealCircleRadius) urgency *= 0.5f;
                 desiredDir = Vector3.Lerp(desiredDir, tangent, urgency).normalized;
                 
                 moveDestination = transform.position + desiredDir * moveStep;
 
-                if (NavMesh.SamplePosition(moveDestination, out hit, moveStep, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(moveDestination, out hit, sampleFallbackRadius, NavMesh.AllAreas))
                     moveDestination = hit.position;
 
                 agent.SetDestination(moveDestination);
