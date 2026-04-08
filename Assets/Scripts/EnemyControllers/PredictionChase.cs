@@ -8,7 +8,7 @@ public class PredictionChase : MonoBehaviour
     public Transform enemyTarget;
     public float repathInterval = 0.3f;
     public float moveStep = 40f;
-    public float idealCircleRadius = 50f; // AI will try to circle at this distance
+    public float idealCircleRadius = 130f; // AI will try to circle at this distance
     public float sideStepGrowthRate = 0.5f; // how fast moveDestination moves away (sideways) from target as distance to target increases
     public float collisionAvoidanceMultiplier = 2f;
     public float sampleFallbackRadius = 100f;
@@ -54,6 +54,7 @@ public class PredictionChase : MonoBehaviour
     {
         Vector3 vel = (transform.position - lastPos) / Time.deltaTime;
         tankSlope.UpdateAlignment(vel);
+        lastPos = transform.position;
 
         repathTimer += Time.deltaTime;
 
