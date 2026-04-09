@@ -6,7 +6,7 @@ using UnityEngine;
         public int id;
         public LayerMask unitLayerMask;
         public float requiredOpenSpace;
-        public Vector3 exitPoint;
+        public Vector3 exitOffset; // movement from spawn point in local space in order to exit spawn area (avoid getting stuck)
 
         private Queue<UnitData> queue = new Queue<UnitData>();
         private UnitManager unitManager;

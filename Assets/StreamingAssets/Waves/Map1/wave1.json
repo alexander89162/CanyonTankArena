@@ -26,6 +26,51 @@
       "damageMultiplier": 1.0,
       "healthMultiplier": 1.0,
       "movementSpeed": 1.0
+    },
+    {
+      "prefabName": "minitank-minigun-red",
+      "spawnDelay": 3.6,
+      "spawnPointId": 2,
+      "team": 2,
+      "damageMultiplier": 1.0,
+      "healthMultiplier": 1.0,
+      "movementSpeed": 1.0
+    },
+    {
+      "prefabName": "minitank-minigun-red",
+      "spawnDelay": 3.7,
+      "spawnPointId": 2,
+      "team": 2,
+      "damageMultiplier": 1.0,
+      "healthMultiplier": 1.0,
+      "movementSpeed": 1.0
+    },
+    {
+      "prefabName": "minitank-minigun-red",
+      "spawnDelay": 3.8,
+      "spawnPointId": 1,
+      "team": 2,
+      "damageMultiplier": 1.0,
+      "healthMultiplier": 1.0,
+      "movementSpeed": 1.0
+    },
+    {
+      "prefabName": "minitank-minigun-red",
+      "spawnDelay": 3.8,
+      "spawnPointId": 1,
+      "team": 2,
+      "damageMultiplier": 1.0,
+      "healthMultiplier": 1.0,
+      "movementSpeed": 1.0
+    },
+    {
+      "prefabName": "minitank-minigun-red",
+      "spawnDelay": 3.9,
+      "spawnPointId": 1,
+      "team": 2,
+      "damageMultiplier": 1.0,
+      "healthMultiplier": 1.0,
+      "movementSpeed": 1.0
     }
   ]
 }

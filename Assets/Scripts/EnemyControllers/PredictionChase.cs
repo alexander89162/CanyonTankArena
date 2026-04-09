@@ -50,8 +50,8 @@ public class PredictionChase : MonoBehaviour
         var unitData = GetComponent<UnitDataHolder>();
         if (unitData != null)
         {
-            Vector3 exit = unitData.data.spawnPoint.exitPoint;
-            exitPoint = exit != Vector3.zero ? exit : transform.position + transform.forward * 100f;
+            Vector3 exitOffset = unitData.data.spawnPoint.exitOffset;
+            exitPoint = exitOffset != Vector3.zero ? transform.position + exitOffset : transform.position + transform.forward * 85f;
         }
 
         lastPos = transform.position;
