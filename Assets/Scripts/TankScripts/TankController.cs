@@ -29,11 +29,6 @@ public class TankController : MonoBehaviour
             movement = GetComponent<MovementController>();
         }
 
-        if (tankSlope != null)
-        {
-            tankSlope.tankRoot = transform;  // Pass root reference
-        }
-
         if (playerInput == null)
             playerInput = GetComponent<PlayerInput>();
 
