@@ -363,7 +363,8 @@ public class HUDController : MonoBehaviour
 
         minimapRadarOverlay.SetMinimapView(minimapImage);
 
-        minimapRadarOverlay.SetRotateCardinalsWithPlayer(true);
+        minimapRadarOverlay.SetRotateCardinalsWithPlayer(false);
+        minimapRadarOverlay.SetSweepFollowsPlayerHeading(true);
 
         Transform minimapTarget = ResolveMinimapTargetTransform(false);
         if (minimapTarget != null)

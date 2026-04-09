@@ -23,7 +23,6 @@ public class MinimapRadarOverlay : MonoBehaviour
     [SerializeField] private Color radarTintColor = new Color(0.25f, 1f, 0.35f, 0.12f);
     [SerializeField] private Color crosshairColor = new Color(0.35f, 1f, 0.45f, 0.2f);
     [SerializeField] private Color sweepColor = new Color(0.45f, 1f, 0.55f, 0.2f);
-    [SerializeField] private Color sweepSoftColor = new Color(0.45f, 1f, 0.55f, 0.08f);
     [SerializeField] private Color borderColor = new Color(0f, 0f, 0f, 0.9f);
     [SerializeField] private Color gridColor = new Color(0.4f, 1f, 0.55f, 0.2f);
     [SerializeField] private Color cardinalColor = new Color(0.86f, 1f, 0.9f, 1f);
@@ -37,7 +36,7 @@ public class MinimapRadarOverlay : MonoBehaviour
     [SerializeField, Range(24f, 96f)] private float cardinalLabelHeight = 44f;
     [SerializeField, Range(0.02f, 0.2f)] private float borderThickness = 0.06f;
     [SerializeField] private int circleTextureSize = 512;
-    [SerializeField] private bool rotateCardinalsWithPlayer = true;
+    [SerializeField] private bool rotateCardinalsWithPlayer = false;
 
     [Header("Compass Ring")]
     [SerializeField] private bool showCompassRing = true;
@@ -53,9 +52,9 @@ public class MinimapRadarOverlay : MonoBehaviour
     [SerializeField, Range(12, 28)] private int compassDirectionFontSize = 18;
 
     [Header("Animation")]
-    [SerializeField] private float sweepSpeedDegreesPerSecond = 40f;
     [SerializeField, Range(0.05f, 0.5f)] private float sweepFillAmount = 0.17f;
-    [SerializeField, Range(0.1f, 0.8f)] private float softSweepFillAmount = 0.26f;
+    [SerializeField] private bool sweepFollowsPlayerHeading = true;
+    [SerializeField] private float sweepYawOffset = 0f;
 
     [Header("UI Performance")]
     [SerializeField] private bool lowPolyUiMode = false;
@@ -92,8 +91,11 @@ public class MinimapRadarOverlay : MonoBehaviour
 
         if (showRadarSweep)
         {
-            float zRotation = -sweepSpeedDegreesPerSecond * Time.unscaledDeltaTime;
-            sweepPivot.Rotate(0f, 0f, zRotation, Space.Self);
+            float sweepRotation = -(180f * Mathf.Clamp01(sweepFillAmount));
+            if (sweepFollowsPlayerHeading && trackingTarget != null)
+                sweepRotation += -trackingTarget.eulerAngles.y + sweepYawOffset;
+
+            sweepPivot.localRotation = Quaternion.Euler(0f, 0f, sweepRotation);
         }
 
         UpdateTopDownMapView();
@@ -132,6 +134,16 @@ public class MinimapRadarOverlay : MonoBehaviour
     public void SetTrackingTarget(Transform target)
     {
         trackingTarget = target;
+    }
+
+    public void SetSweepFollowsPlayerHeading(bool shouldFollow)
+    {
+        sweepFollowsPlayerHeading = shouldFollow;
+    }
+
+    public void SetSweepYawOffset(float yawOffset)
+    {
+        sweepYawOffset = yawOffset;
     }
 
     public void SetTopDownMapTexture(Texture2D mapTexture)
@@ -315,16 +327,9 @@ public class MinimapRadarOverlay : MonoBehaviour
         StretchToParent(pivot);
         sweepPivot = pivot;
 
-        Image softSweep = GetOrCreateImage("RadarSweepSoft", pivot, circleSprite);
-        StretchToParent(softSweep.rectTransform);
-        softSweep.type = Image.Type.Filled;
-        softSweep.fillMethod = Image.FillMethod.Radial360;
-        softSweep.fillOrigin = 2;
-        softSweep.fillClockwise = false;
-        softSweep.fillAmount = softSweepFillAmount;
-        softSweep.color = sweepSoftColor;
-        softSweep.raycastTarget = false;
-        softSweep.gameObject.SetActive(showRadarSweep);
+        Transform softSweep = pivot.Find("RadarSweepSoft");
+        if (softSweep != null)
+            Destroy(softSweep.gameObject);
 
         Image sweep = GetOrCreateImage("RadarSweep", pivot, circleSprite);
         StretchToParent(sweep.rectTransform);
@@ -657,14 +662,12 @@ public class MinimapRadarOverlay : MonoBehaviour
             showRadarSweep = false;
             showCompassRing = false;
             sweepFillAmount = 0.12f;
-            softSweepFillAmount = 0.18f;
         }
 
         radarTintColor = new Color(1f, 1f, 1f, 0.035f);
         crosshairColor = new Color(0.72f, 0.88f, 1f, 0.2f);
         gridColor = new Color(0.72f, 0.88f, 1f, 0.16f);
         sweepColor = new Color(0.65f, 0.9f, 1f, 0.08f);
-        sweepSoftColor = new Color(0.65f, 0.9f, 1f, 0.03f);
         cardinalColor = new Color(0.95f, 0.98f, 1f, 1f);
         compassTickColor = new Color(0.86f, 0.93f, 1f, 0.6f);
         compassLabelColor = new Color(0.95f, 0.98f, 1f, 0.95f);

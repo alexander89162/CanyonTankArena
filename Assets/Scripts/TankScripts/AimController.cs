@@ -61,6 +61,8 @@ public class AimController: MonoBehaviour
     private Vector3 actualTarget;
     private bool hasValidTarget;
     private float currentCannonPitch = 0f;
+    private Vector2 externalAimInput;
+    private bool useExternalAimInput;
 
     void Awake()
     {
@@ -85,7 +87,7 @@ public class AimController: MonoBehaviour
     void Update()
     {
         //Gets the aim input
-        aimInput = aimDeltaAction?.action?.ReadValue<Vector2>() ?? Vector2.zero;
+        aimInput = ReadAimInput();
 
         float rawYawRate = aimInput.x * aimSensitivity * turretTurnSpeed;
         float yawRate = clampYawRate ? Mathf.Clamp(rawYawRate, -maxYawRate, maxYawRate) : rawYawRate;
@@ -110,6 +112,26 @@ public class AimController: MonoBehaviour
         }
 
         UpdateTargeting();
+    }
+
+    public void SetLookInput(Vector2 lookInput)
+    {
+        externalAimInput = lookInput;
+        useExternalAimInput = lookInput.sqrMagnitude > 0.0001f;
+    }
+
+    public void ClearLookInput()
+    {
+        externalAimInput = Vector2.zero;
+        useExternalAimInput = false;
+    }
+
+    private Vector2 ReadAimInput()
+    {
+        if (useExternalAimInput)
+            return externalAimInput;
+
+        return aimDeltaAction?.action?.ReadValue<Vector2>() ?? Vector2.zero;
     }
 
     private void ApplyTurretRotation()

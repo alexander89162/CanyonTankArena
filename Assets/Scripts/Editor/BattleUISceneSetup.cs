@@ -1,8 +1,10 @@
 using TMPro;
 using UnityEditor;
+using UnityEditor.Events;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem.UI;
@@ -40,6 +42,12 @@ public static class BattleUISceneSetup
         GameObject battleUiRoot = GameObject.Find("BattleUI");
         if (battleUiRoot == null)
             return;
+
+        Transform playerTransform = FindPlayerTransform();
+        TankController playerController = ResolveComponentForPlayer<TankController>(playerTransform);
+        CameraController cameraController = ResolveComponentForPlayer<CameraController>(playerTransform);
+        AimController aimController = ResolveComponentForPlayer<AimController>(playerTransform);
+        CannonFiring cannonFiring = ResolveComponentForPlayer<CannonFiring>(playerTransform);
 
         Transform healthRoot = battleUiRoot.transform.Find("HealthTopRight");
         Transform ammoRoot = battleUiRoot.transform.Find("AmmoBottom");
@@ -156,6 +164,12 @@ public static class BattleUISceneSetup
 
             EditorUtility.SetDirty(hudController);
         }
+
+        SetupMobileTouchControls(battleUiRoot.transform, playerController, cameraController, aimController, cannonFiring);
+
+        Transform crosshair = battleUiRoot.transform.Find("Crosshair");
+        if (crosshair != null)
+            crosshair.SetAsLastSibling();
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         Selection.activeGameObject = battleUiRoot;
@@ -689,11 +703,79 @@ public static class BattleUISceneSetup
                 return taggedTank.transform;
         }
 
-        TankController playerController = Object.FindFirstObjectByType<TankController>();
-        if (playerController != null)
-            return playerController.transform;
+        TankController[] allTanks = Object.FindObjectsByType<TankController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        if (allTanks.Length > 0 && allTanks[0] != null)
+            return allTanks[0].transform;
 
         return null;
+    }
+
+    static T ResolveComponentForPlayer<T>(Transform playerTransform) where T : Component
+    {
+        if (playerTransform != null)
+        {
+            T component = playerTransform.GetComponent<T>();
+            if (component != null)
+                return component;
+
+            component = playerTransform.GetComponentInChildren<T>(true);
+            if (component != null)
+                return component;
+        }
+
+        T[] sceneComponents = Object.FindObjectsByType<T>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        for (int i = 0; i < sceneComponents.Length; i++)
+        {
+            if (sceneComponents[i] != null)
+                return sceneComponents[i];
+        }
+
+        return null;
+    }
+
+    static T ResolveSceneComponent<T>() where T : Component
+    {
+        T[] sceneComponents = Object.FindObjectsByType<T>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        for (int i = 0; i < sceneComponents.Length; i++)
+        {
+            if (sceneComponents[i] != null)
+                return sceneComponents[i];
+        }
+
+        return null;
+    }
+
+    static void SetupMobileTouchControls(Transform battleUiRoot, TankController tankController, CameraController cameraController, AimController aimController, CannonFiring cannonFiring)
+    {
+        if (battleUiRoot == null)
+            return;
+
+        Transform existingControls = battleUiRoot.Find("MobileTouchControls");
+        if (existingControls != null)
+            Object.DestroyImmediate(existingControls.gameObject);
+
+        GameObject controlsRoot = new GameObject("MobileTouchControls", typeof(RectTransform));
+        controlsRoot.transform.SetParent(battleUiRoot, false);
+        controlsRoot.transform.SetAsLastSibling();
+
+        RectTransform controlsRect = controlsRoot.GetComponent<RectTransform>();
+        StretchToParent(controlsRect);
+
+        Sprite uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+        if (uiSprite == null)
+            uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+
+        Sprite panelSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
+        if (panelSprite == null)
+            panelSprite = uiSprite;
+
+        if (uiSprite == null)
+            return;
+
+        CreateMovementJoystick(controlsRoot.transform, uiSprite, tankController);
+        CreateLookZone(controlsRoot.transform, panelSprite, cameraController, aimController);
+        CreateActionButton(controlsRoot.transform, "FireButton", "FIRE", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 28f), new Vector2(176f, 176f), new Color(0.82f, 0.22f, 0.2f, 0.9f), uiSprite, cannonFiring, true);
+        CreateActionButton(controlsRoot.transform, "SwitchWeaponButton", "SWAP", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 220f), new Vector2(176f, 82f), new Color(0.17f, 0.54f, 0.88f, 0.88f), uiSprite, tankController, false);
     }
 
     static Transform FindFirstExistingTransform(params string[] objectNames)
@@ -706,6 +788,177 @@ public static class BattleUISceneSetup
         }
 
         return null;
+    }
+
+    static void CreateMovementJoystick(Transform parent, Sprite uiSprite, TankController tankController)
+    {
+        GameObject root = GetOrCreateChild(parent.gameObject, "MoveJoystick");
+        RectTransform rootRect = EnsureRectTransform(root);
+        rootRect.anchorMin = new Vector2(0f, 0f);
+        rootRect.anchorMax = new Vector2(0f, 0f);
+        rootRect.pivot = new Vector2(0f, 0f);
+        rootRect.sizeDelta = new Vector2(320f, 320f);
+        rootRect.anchoredPosition = new Vector2(24f, 24f);
+
+        Image background = GetOrCreateImage(root.transform, "Background", uiSprite, new Color(0.08f, 0.09f, 0.1f, 0.34f));
+        RectTransform backgroundRect = background.GetComponent<RectTransform>();
+        backgroundRect.anchorMin = Vector2.zero;
+        backgroundRect.anchorMax = Vector2.one;
+        backgroundRect.offsetMin = Vector2.zero;
+        backgroundRect.offsetMax = Vector2.zero;
+        background.raycastTarget = true;
+
+        Image ring = GetOrCreateImage(root.transform, "Ring", uiSprite, new Color(1f, 1f, 1f, 0.08f));
+        RectTransform ringRect = ring.GetComponent<RectTransform>();
+        ringRect.anchorMin = new Vector2(0.5f, 0.5f);
+        ringRect.anchorMax = new Vector2(0.5f, 0.5f);
+        ringRect.pivot = new Vector2(0.5f, 0.5f);
+        ringRect.sizeDelta = new Vector2(250f, 250f);
+        ringRect.anchoredPosition = Vector2.zero;
+        ring.raycastTarget = false;
+
+        Image handle = GetOrCreateImage(root.transform, "Handle", uiSprite, new Color(1f, 1f, 1f, 0.8f));
+        RectTransform handleRect = handle.GetComponent<RectTransform>();
+        handleRect.anchorMin = new Vector2(0.5f, 0.5f);
+        handleRect.anchorMax = new Vector2(0.5f, 0.5f);
+        handleRect.pivot = new Vector2(0.5f, 0.5f);
+        handleRect.sizeDelta = new Vector2(96f, 96f);
+        handleRect.anchoredPosition = Vector2.zero;
+        handle.raycastTarget = false;
+
+        UIVirtualJoystick joystick = root.GetComponent<UIVirtualJoystick>();
+        if (joystick == null)
+            joystick = root.AddComponent<UIVirtualJoystick>();
+        joystick.containerRect = backgroundRect;
+        joystick.handleRect = handleRect;
+        joystick.joystickRange = 92f;
+        joystick.magnitudeMultiplier = 1f;
+
+        if (tankController != null)
+        {
+            tankController.movementJoystick = joystick;
+            EditorUtility.SetDirty(tankController);
+            UnityEventTools.AddPersistentListener(joystick.joystickOutputEvent, tankController.SetMoveInput);
+        }
+
+        TextMeshProUGUI label = GetOrCreateTMPText(root.transform, "MoveLabel", "MOVE", 22, TextAlignmentOptions.Top);
+        RectTransform labelRect = label.GetComponent<RectTransform>();
+        labelRect.anchorMin = new Vector2(0.5f, 1f);
+        labelRect.anchorMax = new Vector2(0.5f, 1f);
+        labelRect.pivot = new Vector2(0.5f, 1f);
+        labelRect.sizeDelta = new Vector2(220f, 28f);
+        labelRect.anchoredPosition = new Vector2(0f, -12f);
+        label.raycastTarget = false;
+    }
+
+    static void CreateLookZone(Transform parent, Sprite panelSprite, CameraController cameraController, AimController aimController)
+    {
+        GameObject root = GetOrCreateChild(parent.gameObject, "LookZone");
+        RectTransform rootRect = EnsureRectTransform(root);
+        rootRect.anchorMin = new Vector2(0.42f, 0f);
+        rootRect.anchorMax = new Vector2(1f, 1f);
+        rootRect.offsetMin = Vector2.zero;
+        rootRect.offsetMax = Vector2.zero;
+        rootRect.pivot = new Vector2(0.5f, 0.5f);
+
+        Image zoneImage = GetOrCreateImage(root.transform, "ZoneImage", panelSprite, new Color(1f, 1f, 1f, 0.03f));
+        RectTransform zoneRect = zoneImage.GetComponent<RectTransform>();
+        zoneRect.anchorMin = Vector2.zero;
+        zoneRect.anchorMax = Vector2.one;
+        zoneRect.offsetMin = Vector2.zero;
+        zoneRect.offsetMax = Vector2.zero;
+        zoneImage.raycastTarget = true;
+
+        UIVirtualTouchZone touchZone = root.GetComponent<UIVirtualTouchZone>();
+        if (touchZone == null)
+            touchZone = root.AddComponent<UIVirtualTouchZone>();
+        touchZone.containerRect = zoneRect;
+        touchZone.handleRect = null;
+        touchZone.clampToMagnitude = true;
+        touchZone.magnitudeMultiplier = 1f;
+
+        if (cameraController != null)
+        {
+            UnityEventTools.AddPersistentListener(touchZone.touchZoneOutputEvent, cameraController.SetLookInput);
+        }
+
+        if (aimController != null)
+        {
+            UnityEventTools.AddPersistentListener(touchZone.touchZoneOutputEvent, aimController.SetLookInput);
+        }
+
+        TextMeshProUGUI label = GetOrCreateTMPText(root.transform, "LookLabel", "LOOK", 22, TextAlignmentOptions.TopRight);
+        RectTransform labelRect = label.GetComponent<RectTransform>();
+        labelRect.anchorMin = new Vector2(1f, 1f);
+        labelRect.anchorMax = new Vector2(1f, 1f);
+        labelRect.pivot = new Vector2(1f, 1f);
+        labelRect.sizeDelta = new Vector2(160f, 28f);
+        labelRect.anchoredPosition = new Vector2(-24f, -12f);
+        label.color = new Color(1f, 1f, 1f, 0.75f);
+        label.raycastTarget = false;
+    }
+
+    static void CreateActionButton(Transform parent, string name, string labelText, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta, Color backgroundColor, Sprite uiSprite, Component target, bool fireButton)
+    {
+        GameObject root = GetOrCreateChild(parent.gameObject, name);
+        RectTransform rootRect = EnsureRectTransform(root);
+        rootRect.anchorMin = anchorMin;
+        rootRect.anchorMax = anchorMax;
+        rootRect.pivot = new Vector2(1f, 0f);
+        rootRect.sizeDelta = sizeDelta;
+        rootRect.anchoredPosition = anchoredPosition;
+
+        Image buttonImage = GetOrCreateImage(root.transform, "ButtonImage", uiSprite, backgroundColor);
+        RectTransform buttonRect = buttonImage.GetComponent<RectTransform>();
+        buttonRect.anchorMin = Vector2.zero;
+        buttonRect.anchorMax = Vector2.one;
+        buttonRect.offsetMin = Vector2.zero;
+        buttonRect.offsetMax = Vector2.zero;
+        buttonImage.raycastTarget = true;
+
+        UIVirtualButton virtualButton = root.GetComponent<UIVirtualButton>();
+        if (virtualButton == null)
+            virtualButton = root.AddComponent<UIVirtualButton>();
+
+        if (fireButton && target is CannonFiring cannonFiring)
+        {
+            UnityEventTools.AddPersistentListener(virtualButton.buttonStateOutputEvent, cannonFiring.SetFireButtonState);
+        }
+        else if (!fireButton && target is TankController tankController)
+        {
+            UnityEventTools.AddPersistentListener(virtualButton.buttonStateOutputEvent, tankController.SetTurretCycleButtonState);
+        }
+
+        TextMeshProUGUI buttonLabel = GetOrCreateTMPText(root.transform, "ButtonLabel", labelText, 24, TextAlignmentOptions.Center);
+        RectTransform labelRect = buttonLabel.GetComponent<RectTransform>();
+        labelRect.anchorMin = Vector2.zero;
+        labelRect.anchorMax = Vector2.one;
+        labelRect.offsetMin = Vector2.zero;
+        labelRect.offsetMax = Vector2.zero;
+        buttonLabel.fontStyle = FontStyles.Bold;
+        buttonLabel.color = Color.white;
+        buttonLabel.raycastTarget = false;
+    }
+
+    static Image GetOrCreateImage(Transform parent, string name, Sprite sprite, Color color)
+    {
+        Transform existing = parent.Find(name);
+        Image image = null;
+        if (existing != null)
+            image = existing.GetComponent<Image>();
+
+        if (image == null)
+        {
+            GameObject imageObject = new GameObject(name, typeof(RectTransform), typeof(Image));
+            imageObject.transform.SetParent(parent, false);
+            image = imageObject.GetComponent<Image>();
+        }
+
+        image.sprite = sprite;
+        image.type = Image.Type.Simple;
+        image.preserveAspect = true;
+        image.color = color;
+        return image;
     }
 
     static bool IsPreferredMiniTankName(string objectName)
