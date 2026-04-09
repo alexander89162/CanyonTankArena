@@ -16,7 +16,7 @@ MonoBehaviour:
   nodeName: Node_1
   description: 
   cost: 0
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f5a507c5cc70b481ab74a2d11df011a2, type: 3}
   position: {x: 128, y: 192}
   locked: 0
   column: 0

@@ -48,6 +48,7 @@ public static class BattleUISceneSetup
         CameraController cameraController = ResolveComponentForPlayer<CameraController>(playerTransform);
         AimController aimController = ResolveComponentForPlayer<AimController>(playerTransform);
         CannonFiring cannonFiring = ResolveComponentForPlayer<CannonFiring>(playerTransform);
+        PauseManager pauseManager = ResolveSceneComponent<PauseManager>();
 
         Transform healthRoot = battleUiRoot.transform.Find("HealthTopRight");
         Transform ammoRoot = battleUiRoot.transform.Find("AmmoBottom");
@@ -165,7 +166,7 @@ public static class BattleUISceneSetup
             EditorUtility.SetDirty(hudController);
         }
 
-        SetupMobileTouchControls(battleUiRoot.transform, playerController, cameraController, aimController, cannonFiring);
+        SetupMobileTouchControls(battleUiRoot.transform, playerController, cameraController, aimController, cannonFiring, pauseManager);
 
         Transform crosshair = battleUiRoot.transform.Find("Crosshair");
         if (crosshair != null)
@@ -745,7 +746,7 @@ public static class BattleUISceneSetup
         return null;
     }
 
-    static void SetupMobileTouchControls(Transform battleUiRoot, TankController tankController, CameraController cameraController, AimController aimController, CannonFiring cannonFiring)
+    static void SetupMobileTouchControls(Transform battleUiRoot, TankController tankController, CameraController cameraController, AimController aimController, CannonFiring cannonFiring, PauseManager pauseManager)
     {
         if (battleUiRoot == null)
             return;
@@ -776,6 +777,7 @@ public static class BattleUISceneSetup
         CreateLookZone(controlsRoot.transform, panelSprite, cameraController, aimController);
         CreateActionButton(controlsRoot.transform, "FireButton", "FIRE", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 28f), new Vector2(176f, 176f), new Color(0.82f, 0.22f, 0.2f, 0.9f), uiSprite, cannonFiring, true);
         CreateActionButton(controlsRoot.transform, "SwitchWeaponButton", "SWAP", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 220f), new Vector2(176f, 82f), new Color(0.17f, 0.54f, 0.88f, 0.88f), uiSprite, tankController, false);
+        CreatePauseButton(controlsRoot.transform, panelSprite, pauseManager);
     }
 
     static Transform FindFirstExistingTransform(params string[] objectNames)
@@ -930,6 +932,42 @@ public static class BattleUISceneSetup
         }
 
         TextMeshProUGUI buttonLabel = GetOrCreateTMPText(root.transform, "ButtonLabel", labelText, 24, TextAlignmentOptions.Center);
+        RectTransform labelRect = buttonLabel.GetComponent<RectTransform>();
+        labelRect.anchorMin = Vector2.zero;
+        labelRect.anchorMax = Vector2.one;
+        labelRect.offsetMin = Vector2.zero;
+        labelRect.offsetMax = Vector2.zero;
+        buttonLabel.fontStyle = FontStyles.Bold;
+        buttonLabel.color = Color.white;
+        buttonLabel.raycastTarget = false;
+    }
+
+    static void CreatePauseButton(Transform parent, Sprite uiSprite, PauseManager pauseManager)
+    {
+        GameObject root = GetOrCreateChild(parent.gameObject, "PauseButton");
+        RectTransform rootRect = EnsureRectTransform(root);
+        rootRect.anchorMin = new Vector2(1f, 1f);
+        rootRect.anchorMax = new Vector2(1f, 1f);
+        rootRect.pivot = new Vector2(1f, 1f);
+        rootRect.sizeDelta = new Vector2(156f, 74f);
+        rootRect.anchoredPosition = new Vector2(-24f, -12f);
+
+        Image buttonImage = GetOrCreateImage(root.transform, "ButtonImage", uiSprite, new Color(0.14f, 0.14f, 0.16f, 0.9f));
+        RectTransform buttonRect = buttonImage.GetComponent<RectTransform>();
+        buttonRect.anchorMin = Vector2.zero;
+        buttonRect.anchorMax = Vector2.one;
+        buttonRect.offsetMin = Vector2.zero;
+        buttonRect.offsetMax = Vector2.zero;
+        buttonImage.raycastTarget = true;
+
+        UIVirtualButton virtualButton = root.GetComponent<UIVirtualButton>();
+        if (virtualButton == null)
+            virtualButton = root.AddComponent<UIVirtualButton>();
+
+        if (pauseManager != null)
+            UnityEventTools.AddPersistentListener(virtualButton.buttonClickOutputEvent, pauseManager.TogglePause);
+
+        TextMeshProUGUI buttonLabel = GetOrCreateTMPText(root.transform, "ButtonLabel", "PAUSE", 24, TextAlignmentOptions.Center);
         RectTransform labelRect = buttonLabel.GetComponent<RectTransform>();
         labelRect.anchorMin = Vector2.zero;
         labelRect.anchorMax = Vector2.one;

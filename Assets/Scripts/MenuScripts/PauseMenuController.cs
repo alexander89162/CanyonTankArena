@@ -16,6 +16,7 @@ public class PauseManager : MonoBehaviour
     [SerializeField] private InputActionAsset inputActions;
     private InputActionMap player;
     private InputActionMap ui;
+    private InputAction pauseAction;
 
     void Awake()
     {
@@ -29,8 +30,9 @@ public class PauseManager : MonoBehaviour
         root = pauseDocument.rootVisualElement;
 
         pausePanel = root.Q<VisualElement>("PauseOverlay");
-        player = inputActions.FindActionMap("Player");   // exact name from your asset
-        ui = inputActions.FindActionMap("UI");
+        player = inputActions != null ? inputActions.FindActionMap("Tanks") : null;
+        ui = inputActions != null ? inputActions.FindActionMap("UI") : null;
+        pauseAction = inputActions != null ? inputActions.FindActionMap("Tanks")?.FindAction("Pause") : null;
 
         // Hide everything at start
         if (pausePanel != null) 
@@ -55,13 +57,26 @@ public class PauseManager : MonoBehaviour
 
 void OnEnable()
 {
-    player?.Enable();
-}
+        player?.Enable();
+    }
 
-void OnDisable()
-{
-    player?.Disable();
-}
+    void OnDisable()
+    {
+        player?.Disable();
+    }
+
+    void OnDestroy()
+    {
+    }
+
+    void Update()
+    {
+        bool escapePressed = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
+        bool pauseActionPressed = pauseAction != null && pauseAction.WasPressedThisFrame();
+
+        if (escapePressed || pauseActionPressed)
+            TogglePause();
+    }
 
     public void TogglePause()
     {
@@ -85,10 +100,13 @@ void OnDisable()
         {
             pausePanel.visible = true; // Show the pause panel
             pausePanel.style.display = DisplayStyle.Flex;
-            hud.enabled = false;
-            UnityEngine.Cursor.visible = true;
-            UnityEngine.Cursor.lockState = CursorLockMode.None;
         }
+
+        if (hud != null)
+            hud.enabled = false;
+
+        UnityEngine.Cursor.visible = true;
+        UnityEngine.Cursor.lockState = CursorLockMode.None;
     
         player?.Disable();
         ui?.Enable();
@@ -100,13 +118,16 @@ void OnDisable()
         if (pausePanel != null)    
         {
             pausePanel.visible = false; // Hide the pause panel
-            hud.enabled = true;
-            UnityEngine.Cursor.visible = false;
-            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-
-            ui?.Disable();
-            player?.Enable();   
         }
+
+        if (hud != null)
+            hud.enabled = true;
+
+        UnityEngine.Cursor.visible = false;
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+
+        ui?.Disable();
+        player?.Enable();   
         
 
         isPaused = false;
