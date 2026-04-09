@@ -1,7 +1,7 @@
 {
   "unitConfigs": [
     {
-      "prefabName": "minitank-v10-red",
+      "prefabName": "minitank-cannon-red",
       "spawnDelay": 0.7,
       "spawnPointId": 1,
       "team": 1,
@@ -10,7 +10,7 @@
       "movementSpeed": 1.0
     },
     {
-      "prefabName": "minitank-v10-red",
+      "prefabName": "minitank-cannon-red",
       "spawnDelay": 2.0,
       "spawnPointId": 1,
       "team": 1,
@@ -19,7 +19,7 @@
       "movementSpeed": 1.0
     },
     {
-      "prefabName": "minitank-v10-red",
+      "prefabName": "minitank-cannon-red",
       "spawnDelay": 2.8,
       "spawnPointId": 1,
       "team": 2,

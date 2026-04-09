@@ -6,6 +6,7 @@ using UnityEngine;
         public int id;
         public LayerMask unitLayerMask;
         public float requiredOpenSpace;
+        public Vector3 exitPoint;
 
         private Queue<UnitData> queue = new Queue<UnitData>();
         private UnitManager unitManager;
@@ -27,6 +28,7 @@ using UnityEngine;
         {
             unit.gameObject.transform.position = transform.position;
             unit.gameObject.transform.rotation = transform.rotation;
+            unit.spawnPoint = this;
 
             var health = unit.gameObject.GetComponent<HealthComponent>();
             if (health != null)

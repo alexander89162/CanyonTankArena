@@ -308,8 +308,7 @@ public class UnitManager : MonoBehaviour
     {
         if (debug) Debug.Log("AllocateUnits() invoked on " + currentWave);
 
-        int waveSize = unitHandles.Count;
-        for (int i = 0; i < waveSize; i++)
+        for (int i = 0; i < unitHandles.Count; i++)
         {
             UnitConfig config = unitHandles[i].config;
             if (!prefabLookup.TryGetValue(config.prefabName, out GameObject unitPrefab))

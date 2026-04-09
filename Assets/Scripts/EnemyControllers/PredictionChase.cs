@@ -25,6 +25,7 @@ public class PredictionChase : MonoBehaviour
     private Vector3 lastPos;
     private NavMeshHit hit;
     private float dist = 0f;
+    private Vector3 exitPoint {get; set;}
 
     [Space(12)]
     public bool debug = false;
@@ -44,10 +45,18 @@ public class PredictionChase : MonoBehaviour
         agent.updateUpAxis = false;
         agent.autoBraking = false;
         moveDestination = transform.position;
+        enemyTarget = GameObject.FindWithTag("Player").transform.root;
+
+        var unitData = GetComponent<UnitDataHolder>();
+        if (unitData != null)
+        {
+            Vector3 exit = unitData.data.spawnPoint.exitPoint;
+            exitPoint = exit != Vector3.zero ? exit : transform.position + transform.forward * 100f;
+        }
 
         lastPos = transform.position;
 
-        SetState(AttackState.Circling);
+        SetState(AttackState.Deploying);
     }
 
     void Update()
@@ -58,7 +67,8 @@ public class PredictionChase : MonoBehaviour
 
         repathTimer += Time.deltaTime;
 
-        if (currentState == AttackState.CatchingUp 
+        if (currentState == AttackState.Deploying
+            || currentState == AttackState.CatchingUp 
             || currentState == AttackState.Circling)
         {
             if (repathTimer > repathInterval)
@@ -75,8 +85,18 @@ public class PredictionChase : MonoBehaviour
 
         switch (currentState)
         {
-            case AttackState.Deploying: break;
-            case AttackState.Wandering: break;
+            case AttackState.Deploying:
+
+                if (NavMesh.SamplePosition(exitPoint, out hit, sampleFallbackRadius, NavMesh.AllAreas))
+                    moveDestination = hit.position;
+                agent.SetDestination(moveDestination);
+
+                Vector2 flatPos = new Vector2(transform.position.x, transform.position.z);
+                Vector2 flatExit = new Vector2(exitPoint.x, exitPoint.z);
+                if ((flatPos - flatExit).sqrMagnitude < 6400) // 80*80
+                    SetState(AttackState.CatchingUp);
+                return;
+            case AttackState.Wandering: return;
             case AttackState.CatchingUp:
                 toEnemy = enemyTarget.position - transform.position;
                 dist = toEnemy.magnitude;
