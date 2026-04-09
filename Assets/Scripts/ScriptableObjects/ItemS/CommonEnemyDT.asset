@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2aaf85a8da26c94d9dddc8d650e7df2, type: 3}
+  m_Name: CommonEnemyDT
+  m_EditorClassIdentifier: Assembly-CSharp::DropTableSO
+  entries:
+  - item: {fileID: 11400000, guid: 31c3afd9acb14ca4ca21dd966a9dd82d, type: 2}
+    weight: 100
+    minAmount: 5
+    maxAmount: 15
+  - item: {fileID: 11400000, guid: 4c522cafc3a00e9418012dc4276fc986, type: 2}
+    weight: 20
+    minAmount: 1
+    maxAmount: 1
+  - item: {fileID: 11400000, guid: 4c71b5cf5167f894993ec44d6e278201, type: 2}
+    weight: 5
+    minAmount: 1
+    maxAmount: 1
+  - item: {fileID: 11400000, guid: 69ca4efa321aa7f43af9c234234c9baa, type: 2}
+    weight: 1
+    minAmount: 1
+    maxAmount: 1
+  - item: {fileID: 11400000, guid: c27db4dd5b39f6b4daf1d19abac559ce, type: 2}
+    weight: 1
+    minAmount: 1
+    maxAmount: 1

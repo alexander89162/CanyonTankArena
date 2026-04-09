@@ -49,6 +49,7 @@ public class HealthComponent : MonoBehaviour
 
             if (destroyOnDeath)
             {
+                GetComponent<EnemyDrop>()?.OnDeath();
                 Destroy(gameObject, deathDelay);
 
                 if (gameObject.CompareTag("Player"))
