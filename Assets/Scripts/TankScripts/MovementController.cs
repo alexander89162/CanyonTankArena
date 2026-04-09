@@ -18,16 +18,15 @@ public class MovementController : MonoBehaviour
     private float verticalVelocity = 0f;
     public Vector3 currentVelocityV = Vector3.zero;
 
-    public TankSlope tankSlope;
+    private TankSlopeForRig tankSlope;
 
     void Awake()
     {
         controller = GetComponent<CharacterController>();
+        tankSlope = GetComponent<TankSlopeForRig>();
 
         if (tankSlope != null)
-        {
             tankSlope.tankRoot = transform;
-        }
     }
 
     void Update()
@@ -82,5 +81,16 @@ public class MovementController : MonoBehaviour
         {
             tankSlope.UpdateAlignment(currentVelocity);
         }
+    }
+
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        // Ignore ground surfaces
+        if (hit.normal.y > 0.5f) return;
+
+        // Slide sideways upon collision to make it feel less rigid
+        Vector3 projected = Vector3.Dot(currentVelocity, hit.normal) * hit.normal;
+        Vector3 slide = currentVelocity - projected;
+        currentVelocity = Vector3.ClampMagnitude(slide * 1.5f, maxSpeed * 0.6f);
     }
 }

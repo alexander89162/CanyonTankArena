@@ -1,30 +1,72 @@
 {
   "unitConfigs": [
     {
-      "prefabName": "minitank-v10-red",
+      "prefabName": "minitank-cannon-red",
       "spawnDelay": 0.7,
-      "spawnPosition": { "x": 220.0, "y": 25.0, "z": 670.0 },
-      "spawnRotation": { "x": 0.0, "y": 180.0, "z": 0.0 },
+      "spawnPointId": 1,
       "team": 1,
       "damageMultiplier": 1.0,
       "healthMultiplier": 1.0,
       "movementSpeed": 1.0
     },
     {
-      "prefabName": "minitank-v10-red",
+      "prefabName": "minitank-cannon-red",
       "spawnDelay": 2.0,
-      "spawnPosition": { "x": 225.0, "y": 28.0, "z": 658.0 },
-      "spawnRotation": { "x": 0.0, "y": 180.0, "z": 0.0 },
+      "spawnPointId": 1,
       "team": 1,
       "damageMultiplier": 1.0,
       "healthMultiplier": 1.0,
       "movementSpeed": 1.0
     },
     {
-      "prefabName": "minitank-v10-red",
+      "prefabName": "minitank-cannon-red",
       "spawnDelay": 2.8,
-      "spawnPosition": { "x": 230.0, "y": 22.0, "z": 665.0 },
-      "spawnRotation": { "x": 0.0, "y": 180.0, "z": 0.0 },
+      "spawnPointId": 1,
+      "team": 2,
+      "damageMultiplier": 1.0,
+      "healthMultiplier": 1.0,
+      "movementSpeed": 1.0
+    },
+    {
+      "prefabName": "minitank-minigun-red",
+      "spawnDelay": 3.6,
+      "spawnPointId": 2,
+      "team": 2,
+      "damageMultiplier": 1.0,
+      "healthMultiplier": 1.0,
+      "movementSpeed": 1.0
+    },
+    {
+      "prefabName": "minitank-minigun-red",
+      "spawnDelay": 3.7,
+      "spawnPointId": 2,
+      "team": 2,
+      "damageMultiplier": 1.0,
+      "healthMultiplier": 1.0,
+      "movementSpeed": 1.0
+    },
+    {
+      "prefabName": "minitank-minigun-red",
+      "spawnDelay": 3.8,
+      "spawnPointId": 1,
+      "team": 2,
+      "damageMultiplier": 1.0,
+      "healthMultiplier": 1.0,
+      "movementSpeed": 1.0
+    },
+    {
+      "prefabName": "minitank-minigun-red",
+      "spawnDelay": 3.8,
+      "spawnPointId": 1,
+      "team": 2,
+      "damageMultiplier": 1.0,
+      "healthMultiplier": 1.0,
+      "movementSpeed": 1.0
+    },
+    {
+      "prefabName": "minitank-minigun-red",
+      "spawnDelay": 3.9,
+      "spawnPointId": 1,
       "team": 2,
       "damageMultiplier": 1.0,
       "healthMultiplier": 1.0,
