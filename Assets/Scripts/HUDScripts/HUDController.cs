@@ -100,6 +100,7 @@ public class HUDController : MonoBehaviour
     public void RefreshUI()
     {
         ResolveUIReferences();
+        ApplyResponsiveMobileLayout();
         EnsureHealthBarPresentation();
 
         if (playerController == null)
@@ -117,6 +118,113 @@ public class HUDController : MonoBehaviour
     {
         bulletCountOnRight = showOnRight;
         ApplyAmmoAnchor();
+    }
+
+    bool ShouldUseResponsiveLayout()
+    {
+        if (mobileUiLayout)
+            return true;
+
+        RectTransform healthRoot = healthBar != null ? healthBar.transform.parent as RectTransform : null;
+        if (healthRoot != null && healthRoot.anchorMin.x < 0.5f)
+            return true;
+
+        if (ammoContainer != null && ammoContainer.anchorMin.x < 0.5f)
+            return true;
+
+        RectTransform minimapRoot = minimapImage != null ? minimapImage.transform.parent as RectTransform : null;
+        if (minimapRoot != null && minimapRoot.anchorMax.x > 0.5f && minimapRoot.anchorMin.y > 0.5f)
+            return true;
+
+        return false;
+    }
+
+    void ApplyResponsiveMobileLayout()
+    {
+        if (!ShouldUseResponsiveLayout())
+            return;
+
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null)
+            return;
+
+        RectTransform canvasRect = canvas.transform as RectTransform;
+        if (canvasRect == null)
+            return;
+
+        Vector2 canvasSize = canvasRect.rect.size;
+        if (canvasSize.x <= 0f || canvasSize.y <= 0f)
+            return;
+
+        float shortSide = Mathf.Min(canvasSize.x, canvasSize.y);
+        float margin = Mathf.Clamp(shortSide * 0.018f, 14f, 24f);
+        float healthTopOffset = Mathf.Clamp(shortSide * 0.012f, 8f, 16f);
+        float healthBarMobileHeight = Mathf.Clamp(shortSide * 0.065f, 48f, 68f);
+        float healthTextMobileOffset = Mathf.Clamp(shortSide * 0.006f, 4f, 8f);
+        float healthRootWidth = Mathf.Clamp(canvasSize.x * 0.34f, 320f, 460f);
+        float healthRootHeight = Mathf.Clamp(healthBarMobileHeight + healthTextMobileOffset + 44f, 104f, 140f);
+        float ammoSlotWidthMobile = Mathf.Clamp(shortSide * 0.064f, 108f, 136f);
+        float ammoSlotHeightMobile = Mathf.Clamp(shortSide * 0.086f, 80f, 104f);
+        float ammoSlotSpacingMobile = Mathf.Clamp(shortSide * 0.007f, 5f, 9f);
+        float ammoSlotPaddingMobile = Mathf.Clamp(shortSide * 0.009f, 7f, 11f);
+        float ammoContainerWidthMobile = (ammoSlotWidthMobile * 3f) + (ammoSlotSpacingMobile * 4f);
+        float ammoContainerHeightMobile = ammoSlotHeightMobile;
+        float ammoGapMobile = Mathf.Clamp(shortSide * 0.0015f, 0f, 3f);
+        float minimapSizeMobile = 500f;
+
+        healthBarHeight = healthBarMobileHeight;
+        healthTextOffsetBelowBar = healthTextMobileOffset;
+        ammoSlotWidth = ammoSlotWidthMobile;
+        ammoSlotHeight = ammoSlotHeightMobile;
+        ammoSlotSpacing = ammoSlotSpacingMobile;
+        ammoIconSize = Mathf.Clamp(shortSide * 0.042f, 38f, 52f);
+        ammoSlotPadding = ammoSlotPaddingMobile;
+        minimapSize = new Vector2(minimapSizeMobile, minimapSizeMobile);
+
+        RectTransform healthRoot = healthBar != null ? healthBar.transform.parent as RectTransform : null;
+        if (healthRoot != null)
+        {
+            healthRoot.anchorMin = new Vector2(0f, 1f);
+            healthRoot.anchorMax = new Vector2(0f, 1f);
+            healthRoot.pivot = new Vector2(0f, 1f);
+            healthRoot.sizeDelta = new Vector2(healthRootWidth, healthRootHeight);
+            healthRoot.anchoredPosition = new Vector2(margin, -healthTopOffset);
+
+            RectTransform healthBarRect = healthBar != null ? healthBar.GetComponent<RectTransform>() : null;
+            if (healthBarRect != null)
+            {
+                healthBarRect.anchorMin = new Vector2(0f, 1f);
+                healthBarRect.anchorMax = new Vector2(1f, 1f);
+                healthBarRect.pivot = new Vector2(0.5f, 1f);
+                healthBarRect.sizeDelta = new Vector2(0f, healthBarMobileHeight);
+                healthBarRect.anchoredPosition = new Vector2(0f, -4f);
+            }
+        }
+
+        if (ammoContainer != null)
+        {
+            ammoContainer.anchorMin = new Vector2(0f, 1f);
+            ammoContainer.anchorMax = new Vector2(0f, 1f);
+            ammoContainer.pivot = new Vector2(0f, 1f);
+            ammoContainer.sizeDelta = new Vector2(ammoContainerWidthMobile, ammoContainerHeightMobile);
+
+            float healthHeightForSpacing = healthRoot != null ? healthRoot.sizeDelta.y : healthRootHeight;
+            float ammoLeftOffset = margin + Mathf.Max(0f, (healthRootWidth - ammoContainerWidthMobile) * 0.5f);
+            ammoContainer.anchoredPosition = new Vector2(ammoLeftOffset, -(margin + healthHeightForSpacing + ammoGapMobile));
+        }
+
+        if (minimapImage != null)
+        {
+            RectTransform minimapRoot = minimapImage.transform.parent as RectTransform;
+            if (minimapRoot != null)
+            {
+                minimapRoot.anchorMin = new Vector2(1f, 1f);
+                minimapRoot.anchorMax = new Vector2(1f, 1f);
+                minimapRoot.pivot = new Vector2(1f, 1f);
+                minimapRoot.sizeDelta = minimapSize;
+                minimapRoot.anchoredPosition = new Vector2(-margin, -margin);
+            }
+        }
     }
 
     void UpdateHealthAndAmmo(HealthComponent controller)
@@ -239,10 +347,13 @@ public class HUDController : MonoBehaviour
         if (minimapRoot == null)
             return;
 
-        if (minimapSize.x <= 0f || minimapSize.y <= 0f)
-            minimapSize = new Vector2(500f, 500f);
+        if (!mobileUiLayout)
+        {
+            if (minimapSize.x <= 0f || minimapSize.y <= 0f)
+                minimapSize = new Vector2(500f, 500f);
 
-        minimapRoot.sizeDelta = minimapSize;
+            minimapRoot.sizeDelta = minimapSize;
+        }
 
         if (minimapRadarOverlay == null)
             minimapRadarOverlay = minimapRoot.GetComponent<MinimapRadarOverlay>();
@@ -252,7 +363,8 @@ public class HUDController : MonoBehaviour
 
         minimapRadarOverlay.SetMinimapView(minimapImage);
 
-        minimapRadarOverlay.SetRotateCardinalsWithPlayer(true);
+        minimapRadarOverlay.SetRotateCardinalsWithPlayer(false);
+        minimapRadarOverlay.SetSweepFollowsPlayerHeading(true);
 
         Transform minimapTarget = ResolveMinimapTargetTransform(false);
         if (minimapTarget != null)
@@ -677,8 +789,11 @@ public class HUDController : MonoBehaviour
 
         // If the HUD has been configured for a dedicated mobile layout, do not override
         // the anchor/position that the scene setup assigned.
-        if (mobileUiLayout)
+        if (ShouldUseResponsiveLayout())
+        {
+            ApplyResponsiveMobileLayout();
             return;
+        }
 
         if (bulletCountOnRight)
         {
@@ -974,7 +1089,7 @@ public class HUDController : MonoBehaviour
         if (healthBar != null)
         {
             RectTransform healthBarRect = healthBar.GetComponent<RectTransform>();
-            if (healthBarRect != null)
+            if (healthBarRect != null && !mobileUiLayout)
             {
                 healthBarRect.anchorMin = new Vector2(0f, 1f);
                 healthBarRect.anchorMax = new Vector2(1f, 1f);
@@ -1091,7 +1206,7 @@ void EnsureHealthBarPresentation()
     {
         RectTransform healthTextRect = healthText.GetComponent<RectTransform>();
         RectTransform healthBarRect = healthBar.GetComponent<RectTransform>();
-        if (healthTextRect != null && healthBarRect != null)
+        if (healthTextRect != null && healthBarRect != null && !mobileUiLayout)
         {
             healthTextRect.anchorMin = new Vector2(0f, 1f);
             healthTextRect.anchorMax = new Vector2(1f, 1f);

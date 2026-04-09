@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
+using System;
 
 public class CannonFiring : MonoBehaviour
 {
@@ -20,12 +21,15 @@ public class CannonFiring : MonoBehaviour
     public float volume = 1.0f;
 
     private float nextFireTime;
+    private Action<InputAction.CallbackContext> firePerformedHandler;
 
     private void OnEnable()
     {
         if (fireAction?.action != null)
         {
-            fireAction.action.performed += ctx => TryFire();
+            if (firePerformedHandler == null)
+                firePerformedHandler = OnFirePerformed;
+            fireAction.action.performed += firePerformedHandler;
             fireAction.action.Enable();
         }
     }
@@ -34,9 +38,26 @@ public class CannonFiring : MonoBehaviour
     {
         if (fireAction?.action != null)
         {
-            fireAction.action.performed -= ctx => TryFire();
+            if (firePerformedHandler != null)
+                fireAction.action.performed -= firePerformedHandler;
             fireAction.action.Disable();
         }
+    }
+
+    public void RequestFire()
+    {
+        TryFire();
+    }
+
+    public void SetFireButtonState(bool isPressed)
+    {
+        if (isPressed)
+            TryFire();
+    }
+
+    private void OnFirePerformed(InputAction.CallbackContext context)
+    {
+        TryFire();
     }
 
     private void TryFire()
@@ -46,7 +67,9 @@ public class CannonFiring : MonoBehaviour
         if (shellPrefab == null || muzzlePoint == null) return;
 
         nextFireTime = Time.time + fireCooldown;
-        AudioSource.PlayClipAtPoint(fireSound, Camera.main.transform.position, volume);
+        Camera audioCamera = Camera.main;
+        if (fireSound != null && audioCamera != null)
+            AudioSource.PlayClipAtPoint(fireSound, audioCamera.transform.position, volume);
 
         MovementController movement = GetComponentInParent<MovementController>();
         Vector3 tankVelocity = movement != null ? movement.currentVelocityV : Vector3.zero;

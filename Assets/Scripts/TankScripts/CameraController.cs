@@ -27,6 +27,8 @@ public class CameraController : MonoBehaviour
     private float targetYaw;
     private Camera cachedCamera;
     private AudioListener cachedAudioListener;
+    private Vector2 externalLookInput;
+    private bool useExternalLookInput;
 
     void Start()
     {
@@ -76,7 +78,7 @@ public class CameraController : MonoBehaviour
         }
 
         //Gets look action
-        Vector2 look = lookAction?.action?.ReadValue<Vector2>() ?? Vector2.zero;
+        Vector2 look = ReadLookInput();
 
 
         //Horizontal rotation 
@@ -117,6 +119,26 @@ public class CameraController : MonoBehaviour
         {
             transform.rotation = Quaternion.LookRotation(lookDirection.normalized, followTarget.up);
         }
+    }
+
+    public void SetLookInput(Vector2 lookInput)
+    {
+        externalLookInput = lookInput;
+        useExternalLookInput = lookInput.sqrMagnitude > 0.0001f;
+    }
+
+    public void ClearLookInput()
+    {
+        externalLookInput = Vector2.zero;
+        useExternalLookInput = false;
+    }
+
+    Vector2 ReadLookInput()
+    {
+        if (useExternalLookInput)
+            return externalLookInput;
+
+        return lookAction?.action?.ReadValue<Vector2>() ?? Vector2.zero;
     }
 
     void ApplyCameraOwnershipGate()
