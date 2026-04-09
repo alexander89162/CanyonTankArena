@@ -899,6 +899,42 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "TestInventory",
+                    "type": "Button",
+                    "id": "0fd69ad9-2eb8-4493-b83d-69752c0bf05a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TestSave",
+                    "type": "Button",
+                    "id": "0f97872d-947c-42d2-ba09-f4f0b4b4963e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TestLoad",
+                    "type": "Button",
+                    "id": "63f7383b-3082-4cae-8474-ef19df3becee",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TestClear",
+                    "type": "Button",
+                    "id": "ca259a8a-4c16-4fe6-80cb-6f83563f5bcf",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1108,6 +1144,50 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "AimAxisY",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0c42a2d1-af42-4e30-bf3b-5477ec8c6aa0",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "TestInventory",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "92c965e5-2a5e-41c2-a379-9a8bc7291efb",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "TestSave",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d2c4a8ea-6c0d-447e-a50b-0fad56c363c1",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "TestLoad",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c3b7c55e-9764-4ae0-8639-28c0597e2961",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "TestClear",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

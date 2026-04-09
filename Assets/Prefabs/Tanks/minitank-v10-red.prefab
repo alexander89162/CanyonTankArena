@@ -374,6 +374,7 @@ GameObject:
   - component: {fileID: 3052485253306320225}
   - component: {fileID: 517278641209727581}
   - component: {fileID: 1415339706145447546}
+  - component: {fileID: 3207499155788037934}
   m_Layer: 0
   m_Name: minitank-v10-red
   m_TagString: Untagged
@@ -562,3 +563,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageController
   health: {fileID: 7238636229218141712}
+--- !u!114 &3207499155788037934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8931809357140288130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be6463bedb4a76f479146a453306b639, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  dropTable: {fileID: 11400000, guid: 6b726b7f75cae594c8bedcf4aedf5737, type: 2}
+  dropChance: 100
