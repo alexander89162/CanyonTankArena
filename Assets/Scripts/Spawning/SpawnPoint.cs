@@ -39,7 +39,7 @@ using UnityEngine;
             holder.data = unit;
 
             #if UNITY_EDITOR
-            if (holder == null) Debug.LogError($"UnitDataHolder component is null in Spawn()");
+            if (holder == null) Debug.LogError($"UnitDataHolder component was null in Spawn() for prefab: {unit.config.prefabName}");
             #endif
     
             var health = unit.unitRoot.GetComponent<HealthComponent>();
@@ -50,7 +50,7 @@ using UnityEngine;
             }
             #if UNITY_EDITOR
             else
-                Debug.LogError($"Health component is null in Spawn()");
+                Debug.LogError($"Health component was null in Spawn() for prefab: {unit.config.prefabName}");
             #endif
 
             unit.unitRoot.SetActive(true);
@@ -74,7 +74,7 @@ using UnityEngine;
             unitManager = manager;
             exitPoint = exitOffset != Vector3.zero 
                 ? transform.position + transform.rotation * exitOffset
-                : transform.position + transform.forward * 85f;
+                : transform.position + transform.forward * 90f;
         }
 
         #if UNITY_EDITOR
@@ -92,8 +92,14 @@ using UnityEngine;
 
         void OnDrawGizmosSelected()
         {
+            // spawn point
             Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
             Gizmos.DrawSphere(transform.position, requiredOpenSpace);
+
+            // draw for exit point
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(transform.position, transform.position + transform.rotation * exitOffset);
+            Gizmos.DrawSphere(transform.position + transform.rotation * exitOffset, 5f);
         }
         #endif
     }
