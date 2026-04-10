@@ -334,6 +334,7 @@ GameObject:
   - component: {fileID: 4867861844524021628}
   - component: {fileID: 9127319107573624352}
   - component: {fileID: 1569132911155632130}
+  - component: {fileID: 5877000822416222695}
   m_Layer: 7
   m_Name: minitank-minigun-red
   m_TagString: Untagged
@@ -497,6 +498,27 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 16, y: 9, z: 22}
   m_Center: {x: 0, y: 4.2, z: 0}
+--- !u!114 &5877000822416222695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6180137789946429802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19bc73e8f4cb44246bfb6bb287d048e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
+  maxHealth: 100
+  destroyOnDeath: 1
+  deathDelay: 0.1
+  OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDeath:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7695468828355442639
 GameObject:
   m_ObjectHideFlags: 0

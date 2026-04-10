@@ -79,6 +79,7 @@ GameObject:
   - component: {fileID: 6017940678000785229}
   - component: {fileID: 6344087635494132901}
   - component: {fileID: 7119538944719313848}
+  - component: {fileID: 6133605875005841487}
   m_Layer: 7
   m_Name: minitank-cannon-red
   m_TagString: Untagged
@@ -242,6 +243,27 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 16, y: 9, z: 22}
   m_Center: {x: 0, y: 4.2, z: 0}
+--- !u!114 &6133605875005841487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3136921829313457731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19bc73e8f4cb44246bfb6bb287d048e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
+  maxHealth: 100
+  destroyOnDeath: 1
+  deathDelay: 0.1
+  OnHealthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDeath:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3237836485336562178
 GameObject:
   m_ObjectHideFlags: 0

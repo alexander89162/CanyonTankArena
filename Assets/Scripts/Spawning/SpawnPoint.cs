@@ -7,6 +7,7 @@ using UnityEngine;
         public LayerMask unitLayerMask;
         public float requiredOpenSpace;
         public Vector3 exitOffset; // movement from spawn point in local space in order to exit spawn area (avoid getting stuck)
+        public Vector3 exitPoint {get; private set;}
 
         private Queue<UnitData> queue = new Queue<UnitData>();
         private UnitManager unitManager;
@@ -26,18 +27,33 @@ using UnityEngine;
 
         private void Spawn(UnitData unit)
         {
-            unit.gameObject.transform.position = transform.position;
-            unit.gameObject.transform.rotation = transform.rotation;
+            #if UNITY_EDITOR
+            if (unit.unitRoot == null) Debug.Log($"unit.gameObject null in Spawn()");
+            #endif
+
+            unit.unitRoot.transform.position = transform.position;
+            unit.unitRoot.transform.rotation = transform.rotation;
             unit.spawnPoint = this;
 
-            var health = unit.gameObject.GetComponent<HealthComponent>();
+            var holder = unit.unitRoot.AddComponent<UnitDataHolder>();
+            holder.data = unit;
+
+            #if UNITY_EDITOR
+            if (holder == null) Debug.LogError($"UnitDataHolder component is null in Spawn()");
+            #endif
+    
+            var health = unit.unitRoot.GetComponent<HealthComponent>();
             if (health != null)
             {
                 health.Initialize(health.MaxHealth * unit.config.healthMultiplier);
                 health.OnDeath.AddListener(() => unitManager.enemiesRemaining--);
             }
+            #if UNITY_EDITOR
+            else
+                Debug.LogError($"Health component is null in Spawn()");
+            #endif
 
-            unit.gameObject.SetActive(true);
+            unit.unitRoot.SetActive(true);
         }
 
         private bool SpotOpen()
@@ -56,6 +72,9 @@ using UnityEngine;
             if (unitLayerMask == 0) unitLayerMask = defaultMask;
             if (requiredOpenSpace == 0f) requiredOpenSpace = defaultSpace;
             unitManager = manager;
+            exitPoint = exitOffset != Vector3.zero 
+                ? transform.position + transform.rotation * exitOffset
+                : transform.position + transform.forward * 85f;
         }
 
         #if UNITY_EDITOR

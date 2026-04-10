@@ -163,7 +163,7 @@ public class UnitManager : MonoBehaviour
                 continue;
             }
 
-            sp.Configure(defaultLayerMask, defaultRequiredOpenSpace, this);
+            sp.Configure(defaultLayerMask, defaultRequiredOpenSpace, this); // only updates any null values
             spawnPointLookup[sp.id] = sp;
         }
     }
@@ -317,7 +317,7 @@ public class UnitManager : MonoBehaviour
                 unitHandles.RemoveAt(i); i--; continue;
             }
             GameObject unit = Instantiate(unitPrefab);
-            unitHandles[i].gameObject = unit;
+            unitHandles[i].unitRoot = unit;
             unit.SetActive(false);
 
             if (i % batchSize == 0) // yield on first iteration is OK here and on purpose
@@ -359,7 +359,7 @@ public class UnitManager : MonoBehaviour
 
         foreach (var unit in unitHandles)
         {
-            Destroy(unit.gameObject);
+            Destroy(unit.unitRoot);
         }
 
         unitHandles.Clear();
