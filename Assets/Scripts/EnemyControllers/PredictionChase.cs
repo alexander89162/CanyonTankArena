@@ -48,7 +48,7 @@ public class PredictionChase : MonoBehaviour
         enemyTarget = GameObject.FindWithTag("Player").transform.root;
 
         lastPos = transform.position;
-        idealCircleRadius += UnityEngine.Random.Range(-30f, 30f);
+        idealCircleRadius += Random.Range(-30f, 30f);
 
         SetState(AttackState.Deploying);
     }

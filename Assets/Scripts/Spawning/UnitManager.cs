@@ -160,6 +160,7 @@ public class UnitManager : MonoBehaviour
             if (spawnPointLookup.ContainsKey(sp.id))
             {
                 Debug.LogError($"Duplicate SpawnPoint ID: {sp.id}");
+                enemiesRemaining--;
                 continue;
             }
 
@@ -201,7 +202,7 @@ public class UnitManager : MonoBehaviour
 
         if (!spawnPointLookup.TryGetValue(config.spawnPointId, out SpawnPoint sp))
         {
-            Debug.LogError($"SpawnPoint ID {config.spawnPointId} not found.");
+            Debug.LogError($"SpawnPoint ID {config.spawnPointId} not found. The unit was skipped.");
             return;
         }
 

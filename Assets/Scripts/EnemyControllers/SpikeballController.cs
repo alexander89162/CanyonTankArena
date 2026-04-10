@@ -61,6 +61,8 @@ public class SpikeballController : MonoBehaviour
         rb.useGravity = false;
         moveDestination = transform.position;
 
+        enemyTarget = GameObject.FindWithTag("Player").transform.root;
+
         SetState(AttackState.Approaching);
     }
 

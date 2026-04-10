@@ -1,7 +1,7 @@
 {
   "unitConfigs": [
     {
-      "prefabName": "minitank-cannon-red",
+      "prefabName": "tank-cannon",
       "spawnDelay": 0.7,
       "spawnPointId": 1,
       "team": 1,
@@ -10,7 +10,7 @@
       "movementSpeed": 1.0
     },
     {
-      "prefabName": "minitank-cannon-red",
+      "prefabName": "tank-cannon",
       "spawnDelay": 2.0,
       "spawnPointId": 1,
       "team": 1,
@@ -19,7 +19,7 @@
       "movementSpeed": 1.0
     },
     {
-      "prefabName": "minitank-cannon-red",
+      "prefabName": "tank-cannon",
       "spawnDelay": 2.8,
       "spawnPointId": 1,
       "team": 2,
@@ -28,7 +28,7 @@
       "movementSpeed": 1.0
     },
     {
-      "prefabName": "minitank-minigun-red",
+      "prefabName": "tank-minigun",
       "spawnDelay": 3.6,
       "spawnPointId": 2,
       "team": 2,
@@ -37,7 +37,7 @@
       "movementSpeed": 1.0
     },
     {
-      "prefabName": "minitank-minigun-red",
+      "prefabName": "tank-minigun",
       "spawnDelay": 3.7,
       "spawnPointId": 2,
       "team": 2,
@@ -46,7 +46,7 @@
       "movementSpeed": 1.0
     },
     {
-      "prefabName": "minitank-minigun-red",
+      "prefabName": "tank-minigun",
       "spawnDelay": 3.8,
       "spawnPointId": 1,
       "team": 2,
@@ -55,7 +55,7 @@
       "movementSpeed": 1.0
     },
     {
-      "prefabName": "minitank-minigun-red",
+      "prefabName": "tank-minigun",
       "spawnDelay": 3.8,
       "spawnPointId": 1,
       "team": 2,
@@ -64,7 +64,7 @@
       "movementSpeed": 1.0
     },
     {
-      "prefabName": "minitank-minigun-red",
+      "prefabName": "tank-minigun",
       "spawnDelay": 3.9,
       "spawnPointId": 1,
       "team": 2,
