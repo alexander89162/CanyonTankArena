@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;    
     
     public class SpawnPoint : MonoBehaviour
@@ -97,9 +98,10 @@ using UnityEngine;
             Gizmos.DrawSphere(transform.position, requiredOpenSpace);
 
             // draw for exit point
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(transform.position, transform.position + transform.rotation * exitOffset);
-            Gizmos.DrawSphere(transform.position + transform.rotation * exitOffset, 5f);
+            Handles.color = Color.darkBlue;
+            Handles.DrawAAPolyLine(20f, transform.position, transform.position + transform.rotation * exitOffset);
+            Gizmos.color = Color.darkBlue;
+            Gizmos.DrawSphere(transform.position + transform.rotation * exitOffset, 8f);
         }
         #endif
     }
