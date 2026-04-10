@@ -47,16 +47,21 @@ public class PredictionChase : MonoBehaviour
         moveDestination = transform.position;
         enemyTarget = GameObject.FindWithTag("Player").transform.root;
 
-        var unitData = GetComponent<UnitDataHolder>();
-        if (unitData != null)
-        {
-            Vector3 exitOffset = unitData.data.spawnPoint.exitOffset;
-            exitPoint = exitOffset != Vector3.zero ? transform.position + exitOffset : transform.position + transform.forward * 85f;
-        }
-
         lastPos = transform.position;
+        idealCircleRadius += Random.Range(-30f, 30f);
 
         SetState(AttackState.Deploying);
+    }
+
+    void Start()
+    {
+        var holder = GetComponent<UnitDataHolder>();
+        if (holder != null)
+            exitPoint = holder.data.spawnPoint.exitPoint;
+
+        #if UNITY_EDITOR
+        if (debug) Debug.Log($"PredictionChase on {gameObject.name} exitPoint:{exitPoint}");
+        #endif
     }
 
     void Update()
