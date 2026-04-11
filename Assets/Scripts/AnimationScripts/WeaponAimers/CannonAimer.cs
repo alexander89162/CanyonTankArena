@@ -22,4 +22,6 @@ public class CannonAimer : WeaponAimer
     {
         throw new System.NotImplementedException();
     }
+
+    public override void ReloadWeapon(){} // do nothing for now
 }

@@ -58,6 +58,8 @@ public class PredictionChase : MonoBehaviour
         var holder = GetComponent<UnitDataHolder>();
         if (holder != null)
             exitPoint = holder.data.spawnPoint.exitPoint;
+        else
+            SetState(AttackState.CatchingUp); // this unit was manually placed (not spawned by spawn system), so skip deployment logic
 
         #if UNITY_EDITOR
         if (debug) Debug.Log($"PredictionChase on {gameObject.name} exitPoint:{exitPoint}");
