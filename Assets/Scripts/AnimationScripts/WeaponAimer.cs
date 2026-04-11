@@ -9,6 +9,7 @@ public abstract class WeaponAimer : MonoBehaviour
     private Vector3 originalScale;
     public int maxAmmo;
     public int currentAmmo;
+    public float reloadTime;
 
     protected virtual void Awake()
     {

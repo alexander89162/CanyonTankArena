@@ -5,13 +5,13 @@ public class AimWeapons : MonoBehaviour
     private WeaponState currentState;
     private WeaponAimer[] aimers;
     private int activeWeaponIndex = 0;
-    private Vector3 target;
+    private Transform target;
     private enum WeaponState {Holding, Swapping, Reloading}
 
     void Awake()
     {
         aimers = GetComponents<WeaponAimer>();
-        target = GameObject.FindWithTag("Player").transform.position;
+        target = GameObject.FindWithTag("Player").transform;
     }
 
     void Update()
@@ -20,7 +20,7 @@ public class AimWeapons : MonoBehaviour
         {
             case WeaponState.Swapping: return;
             case WeaponState.Holding:
-                aimers[activeWeaponIndex].AimAt(target);
+                aimers[activeWeaponIndex].AimAt(target.position);
                 return;
         }
     }
