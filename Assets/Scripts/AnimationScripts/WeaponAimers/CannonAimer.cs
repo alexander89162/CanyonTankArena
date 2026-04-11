@@ -22,10 +22,10 @@ public class CannonAimer : WeaponAimer
         Vector3 toEnemy = worldTarget - transform.position;
 
         float yaw   = Mathf.Atan2(toEnemy.x, toEnemy.z) * Mathf.Rad2Deg;
-        float pitch = -Mathf.Atan2(toEnemy.y, new Vector2(toEnemy.x, toEnemy.z).magnitude) * Mathf.Rad2Deg;
+        float pitch = Mathf.Atan2(toEnemy.y, new Vector2(toEnemy.x, toEnemy.z).magnitude) * Mathf.Rad2Deg;
 
         cannonBody.rotation   = bodyRestRotation   * Quaternion.Euler(0, yaw, 0);
-        cannonBarrel.rotation = barrelRestRotation * Quaternion.Euler(pitch, 0, 0);
+        cannonBarrel.localRotation = barrelRestRotation * Quaternion.Euler(pitch, 0, 0);
     }
 
     public override void Fire()

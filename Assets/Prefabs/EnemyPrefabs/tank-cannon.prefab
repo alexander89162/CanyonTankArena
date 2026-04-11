@@ -80,6 +80,8 @@ GameObject:
   - component: {fileID: 6344087635494132901}
   - component: {fileID: 7119538944719313848}
   - component: {fileID: 6133605875005841487}
+  - component: {fileID: 910600987153807274}
+  - component: {fileID: 6630620664104389440}
   m_Layer: 7
   m_Name: tank-cannon
   m_TagString: Untagged
@@ -264,6 +266,37 @@ MonoBehaviour:
   OnDeath:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &910600987153807274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3136921829313457731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 541e30b3f40f20e4484de67f82c19beb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AimWeapons
+--- !u!114 &6630620664104389440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3136921829313457731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01cdca5ec61276a4bab095038ece725e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CannonAimer
+  weaponEnabled: 1
+  meshRenderer: {fileID: 90474143298115388}
+  swapDuration: 0.7
+  maxAmmo: 6
+  currentAmmo: 6
+  cannonBody: {fileID: 4804791775133336969}
+  cannonBarrel: {fileID: 6859378360194369764}
 --- !u!1 &3237836485336562178
 GameObject:
   m_ObjectHideFlags: 0
