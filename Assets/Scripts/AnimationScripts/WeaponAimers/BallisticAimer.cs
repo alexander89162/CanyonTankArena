@@ -1,5 +1,7 @@
 using UnityEngine;
 
+/*Aimer implementation for ballistic missile launcher.
+Supports aiming towards the target and hiding/showing missiles*/
 public class BallisticAimer : WeaponAimer
 {
     [SerializeField] private Transform ballisticBody;

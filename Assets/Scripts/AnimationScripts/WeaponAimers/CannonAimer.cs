@@ -1,10 +1,15 @@
 using UnityEngine;
 
+/*Aimer implementation for the basic cannon
+Supports aiming at the target and clamping cannon-body at clampLiftCannon,
+adding any remaining up/down aim via cannon-barrel, up until clampLiftBarrel*/
 public class CannonAimer : WeaponAimer
 {
     [SerializeField] private Transform cannonBody;
     [SerializeField] private Transform cannonBarrel;
-
+    [SerializeField] private float clampLiftCannon;
+    [SerializeField] private float clampLiftBarrel;
+    
     private Quaternion bodyRestRotation;
     private Quaternion barrelRestRotation;
 

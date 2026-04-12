@@ -335,6 +335,8 @@ GameObject:
   - component: {fileID: 9127319107573624352}
   - component: {fileID: 1569132911155632130}
   - component: {fileID: 5877000822416222695}
+  - component: {fileID: 1208942831822770643}
+  - component: {fileID: 4693065677844920671}
   m_Layer: 7
   m_Name: tank-minigun
   m_TagString: Untagged
@@ -519,6 +521,39 @@ MonoBehaviour:
   OnDeath:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1208942831822770643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6180137789946429802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 541e30b3f40f20e4484de67f82c19beb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AimWeapons
+--- !u!114 &4693065677844920671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6180137789946429802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 280405c144ba6f64f881e2b2176dfffa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MinigunAimer
+  weaponEnabled: 1
+  meshRenderer: {fileID: 5608681048051194362}
+  swapDuration: 0.7
+  maxAmmo: 25
+  currentAmmo: 25
+  reloadTime: 3.8
+  minigunBase: {fileID: 1132761039689416492}
+  minigunBody: {fileID: 4165643794708771199}
+  minigunBarrels: {fileID: 2212171305854700149}
 --- !u!1 &7695468828355442639
 GameObject:
   m_ObjectHideFlags: 0

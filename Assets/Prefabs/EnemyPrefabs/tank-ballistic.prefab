@@ -456,7 +456,9 @@ MonoBehaviour:
   currentAmmo: 2
   reloadTime: 4
   ballisticBody: {fileID: 2434394840739719841}
-  missiles: []
+  missiles:
+  - {fileID: 1180548276422870632}
+  - {fileID: 2914707749025144088}
 --- !u!1 &5266946501906647126
 GameObject:
   m_ObjectHideFlags: 0
