@@ -20,7 +20,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dd0150a5e077a4cde9fdea281408c073, type: 2}
   - {fileID: 11400000, guid: e5e0a0cfe92534c598ca29ff37c81f06, type: 2}
   - {fileID: 11400000, guid: 9fe371198f0c74f2882aba442b0334d8, type: 2}
-  - {fileID: 11400000, guid: f2ba9ed0870e243949a68c642a600cdc, type: 2}
   edges:
   - fromId: 45ea9002-ffb0-4b54-b327-7c32f99ce9e2
     toId: fc33c3bc-aafc-487f-b2b7-e1cc73783205
@@ -30,5 +29,3 @@ MonoBehaviour:
     toId: cc7a94b6-4e8c-4a14-b509-0dca3e9492da
   - fromId: d58947a8-4166-404e-8b21-99492d880400
     toId: b092d250-fc05-4548-8fee-141222d8dbee
-  - fromId: fc33c3bc-aafc-487f-b2b7-e1cc73783205
-    toId: 73f542a3-1ba1-4320-bc97-ab3cc4063398

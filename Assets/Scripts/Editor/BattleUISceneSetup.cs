@@ -33,6 +33,7 @@ public static class BattleUISceneSetup
         const float mobileHudMargin = 20f;
         const float mobileHealthTopOffset = 12f;
         const float mobileMinimapSize = 500f;
+        const float mobileMinimapRightOffset = 96f;
         const float mobileHealthAmmoGap = 1f;
         const float mobileAmmoSlotWidth = 124f;
         const float mobileAmmoSlotSpacing = 6f;
@@ -112,7 +113,7 @@ public static class BattleUISceneSetup
             minimapRect.anchorMax = new Vector2(1f, 1f);
             minimapRect.pivot = new Vector2(1f, 1f);
             minimapRect.sizeDelta = new Vector2(mobileMinimapSize, mobileMinimapSize);
-            minimapRect.anchoredPosition = new Vector2(-mobileHudMargin, -mobileHudMargin);
+            minimapRect.anchoredPosition = new Vector2(-(mobileHudMargin + mobileMinimapRightOffset), -mobileHudMargin);
         }
 
         if (ammoRect != null && healthRect != null)
@@ -146,6 +147,9 @@ public static class BattleUISceneSetup
             SerializedProperty minimapSizeProp = serializedHud.FindProperty("minimapSize");
             if (minimapSizeProp != null)
                 minimapSizeProp.vector2Value = new Vector2(mobileMinimapSize, mobileMinimapSize);
+            SerializedProperty minimapOffsetProp = serializedHud.FindProperty("minimapScreenOffset");
+            if (minimapOffsetProp != null)
+                minimapOffsetProp.vector2Value = new Vector2(mobileMinimapRightOffset, 0f);
             // mark HUD as mobile so runtime layout code doesn't override editor placement
             SerializedProperty mobileProp = serializedHud.FindProperty("mobileUiLayout");
             if (mobileProp != null)
@@ -777,6 +781,7 @@ public static class BattleUISceneSetup
         CreateLookZone(controlsRoot.transform, panelSprite, cameraController, aimController);
         CreateActionButton(controlsRoot.transform, "FireButton", "FIRE", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 28f), new Vector2(176f, 176f), new Color(0.82f, 0.22f, 0.2f, 0.9f), uiSprite, cannonFiring, true);
         CreateActionButton(controlsRoot.transform, "SwitchWeaponButton", "SWAP", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f, 220f), new Vector2(176f, 82f), new Color(0.17f, 0.54f, 0.88f, 0.88f), uiSprite, tankController, false);
+        CreateActionButton(controlsRoot.transform, "DashButton", "DASH", new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-220f, 220f), new Vector2(140f, 82f), new Color(0.22f, 0.22f, 0.24f, 0.82f), uiSprite, null, false);
         CreatePauseButton(controlsRoot.transform, panelSprite, pauseManager);
     }
 
@@ -799,7 +804,7 @@ public static class BattleUISceneSetup
         rootRect.anchorMin = new Vector2(0f, 0f);
         rootRect.anchorMax = new Vector2(0f, 0f);
         rootRect.pivot = new Vector2(0f, 0f);
-        rootRect.sizeDelta = new Vector2(320f, 320f);
+        rootRect.sizeDelta = new Vector2(360f, 360f);
         rootRect.anchoredPosition = new Vector2(24f, 24f);
 
         Image background = GetOrCreateImage(root.transform, "Background", uiSprite, new Color(0.08f, 0.09f, 0.1f, 0.34f));
@@ -815,7 +820,7 @@ public static class BattleUISceneSetup
         ringRect.anchorMin = new Vector2(0.5f, 0.5f);
         ringRect.anchorMax = new Vector2(0.5f, 0.5f);
         ringRect.pivot = new Vector2(0.5f, 0.5f);
-        ringRect.sizeDelta = new Vector2(250f, 250f);
+        ringRect.sizeDelta = new Vector2(280f, 280f);
         ringRect.anchoredPosition = Vector2.zero;
         ring.raycastTarget = false;
 
@@ -824,7 +829,7 @@ public static class BattleUISceneSetup
         handleRect.anchorMin = new Vector2(0.5f, 0.5f);
         handleRect.anchorMax = new Vector2(0.5f, 0.5f);
         handleRect.pivot = new Vector2(0.5f, 0.5f);
-        handleRect.sizeDelta = new Vector2(96f, 96f);
+        handleRect.sizeDelta = new Vector2(104f, 104f);
         handleRect.anchoredPosition = Vector2.zero;
         handle.raycastTarget = false;
 
@@ -842,6 +847,8 @@ public static class BattleUISceneSetup
             EditorUtility.SetDirty(tankController);
             UnityEventTools.AddPersistentListener(joystick.joystickOutputEvent, tankController.SetMoveInput);
         }
+
+        joystick.joystickRange = 104f;
 
         TextMeshProUGUI label = GetOrCreateTMPText(root.transform, "MoveLabel", "MOVE", 22, TextAlignmentOptions.Top);
         RectTransform labelRect = label.GetComponent<RectTransform>();

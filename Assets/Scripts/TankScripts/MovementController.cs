@@ -8,10 +8,12 @@ public class MovementController : MonoBehaviour
     public float accelerationTime;
     public float decelerationTime;
     public float backwardMultiplier;
+    public float boostMultiplier = 1.5f;
     public float rotationSpeed;
     public float gravity;
 
     public Vector2 moveInput = Vector2.zero; 
+    public bool isBoosting = false;
 
     private CharacterController controller;
     private Vector3 currentVelocity = Vector3.zero;
@@ -45,6 +47,9 @@ public class MovementController : MonoBehaviour
 
         Vector3 targetDirection = transform.forward * moveInput.y;
         float targetSpeed = Mathf.Abs(moveInput.y) * maxSpeed;
+
+        if (isBoosting)
+            targetSpeed *= boostMultiplier;
 
         if (moveInput.y < 0)
             targetSpeed *= backwardMultiplier;

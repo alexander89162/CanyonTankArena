@@ -59,6 +59,7 @@ public class HUDController : MonoBehaviour
     [SerializeField] private Vector3 minimapFollowOffset = new Vector3(0f, 35f, 0f);
     [SerializeField] private bool minimapRotateWithPlayer = true;
     [SerializeField] private Vector2 minimapSize = new Vector2(500f, 500f);
+    [SerializeField] private Vector2 minimapScreenOffset = Vector2.zero;
 
     [Header("Performance")]
     [SerializeField, Range(0.03f, 0.5f)] private float uiRefreshInterval = 0.1f;
@@ -222,7 +223,7 @@ public class HUDController : MonoBehaviour
                 minimapRoot.anchorMax = new Vector2(1f, 1f);
                 minimapRoot.pivot = new Vector2(1f, 1f);
                 minimapRoot.sizeDelta = minimapSize;
-                minimapRoot.anchoredPosition = new Vector2(-margin, -margin);
+                minimapRoot.anchoredPosition = new Vector2(-(margin + minimapScreenOffset.x), -(margin + minimapScreenOffset.y));
             }
         }
     }

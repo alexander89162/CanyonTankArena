@@ -1,6 +1,9 @@
 ﻿<Solution>
   <Project Path="Assembly-CSharp.csproj" />
+<<<<<<< HEAD
   <Project Path="PrimeTween.Demo.csproj" />
+=======
+>>>>>>> 845c735 (Added pause button and dash button to mobile UI)
   <Project Path="Assembly-CSharp-Editor.csproj" />
   <Project Path="PrimeTween.Debug.csproj" />
   <Project Path="PrimeTween.Installer.csproj" />
