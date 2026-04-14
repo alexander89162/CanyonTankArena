@@ -38,7 +38,7 @@ public class CannonAimer : WeaponAimer
 
     public override void Fire()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Fire() was called"); // TODO
     }
 
     public override void ReloadWeapon(){} // do nothing for now

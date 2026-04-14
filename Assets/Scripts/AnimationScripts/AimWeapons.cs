@@ -28,12 +28,15 @@ public class AimWeapons : MonoBehaviour
 
     public void SwapToWeapon(int newWeaponIndex)
     {
-        aimers[activeWeaponIndex].HideWeapon(swapDuration/2)
-        .OnComplete(() => {
-            aimers[newWeaponIndex].ShowWeapon(swapDuration/2);
-            activeWeaponIndex = newWeaponIndex;
-        });
-        activeWeaponIndex = newWeaponIndex;
+        SetState(WeaponState.Swapping);
+        aimers[activeWeaponIndex].HideWeapon(swapDuration / 2)
+            .OnComplete(() => {
+                aimers[newWeaponIndex].ShowWeapon(swapDuration / 2)
+                    .OnComplete(() => {
+                        activeWeaponIndex = newWeaponIndex;
+                        SetState(WeaponState.Holding);
+                    });
+            });
     }
 
     public void SetState(WeaponState newState)
