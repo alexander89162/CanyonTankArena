@@ -295,7 +295,7 @@ MonoBehaviour:
   swapDuration: 0.7
   maxAmmo: 6
   currentAmmo: 6
-  reloadTime: 0
+  reloadTime: 2.6
   cannonBody: {fileID: 4804791775133336969}
   cannonBarrel: {fileID: 6859378360194369764}
   clampLiftCannon: 40

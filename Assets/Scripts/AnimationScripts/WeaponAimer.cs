@@ -5,7 +5,6 @@ public abstract class WeaponAimer : MonoBehaviour
 {
     public bool weaponEnabled;
     [SerializeField] private Renderer meshRenderer;
-    [SerializeField] private float swapDuration = 0.7f;
     private Vector3 originalScale;
     public int maxAmmo;
     public int currentAmmo;
@@ -16,14 +15,14 @@ public abstract class WeaponAimer : MonoBehaviour
         originalScale = transform.localScale;
     }
 
-    public virtual void ShowWeapon()
+    public virtual Tween ShowWeapon(float duration)
     {
         meshRenderer.enabled = true;
-        Tween.Scale(transform, originalScale, swapDuration, Ease.OutQuad);
+        return Tween.Scale(transform, originalScale, duration, Ease.OutQuad);
     }
-    public virtual void HideWeapon()
+    public virtual Tween HideWeapon(float duration)
     {
-        Tween.Scale(transform, Vector3.one * 0.01f, swapDuration, Ease.InQuad)
+        return Tween.Scale(transform, Vector3.one * 0.01f, duration, Ease.InQuad)
             .OnComplete(this, target => target.meshRenderer.enabled = false);
     }
     public abstract void ReloadWeapon();

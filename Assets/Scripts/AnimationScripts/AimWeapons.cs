@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class AimWeapons : MonoBehaviour
 {
+    public float swapDuration = 0.7f;
     private WeaponState currentState;
     private WeaponAimer[] aimers;
     private int activeWeaponIndex = 0;
     private Transform target;
-    private enum WeaponState {Holding, Swapping, Reloading}
+    public enum WeaponState {Holding, Swapping, Reloading}
 
     void Awake()
     {
@@ -22,6 +23,26 @@ public class AimWeapons : MonoBehaviour
             case WeaponState.Holding:
                 aimers[activeWeaponIndex].AimAt(target.position);
                 return;
+        }
+    }
+
+    public void SwapToWeapon(int newWeaponIndex)
+    {
+        aimers[activeWeaponIndex].HideWeapon(swapDuration/2)
+        .OnComplete(() => {
+            aimers[newWeaponIndex].ShowWeapon(swapDuration/2);
+            activeWeaponIndex = newWeaponIndex;
+        });
+        activeWeaponIndex = newWeaponIndex;
+    }
+
+    public void SetState(WeaponState newState)
+    {
+        switch (newState)
+        {
+            case WeaponState.Holding: break;
+            case WeaponState.Reloading: break;
+            case WeaponState.Swapping: break;
         }
     }
 }
