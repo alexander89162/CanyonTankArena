@@ -2,16 +2,19 @@ using UnityEngine;
 
 public class AimWeapons : MonoBehaviour
 {
+    public TargetingSystem targetingSystem;
     public float swapDuration = 0.7f;
     private WeaponState currentState;
     private WeaponAimer[] aimers;
     private int activeWeaponIndex = 0;
     private Transform target;
     public enum WeaponState {Holding, Swapping, Reloading}
+    public bool playerControlled = false;
 
     void Awake()
     {
         aimers = GetComponents<WeaponAimer>();
+        if (playerControlled) targetingSystem = GetComponent<TargetingSystem>();
         target = GameObject.FindWithTag("Player").transform;
     }
 
@@ -21,7 +24,12 @@ public class AimWeapons : MonoBehaviour
         {
             case WeaponState.Swapping: return;
             case WeaponState.Holding:
-                aimers[activeWeaponIndex].AimAt(target.position);
+                if (playerControlled)
+                {
+                    aimers[activeWeaponIndex].AimAt(targetingSystem.GetCameraTarget());
+                }
+                else
+                    aimers[activeWeaponIndex].AimAt(target.position);
                 return;
         }
     }
