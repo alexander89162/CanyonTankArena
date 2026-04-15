@@ -1,4 +1,6 @@
+using PrimeTween;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class AimWeapons : MonoBehaviour
 {
@@ -10,15 +12,23 @@ public class AimWeapons : MonoBehaviour
     private Transform target;
     public enum WeaponState {Holding, Swapping, Reloading}
     public bool playerControlled = false;
+    private PlayerInput playerInput;
+    private InputAction swapAction;
 
     void Awake()
     {
         aimers = GetComponents<WeaponAimer>();
         if (playerControlled) targetingSystem = GetComponent<TargetingSystem>();
         target = GameObject.FindWithTag("Player").transform;
+
+        if (playerControlled)
+        {
+            playerInput = GetComponent<PlayerInput>();
+            swapAction = playerInput.actions["SwapNextWeapon"];
+        }
     }
 
-    void LateUpdate()
+    void Update()
     {
         switch (currentState)
         {
@@ -26,6 +36,12 @@ public class AimWeapons : MonoBehaviour
             case WeaponState.Holding:
                 if (playerControlled)
                 {
+                    if (swapAction.WasPressedThisFrame())
+                    {
+                        int next = (activeWeaponIndex + 1) % aimers.Length;
+                        SwapToWeapon(next);
+                        return;
+                    }
                     aimers[activeWeaponIndex].AimAt(GetTarget());
                 }
                 else
@@ -35,17 +51,21 @@ public class AimWeapons : MonoBehaviour
     }
 
     public void SwapToWeapon(int newWeaponIndex)
-    {
-        SetState(WeaponState.Swapping);
-        aimers[activeWeaponIndex].HideWeapon(swapDuration / 2)
-            .OnComplete(() => {
-                aimers[newWeaponIndex].ShowWeapon(swapDuration / 2)
-                    .OnComplete(() => {
-                        activeWeaponIndex = newWeaponIndex;
-                        SetState(WeaponState.Holding);
-                    });
-            });
-    }
+{
+    SetState(WeaponState.Swapping);
+    Sequence.Create()
+        .Chain(aimers[activeWeaponIndex].HideWeapon(swapDuration / 2))
+        .ChainCallback(() =>
+        {
+            Sequence.Create()
+                .Chain(aimers[newWeaponIndex].ShowWeapon(swapDuration / 2))
+                .ChainCallback(() =>
+                {
+                    activeWeaponIndex = newWeaponIndex;
+                    SetState(WeaponState.Holding);
+                });
+        });
+}
 
     public Vector3 GetTarget()
     {

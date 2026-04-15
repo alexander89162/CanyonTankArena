@@ -935,6 +935,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SwapNextWeapon",
+                    "type": "Button",
+                    "id": "72cbe7a2-acae-4a24-bbe2-ca4ba91d0aee",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1188,6 +1197,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "TestClear",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "79e3bf8c-f7d8-49d6-bebe-770186be1305",
+                    "path": "<Keyboard>/o",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwapNextWeapon",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

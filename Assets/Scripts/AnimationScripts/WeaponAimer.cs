@@ -12,17 +12,17 @@ public abstract class WeaponAimer : MonoBehaviour
 
     protected virtual void Awake()
     {
-        originalScale = transform.localScale;
+        originalScale = meshRenderer.transform.localScale;
     }
 
     public virtual Tween ShowWeapon(float duration)
     {
         meshRenderer.enabled = true;
-        return Tween.Scale(transform, originalScale, duration, Ease.OutQuad);
+        return Tween.Scale(meshRenderer.transform, originalScale, duration, Ease.OutQuad);
     }
     public virtual Tween HideWeapon(float duration)
     {
-        return Tween.Scale(transform, Vector3.one * 0.01f, duration, Ease.InQuad)
+        return Tween.Scale(meshRenderer.transform, Vector3.one * 0.01f, duration, Ease.InQuad)
             .OnComplete(this, target => target.meshRenderer.enabled = false);
     }
     public abstract void ReloadWeapon();
