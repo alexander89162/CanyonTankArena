@@ -13,7 +13,7 @@ public class BallisticAimer : WeaponAimer
     protected override void Awake()
     {
         base.Awake();
-        bodyRestRotation   = ballisticBody.rotation;
+        bodyRestRotation   = ballisticBody.localRotation;
         missileLoaded = new bool[missiles.Length];
         for (int i = 0; i < missileLoaded.Length; i++)
             missileLoaded[i] = true;

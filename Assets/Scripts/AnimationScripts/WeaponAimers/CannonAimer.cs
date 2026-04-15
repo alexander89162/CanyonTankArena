@@ -16,8 +16,8 @@ public class CannonAimer : WeaponAimer
     protected override void Awake()
     {
         base.Awake();
-        bodyRestRotation   = cannonBody.rotation;
-        barrelRestRotation = cannonBarrel.rotation;
+        bodyRestRotation   = cannonBody.localRotation;
+        barrelRestRotation = cannonBarrel.localRotation;
     }
 
     public override void AimAt(Vector3 worldTarget)

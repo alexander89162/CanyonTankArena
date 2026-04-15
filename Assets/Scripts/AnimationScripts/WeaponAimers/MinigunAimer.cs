@@ -16,23 +16,22 @@ public class MinigunAimer : WeaponAimer
     protected override void Awake()
     {
         base.Awake();
-        baseRestRotation    = minigunBase.rotation;
-        bodyRestRotation    = minigunBody.rotation;
-        barrelsRestRotation = minigunBarrels.rotation;
+        baseRestRotation    = minigunBase.localRotation;
+        bodyRestRotation    = minigunBody.localRotation;
+        barrelsRestRotation = minigunBarrels.localRotation;
     }
 
     public override void AimAt(Vector3 worldTarget)
     {
         if (!weaponEnabled) return;
 
-        worldTarget.y -= lowerTarget;
-
         Vector3 toEnemy = worldTarget - transform.position;
 
         float yaw   = Mathf.Atan2(toEnemy.x, toEnemy.z) * Mathf.Rad2Deg;
         float pitch = -Mathf.Atan2(toEnemy.y, new Vector2(toEnemy.x, toEnemy.z).magnitude) * Mathf.Rad2Deg;
+        pitch += lowerTarget;
 
-        minigunBase.rotation      = baseRestRotation * Quaternion.Euler(0, yaw - 90f, 0);
+        minigunBase.rotation      = baseRestRotation * Quaternion.Euler(0, yaw, 0);
         minigunBody.localRotation = bodyRestRotation * Quaternion.Euler(pitch, 0, 0);
     }
 

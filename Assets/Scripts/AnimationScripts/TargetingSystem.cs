@@ -27,7 +27,7 @@ public class TargetingSystem : MonoBehaviour
     [SerializeField] private LayerMask ignoreLayerMask = 0;
 
     [Tooltip("If true, target comes from weapon/muzzle forward ray instead of camera-forward ray")]
-    [SerializeField] private bool useWeaponForwardAsPrimary = true;
+    [SerializeField] private bool useWeaponForwardAsPrimary = false;
 
     private AimController aimController;
     

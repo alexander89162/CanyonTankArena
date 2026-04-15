@@ -18,7 +18,7 @@ public class AimWeapons : MonoBehaviour
         target = GameObject.FindWithTag("Player").transform;
     }
 
-    void Update()
+    void LateUpdate()
     {
         switch (currentState)
         {
@@ -26,7 +26,7 @@ public class AimWeapons : MonoBehaviour
             case WeaponState.Holding:
                 if (playerControlled)
                 {
-                    aimers[activeWeaponIndex].AimAt(targetingSystem.GetCameraTarget());
+                    aimers[activeWeaponIndex].AimAt(GetTarget());
                 }
                 else
                     aimers[activeWeaponIndex].AimAt(target.position);
@@ -45,6 +45,11 @@ public class AimWeapons : MonoBehaviour
                         SetState(WeaponState.Holding);
                     });
             });
+    }
+
+    public Vector3 GetTarget()
+    {
+        return targetingSystem.GetTargetPosition();
     }
 
     public void SetState(WeaponState newState)
