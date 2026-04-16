@@ -3,8 +3,8 @@ using PrimeTween;
 
 public abstract class WeaponAimer : MonoBehaviour
 {
-    public bool weaponEnabled;
-    [SerializeField] private Renderer meshRenderer;
+    public bool weaponEnabled = false;
+    public Renderer meshRenderer;
     private Vector3 originalScale;
     public int maxAmmo;
     public int currentAmmo;
@@ -17,6 +17,7 @@ public abstract class WeaponAimer : MonoBehaviour
 
     public virtual Tween ShowWeapon(float duration)
     {
+        meshRenderer.transform.localScale = Vector3.one * 0.01f;
         meshRenderer.enabled = true;
         return Tween.Scale(meshRenderer.transform, originalScale, duration, Ease.OutQuad);
     }

@@ -18,6 +18,8 @@ public class AimWeapons : MonoBehaviour
     void Awake()
     {
         aimers = GetComponents<WeaponAimer>();
+        HideOtherWeapons(0); // hide all except index 0
+
         if (playerControlled) targetingSystem = GetComponent<TargetingSystem>();
         target = GameObject.FindWithTag("Player").transform;
 
@@ -51,21 +53,34 @@ public class AimWeapons : MonoBehaviour
     }
 
     public void SwapToWeapon(int newWeaponIndex)
-{
-    SetState(WeaponState.Swapping);
-    Sequence.Create()
-        .Chain(aimers[activeWeaponIndex].HideWeapon(swapDuration / 2))
-        .ChainCallback(() =>
+    {
+        SetState(WeaponState.Swapping);
+        Sequence.Create()
+            .Chain(aimers[activeWeaponIndex].HideWeapon(swapDuration / 2))
+            .ChainCallback(() =>
+            {
+                Sequence.Create()
+                    .Chain(aimers[newWeaponIndex].ShowWeapon(swapDuration / 2))
+                    .ChainCallback(() =>
+                    {
+                        activeWeaponIndex = newWeaponIndex;
+                        aimers[activeWeaponIndex].weaponEnabled = true;
+                        SetState(WeaponState.Holding);
+                    });
+            });
+    }
+
+    /*Hide and disable all weapons except the index specified*/
+    private void HideOtherWeapons(int index)
+    {
+        for (int i = 0; i < aimers.Length; i++)
         {
-            Sequence.Create()
-                .Chain(aimers[newWeaponIndex].ShowWeapon(swapDuration / 2))
-                .ChainCallback(() =>
-                {
-                    activeWeaponIndex = newWeaponIndex;
-                    SetState(WeaponState.Holding);
-                });
-        });
-}
+            if (i == index) continue;
+
+            aimers[i].weaponEnabled = false;
+            aimers[i].meshRenderer.enabled = false;
+        }
+    }
 
     public Vector3 GetTarget()
     {
