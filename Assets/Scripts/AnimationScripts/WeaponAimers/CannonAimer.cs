@@ -42,5 +42,5 @@ public class CannonAimer : WeaponAimer
         Debug.Log("Fire() was called"); // TODO
     }
 
-    public override void ReloadWeapon(){} // do nothing for now
+    public override void ReloadWeapon(){} // TODO
 }
