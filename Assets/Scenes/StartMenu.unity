@@ -5237,8 +5237,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
   currentScore: 0
   highScore: 0
-  scoreText: {fileID: 0}
-  highScoreText: {fileID: 0}
 --- !u!1001 &747743795
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5908,7 +5906,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1410074875
 MonoBehaviour:
   m_ObjectHideFlags: 0

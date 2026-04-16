@@ -1,13 +1,5 @@
 {
   "unitConfigs": [
-    { "prefabName": "spikeball", "spawnDelay": 2.2, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
-    { "prefabName": "tank-cannon", "spawnDelay": 3.6, "spawnPointId": 3, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
-    { "prefabName": "spikeball", "spawnDelay": 8.0, "spawnPointId": 2, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
-    { "prefabName": "tank-cannon", "spawnDelay": 9.0, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
-    { "prefabName": "tank-minigun", "spawnDelay": 14.0, "spawnPointId": 3, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
-    { "prefabName": "spikeball", "spawnDelay": 15.0, "spawnPointId": 2, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
-    { "prefabName": "tank-minigun", "spawnDelay": 17.0, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
-   { "prefabName": "tank-cannon", "spawnDelay": 23.0, "spawnPointId": 3, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
-    { "prefabName": "tank-cannon", "spawnDelay": 25.0, "spawnPointId": 2, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 }
+    { "prefabName": "spikeball", "spawnDelay": 2.2, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 }
   ]
 }

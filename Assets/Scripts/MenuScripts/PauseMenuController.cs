@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class PauseManager : MonoBehaviour
+public class PauseMenuController : MonoBehaviour
 {
     private UIDocument pauseDocument; 
 

@@ -55,6 +55,15 @@ public class HealthComponent : MonoBehaviour
                 if (gameObject.CompareTag("Player"))
                 {
                     ScoreManager.Instance?.SaveHighScore();
+                    /*
+                    GameUIManager uiManager = FindFirstObjectByType<GameUIManager>();
+                    if (uiManager != null)
+                    {
+                        // We use OnBattleExit event which is already wired up
+                        UnitManager unitManager = FindFirstObjectByType<UnitManager>();
+                        unitManager.tryOnbattleExit();
+                    }
+                    */
                     SceneManager.LoadScene("StartMenu"); // Reload current scene on player death
                 }
             }
