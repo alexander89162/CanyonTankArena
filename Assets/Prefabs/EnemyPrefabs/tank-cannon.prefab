@@ -278,6 +278,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 541e30b3f40f20e4484de67f82c19beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AimWeapons
+  targetingSystem: {fileID: 0}
+  swapDuration: 0.7
+  playerControlled: 0
 --- !u!114 &6630620664104389440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292,7 +295,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CannonAimer
   weaponEnabled: 1
   meshRenderer: {fileID: 90474143298115388}
-  swapDuration: 0.7
+  weaponRootBone: {fileID: 4804791775133336969}
   maxAmmo: 6
   currentAmmo: 6
   reloadTime: 2.6

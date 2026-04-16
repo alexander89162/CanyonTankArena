@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class AimWeapons : MonoBehaviour
 {
     public TargetingSystem targetingSystem;
-    public float swapDuration = 0.7f;
+    public float swapDuration = 0.3f;
     private WeaponState currentState;
     private WeaponAimer[] aimers;
     private int activeWeaponIndex = 0;
@@ -34,37 +34,32 @@ public class AimWeapons : MonoBehaviour
     {
         switch (currentState)
         {
-            case WeaponState.Swapping: return;
+            case WeaponState.Swapping: 
+                AimCurrentWeapon();
+                return;
             case WeaponState.Holding:
-                if (playerControlled)
-                {
-                    if (swapAction.WasPressedThisFrame())
-                    {
-                        int next = (activeWeaponIndex + 1) % aimers.Length;
-                        SwapToWeapon(next);
-                        return;
-                    }
-                    aimers[activeWeaponIndex].AimAt(GetTarget());
-                }
-                else
-                    aimers[activeWeaponIndex].AimAt(target.position);
+                AimCurrentWeapon();
                 return;
         }
     }
 
     public void SwapToWeapon(int newWeaponIndex)
     {
+        if (currentState == WeaponState.Swapping) return;
+
         SetState(WeaponState.Swapping);
         Sequence.Create()
             .Chain(aimers[activeWeaponIndex].HideWeapon(swapDuration / 2))
             .ChainCallback(() =>
             {
+                // aimers[activeWeaponIndex].DisableRenderer();
+                // aimers[newWeaponIndex].EnableRenderer();
+                aimers[newWeaponIndex].weaponEnabled = true;
+                activeWeaponIndex = newWeaponIndex;
                 Sequence.Create()
                     .Chain(aimers[newWeaponIndex].ShowWeapon(swapDuration / 2))
                     .ChainCallback(() =>
                     {
-                        activeWeaponIndex = newWeaponIndex;
-                        aimers[activeWeaponIndex].weaponEnabled = true;
                         SetState(WeaponState.Holding);
                     });
             });
@@ -80,6 +75,22 @@ public class AimWeapons : MonoBehaviour
             aimers[i].weaponEnabled = false;
             aimers[i].meshRenderer.enabled = false;
         }
+    }
+
+    private void AimCurrentWeapon()
+    {
+        if (playerControlled)
+        {
+            if (swapAction.WasPressedThisFrame())
+            {
+                int next = (activeWeaponIndex + 1) % aimers.Length;
+                SwapToWeapon(next);
+                return;
+            }
+            aimers[activeWeaponIndex].AimAt(GetTarget());
+        }
+        else
+            aimers[activeWeaponIndex].AimAt(target.position);
     }
 
     public Vector3 GetTarget()

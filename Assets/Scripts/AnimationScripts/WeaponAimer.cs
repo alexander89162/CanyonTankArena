@@ -5,6 +5,7 @@ public abstract class WeaponAimer : MonoBehaviour
 {
     public bool weaponEnabled = false;
     public Renderer meshRenderer;
+    public Transform weaponRootBone;
     private Vector3 originalScale;
     public int maxAmmo;
     public int currentAmmo;
@@ -12,18 +13,19 @@ public abstract class WeaponAimer : MonoBehaviour
 
     protected virtual void Awake()
     {
-        originalScale = meshRenderer.transform.localScale;
+        originalScale = weaponRootBone.localScale;
+        if (weaponRootBone == null) Debug.LogError($"Root bone not assigned for {name}");
     }
 
     public virtual Tween ShowWeapon(float duration)
     {
-        meshRenderer.transform.localScale = Vector3.one * 0.01f;
+        weaponRootBone.transform.localScale = Vector3.one * 0.01f;
         meshRenderer.enabled = true;
-        return Tween.Scale(meshRenderer.transform, originalScale, duration, Ease.OutQuad);
+        return Tween.Scale(weaponRootBone.transform, originalScale, duration, Ease.OutQuad);
     }
     public virtual Tween HideWeapon(float duration)
     {
-        return Tween.Scale(meshRenderer.transform, Vector3.one * 0.01f, duration, Ease.InQuad)
+        return Tween.Scale(weaponRootBone.transform, Vector3.one * 0.01f, duration, Ease.InQuad)
             .OnComplete(this, target => target.meshRenderer.enabled = false);
     }
     public abstract void ReloadWeapon();

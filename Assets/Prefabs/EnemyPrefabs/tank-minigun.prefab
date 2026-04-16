@@ -533,6 +533,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 541e30b3f40f20e4484de67f82c19beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AimWeapons
+  targetingSystem: {fileID: 0}
+  swapDuration: 0.7
+  playerControlled: 0
 --- !u!114 &4693065677844920671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -547,13 +550,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MinigunAimer
   weaponEnabled: 1
   meshRenderer: {fileID: 5608681048051194362}
-  swapDuration: 0.7
+  weaponRootBone: {fileID: 1132761039689416492}
   maxAmmo: 25
   currentAmmo: 25
   reloadTime: 3.8
   minigunBase: {fileID: 1132761039689416492}
   minigunBody: {fileID: 4165643794708771199}
   minigunBarrels: {fileID: 2212171305854700149}
+  lowerTarget: 4
 --- !u!1 &7695468828355442639
 GameObject:
   m_ObjectHideFlags: 0

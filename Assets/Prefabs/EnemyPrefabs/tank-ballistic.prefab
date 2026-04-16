@@ -437,6 +437,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 541e30b3f40f20e4484de67f82c19beb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AimWeapons
+  targetingSystem: {fileID: 0}
+  swapDuration: 0.7
+  playerControlled: 0
 --- !u!114 &5272830307464663740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -451,7 +454,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BallisticAimer
   weaponEnabled: 1
   meshRenderer: {fileID: 3966411157940557102}
-  swapDuration: 0.7
+  weaponRootBone: {fileID: 2434394840739719841}
   maxAmmo: 2
   currentAmmo: 2
   reloadTime: 4
