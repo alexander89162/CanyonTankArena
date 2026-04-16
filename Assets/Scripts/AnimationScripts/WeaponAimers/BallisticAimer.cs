@@ -23,11 +23,12 @@ public class BallisticAimer : WeaponAimer
     {
         if (!weaponEnabled) return;
 
-        Vector3 toEnemy = worldTarget - transform.position;
+        Vector3 toEnemyWorld = worldTarget - transform.position;
+        Vector3 toEnemy = transform.InverseTransformDirection(toEnemyWorld);
 
         float yaw   = Mathf.Atan2(toEnemy.x, toEnemy.z) * Mathf.Rad2Deg;
 
-        ballisticBody.rotation   = bodyRestRotation   * Quaternion.Euler(0, yaw, 0);
+        ballisticBody.localRotation   = bodyRestRotation   * Quaternion.Euler(0, yaw, 0);
     }
 
     public override void Fire()

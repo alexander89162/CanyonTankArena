@@ -25,13 +25,14 @@ public class MinigunAimer : WeaponAimer
     {
         if (!weaponEnabled) return;
 
-        Vector3 toEnemy = worldTarget - transform.position;
+        Vector3 toEnemyWorld = worldTarget - transform.position;
+        Vector3 toEnemy = transform.InverseTransformDirection(toEnemyWorld);
 
         float yaw   = Mathf.Atan2(toEnemy.x, toEnemy.z) * Mathf.Rad2Deg;
         float pitch = -Mathf.Atan2(toEnemy.y, new Vector2(toEnemy.x, toEnemy.z).magnitude) * Mathf.Rad2Deg;
         pitch += lowerTarget;
 
-        minigunBase.rotation      = baseRestRotation * Quaternion.Euler(0, yaw, 0);
+        minigunBase.localRotation      = baseRestRotation * Quaternion.Euler(0, yaw, 0);
         minigunBody.localRotation = bodyRestRotation * Quaternion.Euler(pitch, 0, 0);
     }
 
