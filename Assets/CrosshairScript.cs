@@ -1,3 +1,4 @@
+//using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -55,7 +56,7 @@ public class CrosshairScript : MonoBehaviour
     [SerializeField] private Color obstacleInnerRingColor = new Color(0.62f, 0.62f, 0.62f, 1f);
     
     [Tooltip("Size of the crosshair")]
-    [SerializeField] private float crosshairSize = 1f;
+    [SerializeField] private float crosshairSize = 1.5f;
     
     private RectTransform rectTransform;
     private Image crosshairImage;
@@ -257,12 +258,14 @@ public class CrosshairScript : MonoBehaviour
         {
             targetPosition = aimController.GetTargetPosition();
         }
-        else if (aimController != null)
+        else if (aimController == null)
         {
             Vector3 aimDirection = aimController.GetAimDirection().normalized;
             Transform raySource = aimController.GetCannonTransform();
             if (raySource == null)
                 raySource = aimController.GetTurretTransform();
+                
+                Debug.Log($"[Crosshair] Using fallback raycast from {(raySource != null ? raySource.name : "aimController position")} in direction {aimDirection}");
 
             Vector3 rayOrigin = (raySource != null ? raySource.position : aimController.transform.position) + aimDirection * muzzleForwardOffset;
 

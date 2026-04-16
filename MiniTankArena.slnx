@@ -49,5 +49,4 @@
   <Project Path="Unity.PlasticSCM.Editor.Entities.csproj" />
   <Project Path="Unity.Collections.Editor.csproj" />
   <Project Path="Autodesk.Fbx.BuildTestAssets.csproj" />
-  <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>
