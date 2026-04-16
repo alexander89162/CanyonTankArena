@@ -374,6 +374,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
   dropTable: {fileID: 11400000, guid: 6b726b7f75cae594c8bedcf4aedf5737, type: 2}
+  scoreValue: 150
   dropChance: 0.75
 --- !u!1 &3237836485336562178
 GameObject:

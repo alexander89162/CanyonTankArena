@@ -54,6 +54,7 @@ public class HealthComponent : MonoBehaviour
 
                 if (gameObject.CompareTag("Player"))
                 {
+                    ScoreManager.Instance?.SaveHighScore();
                     SceneManager.LoadScene("StartMenu"); // Reload current scene on player death
                 }
             }

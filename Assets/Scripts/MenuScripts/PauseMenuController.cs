@@ -129,6 +129,8 @@ void OnDisable()
     {
         ResumeGame(); // reset time scale before loading
         SceneManager.LoadScene("StartMenu"); 
+        ScoreManager.Instance?.SaveHighScore();
+        ScoreManager.Instance.currentScore = 0;
     }
 
     public void QuitGame()
