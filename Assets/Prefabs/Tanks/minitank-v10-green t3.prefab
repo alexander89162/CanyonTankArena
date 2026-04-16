@@ -110,6 +110,8 @@ MonoBehaviour:
   fireCooldown: 0.8
   muzzleVelocity: 60
   fireAction: {fileID: 1845313811779351494, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  fireSound: {fileID: 8300000, guid: 7567c685067b52f44b07b8524cac83af, type: 3}
+  volume: 0.6
 --- !u!1 &875332954295311758
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,11 +482,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TankController
   movement: {fileID: 0}
-  tankSlope: {fileID: 2360924476373305703}
   turrets:
   - {fileID: 7850487816720558415}
   - {fileID: 8604959772430959927}
   - {fileID: 6771831514210483756}
+  movementJoystick: {fileID: 0}
+  playerInput: {fileID: 0}
 --- !u!114 &2360924476373305703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,7 +548,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1620810625669083874}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ae97e5853cb6b84eaa627164fc930d8, type: 3}
   m_Name: 
@@ -664,7 +667,6 @@ MonoBehaviour:
   gravity: -75
   moveInput: {x: 0, y: 0}
   currentVelocityV: {x: 0, y: 0, z: 0}
-  tankSlope: {fileID: 2360924476373305703}
 --- !u!114 &7336376477106694219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -805,7 +807,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3699284698958797240}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44bcf7e6df215734c82901babb842768, type: 3}
   m_Name: 
@@ -865,6 +867,7 @@ GameObject:
   - component: {fileID: 2439537242385612996}
   - component: {fileID: 1114808066652646529}
   - component: {fileID: 4859203041420037858}
+  - component: {fileID: 5753958028694468583}
   m_Layer: 6
   m_Name: PlayerCamera
   m_TagString: MainCamera
@@ -881,12 +884,12 @@ Transform:
   m_GameObject: {fileID: 5023569516941908527}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.64, z: -6.33}
+  m_LocalPosition: {x: -20.259888, y: 20.39312, z: -25.51416}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6995153440169476388}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -21.595}
 --- !u!20 &2439537242385612996
 Camera:
   m_ObjectHideFlags: 0
@@ -920,7 +923,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 90
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -990,6 +993,38 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &5753958028694468583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5023569516941908527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineBrain
+  ShowDebugText: 0
+  ShowCameraFrustum: 1
+  IgnoreTimeScale: 0
+  WorldUpOverride: {fileID: 0}
+  ChannelMask: -1
+  UpdateMethod: 2
+  BlendUpdateMethod: 1
+  LensModeOverride:
+    Enabled: 0
+    DefaultMode: 2
+  DefaultBlend:
+    Style: 1
+    Time: 2
+    CustomCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  CustomBlends: {fileID: 0}
 --- !u!1 &5027185837275408818
 GameObject:
   m_ObjectHideFlags: 0

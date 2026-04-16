@@ -30,7 +30,7 @@ public class SpikeballController : MonoBehaviour
 
     private NavMeshAgent agent;
     private Rigidbody rb;
-    private AttackState currentState;
+    public AttackState currentState;
     private Vector3 moveDestination;
     private Vector3 liftingStartPos;
     private Vector3 liftingEndPos;
@@ -40,7 +40,7 @@ public class SpikeballController : MonoBehaviour
     private float liftingTimer = 0f;
     private float freeRoamTimer = 0f;
     private float launchRechargeTimer = 0f;
-    private bool hasBouncedThisLaunch = false;
+    public bool hasBouncedThisLaunch = false;
     private float lastGroundedTimer = 0f;
     private Vector3 lastPos;
     [Space(12)]

@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="Root" style="flex-grow: 1; justify-content: center; align-items: center; background-color: rgba(0,0,0,0.85);">
+        <ui:Label name="Title" text="You Win!" style="font-size: 120px; color: #00ff88; -unity-font-style: bold;" />
+        
+        <ui:Button name="RestartButton" text="Play Again" style="margin-top: 60px; font-size: 32px; width: 300px;" />
+        <ui:Button name="GarageButton" text="Return to Menu" style="margin-top: 20px; font-size: 32px; width: 300px;" />
+    </ui:VisualElement>
+</ui:UXML>

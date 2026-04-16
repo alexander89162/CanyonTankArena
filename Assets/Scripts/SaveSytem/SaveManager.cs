@@ -50,6 +50,7 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    //func to save the game
     public void SaveGame()
     {
         if (PlayerInventory.Instance == null)
@@ -58,13 +59,25 @@ public class SaveManager : MonoBehaviour
             return;
         }
 
-        PlayerSaveData data = new PlayerSaveData { inventoryItems = PlayerInventory.Instance.items };
+        if (ScoreManager.Instance == null)
+        {
+            Debug.LogError("Cannot save - ScoreManager.Instance is null");
+            return;
+        }
+
+        ScoreManager.Instance?.SaveHighScore();
+
+        PlayerSaveData data = new PlayerSaveData { 
+            inventoryItems = PlayerInventory.Instance.items, 
+            highScore = ScoreManager.Instance.highScore 
+            };
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(saveFilePath, json);
         Debug.Log($" SAVED successfully! Items saved: {data.inventoryItems.Count}");
     }
 
+    //func to load the game
     public void LoadGame()
     {
         if (!File.Exists(saveFilePath))
@@ -82,8 +95,15 @@ public class SaveManager : MonoBehaviour
             PlayerInventory.Instance.TriggerInventoryChanged();
             Debug.Log($" LOADED! Items loaded: {PlayerInventory.Instance.items.Count}");
         }
+
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.highScore = data.highScore;
+            Debug.Log($" High Score Loaded: {data.highScore}");
+        }
     }
 
+    //func to clear the inventory
     public void ClearInventory()
     {
         if (PlayerInventory.Instance != null)
@@ -92,10 +112,52 @@ public class SaveManager : MonoBehaviour
             PlayerInventory.Instance.TriggerInventoryChanged();
             Debug.Log(" Inventory Cleared");
         }
+
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.currentScore = 0;
+            ScoreManager.Instance.highScore = 0;
+            Debug.Log("  Score Reset");
+        }
+    }
+ 
+    //func to save the highscore
+    public void SaveHighScore(int newHighScore)
+    {
+        // We'll load existing data, update high score, and save
+        PlayerSaveData data;
+
+        if (File.Exists(saveFilePath))
+        {
+            string json = File.ReadAllText(saveFilePath);
+            data = JsonUtility.FromJson<PlayerSaveData>(json) ?? new PlayerSaveData();
+        }
+        else
+        {
+            data = new PlayerSaveData();
+        }
+
+        data.highScore = newHighScore;
+
+        string newJson = JsonUtility.ToJson(data, true);
+        File.WriteAllText(saveFilePath, newJson);
     }
 
+    //func to get the highscore
+    public int GetHighScore()
+    {
+        if (!File.Exists(saveFilePath)) return 0;
+
+        string json = File.ReadAllText(saveFilePath);
+        PlayerSaveData data = JsonUtility.FromJson<PlayerSaveData>(json);
+        return data != null ? data.highScore : 0;
+    }
+
+    //when the game quits, or crash save game, needs to test crash save still
     private void OnApplicationQuit()
     {
         SaveGame();
+        ScoreManager.Instance?.SaveHighScore();
+        ScoreManager.Instance.currentScore = 0;
     }
 }

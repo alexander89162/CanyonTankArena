@@ -1,0 +1,10 @@
+{
+    "waveMode": "sequential",
+
+    "startWave" : "wave1",
+
+    "transitions": [
+        { "from": "wave1", "to": "wave1" }
+
+    ]
+}

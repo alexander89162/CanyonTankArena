@@ -39,7 +39,7 @@ public class SimpleProjectile : MonoBehaviour
 
         float moveThisFrame = velocity.magnitude * Time.deltaTime;
         Vector3 moveDirection = velocity.normalized;
-
+        
         // Raycast ahead this frame's distance + safety
         Ray ray = new Ray(transform.position, moveDirection);
         float rayDistanceThisFrame = moveThisFrame * raycastLengthMultiplier;
