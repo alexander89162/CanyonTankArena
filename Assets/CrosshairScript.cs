@@ -265,11 +265,11 @@ public class CrosshairScript : MonoBehaviour
             if (raySource == null)
                 raySource = aimController.GetTurretTransform();
                 
-                Debug.Log($"[Crosshair] Using fallback raycast from {(raySource != null ? raySource.name : "aimController position")} in direction {aimDirection}");
+                Debug.Log($"[Crosshair] Using fallback raycast from {(raySource != null ? raySource.name : "aimController position")} in direction {/*aimDirection*/Vector3.forward} (no AimController target)");
 
-            Vector3 rayOrigin = (raySource != null ? raySource.position : aimController.transform.position) + aimDirection * muzzleForwardOffset;
+            Vector3 rayOrigin = (raySource != null ? raySource.position : aimController.transform.position) + /*aimDirection*/ Vector3.zero * muzzleForwardOffset;
 
-            bool hitFound = TryRaycastIgnoringAimControllerSelf(rayOrigin, aimDirection, maxAimDistance, aimLayerMask, out RaycastHit hit);
+            bool hitFound = TryRaycastIgnoringAimControllerSelf(rayOrigin, /*aimDirection*/ Vector3.forward, maxAimDistance, aimLayerMask, out RaycastHit hit);
 
             if (hitFound)
             {
@@ -277,11 +277,11 @@ public class CrosshairScript : MonoBehaviour
             }
             else
             {
-                targetPosition = rayOrigin + aimDirection * maxAimDistance;
+                targetPosition = rayOrigin /*+ aimDirection*/ * maxAimDistance;
             }
 
-            if (showDebugRay)
-                Debug.DrawRay(rayOrigin, aimDirection * maxAimDistance, Color.cyan);
+           /* if (showDebugRay)
+                Debug.DrawRay(rayOrigin, aimDirection * maxAimDistance, Color.cyan);*/
         }
         else
         {

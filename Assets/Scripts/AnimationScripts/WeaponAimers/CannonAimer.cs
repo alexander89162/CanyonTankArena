@@ -40,6 +40,7 @@ public class CannonAimer : WeaponAimer
     public override void Fire()
     {
         Debug.Log("Fire() was called"); // TODO
+        //CannonFiring.Instance.RequestFire();
     }
 
     public override void ReloadWeapon(){} // TODO
