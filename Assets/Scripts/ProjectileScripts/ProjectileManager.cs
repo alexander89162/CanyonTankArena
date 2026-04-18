@@ -10,6 +10,7 @@ public class ProjectileManager : MonoBehaviour
     private HitEvent[] hitBuffer;
     private int activeCount = 0;
     private int hitCount = 0;
+    private float[] radiusLookup;
 
     public struct HitEvent
     {
@@ -24,6 +25,10 @@ public class ProjectileManager : MonoBehaviour
     {
         bullets = new Bullet[1024];
         hitBuffer = new HitEvent[1024];
+        radiusLookup = new float[256];
+
+        radiusLookup[0] = cannonShellRadius;
+        radiusLookup[1] = bulletRadius;
     }
 
     void Update()
@@ -72,8 +77,9 @@ public class ProjectileManager : MonoBehaviour
         if (bullet.remainingLifetime <= 0f) return false;
 
         Vector3 oldPosition = bullet.position;
-        bullet.position += bullet.velocity * dt;
-        Vector3 movement = bullet.position - oldPosition;
+        Vector3 movement = bullet.velocity * dt;
+        Vector3 newPosition = bullet.position + movement;
+        
         float distance = movement.magnitude;
         if (distance > 0f)
         {
@@ -81,36 +87,44 @@ public class ProjectileManager : MonoBehaviour
 
             if (Physics.SphereCast(
                 oldPosition,
-                GetRadius(bullet.type),
+                radiusLookup[bullet.type],
                 direction,
                 out RaycastHit hit,
                 distance,
                 collisionMask,
                 QueryTriggerInteraction.Ignore))
             {
+                if (hitCount < hitBuffer.Length)
+                {
+                    hitBuffer[hitCount++] = new HitEvent
+                    {
+                        point = hit.point,
+                        normal = hit.normal,
+                        damage = bullet.damage,
+                        target = hit.collider.transform.root.gameObject,
+                        bulletType = bullet.type
+                    };
+                }
+
                 bullet.position = hit.point + hit.normal * 0.01f;
                 return false; // destroy bullet
             }
         }
 
+        bullet.position = newPosition;
         return true;
-    }
-
-    private float GetRadius(byte type)
-    {
-        switch (type)
-        {
-            case 0: return cannonShellRadius; // cannon shell
-            case 1: return bulletRadius;  // regular bullet
-            default: return 1f;
-        }
     }
 
     private void ApplyHit(HitEvent hit)
     {
-        // damage system
-        // armor logic
-        // VFX spawn
-        // sound
+        if (hit.target == null) return;
+
+        var damageController = hit.target.GetComponent<DamageController>();
+        if (damageController != null)
+        {
+            damageController.TakeDamage(hit.damage);
+        }
+
+        // TODO: VFX spawn (?)
     }
 }
