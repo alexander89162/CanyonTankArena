@@ -2,22 +2,6 @@
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="PrimeTween.Demo.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
-  <Project Path="Unity.AI.Navigation.csproj" />
-  <Project Path="Unity.Collections.CodeGen.csproj" />
-  <Project Path="Unity.Mathematics.Editor.csproj" />
-  <Project Path="Unity.VisualScripting.SettingsProvider.Editor.csproj" />
-  <Project Path="Unity.Settings.Editor.csproj" />
-  <Project Path="Unity.InputSystem.TestFramework.csproj" />
-  <Project Path="Unity.VisualScripting.Shared.Editor.csproj" />
-  <Project Path="Unity.CollabProxy.Editor.csproj" />
-  <Project Path="Unity.Animation.Rigging.DocCodeExamples.csproj" />
-  <Project Path="Unity.InputSystem.DocCodeSamples.csproj" />
-  <Project Path="Unity.Formats.Fbx.Runtime.csproj" />
-  <Project Path="Unity.VisualScripting.DocCodeExamples.csproj" />
-  <Project Path="Autodesk.Fbx.Editor.csproj" />
-  <Project Path="Unity.PlasticSCM.Editor.Entities.csproj" />
-  <Project Path="Unity.Collections.Editor.csproj" />
-  <Project Path="Autodesk.Fbx.BuildTestAssets.csproj" />
   <Project Path="PrimeTween.Debug.csproj" />
   <Project Path="PrimeTween.Installer.csproj" />
 </Solution>
