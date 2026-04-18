@@ -31,7 +31,7 @@ public class CrosshairScript : MonoBehaviour
     [SerializeField] private LayerMask aimLayerMask = -1;
 
     [Tooltip("Draw debug ray for AimController fallback")]
-    [SerializeField] private bool showDebugRay = false;
+    [SerializeField] private bool showDebugRay = false; 
 
     [Tooltip("How often to retry finding the active AimController when missing")]
     [SerializeField] private float aimResolveInterval = 0.5f;
@@ -280,8 +280,8 @@ public class CrosshairScript : MonoBehaviour
                 targetPosition = rayOrigin /*+ aimDirection*/ * maxAimDistance;
             }
 
-           /* if (showDebugRay)
-                Debug.DrawRay(rayOrigin, aimDirection * maxAimDistance, Color.cyan);*/
+            if (showDebugRay && aimController != null)
+                Debug.DrawRay(rayOrigin, aimDirection * maxAimDistance, Color.cyan);
         }
         else
         {

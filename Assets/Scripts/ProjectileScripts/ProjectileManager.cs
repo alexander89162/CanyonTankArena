@@ -7,17 +7,30 @@ public class ProjectileManager : MonoBehaviour
     [SerializeField] private float bulletRadius = 0.1f;
 
     private Bullet[] bullets;
+    private HitEvent[] hitBuffer;
     private int activeCount = 0;
+    private int hitCount = 0;
+
+    public struct HitEvent
+    {
+        public Vector3 point;
+        public Vector3 normal;
+        public float damage;
+        public GameObject target;
+        public byte bulletType;
+    }
 
     void Awake()
     {
         bullets = new Bullet[1024];
+        hitBuffer = new HitEvent[1024];
     }
 
     void Update()
     {
         float dt = Time.deltaTime;
 
+        // 1) process bullet movement
         for (int i = 0; i < activeCount;)
         {
             if (!Process(ref bullets[i], dt))
@@ -29,6 +42,14 @@ public class ProjectileManager : MonoBehaviour
                 i++;
             }
         }
+
+        // 2) process bullet hits
+        for (int i = 0; i < hitCount; i++)
+        {
+            ApplyHit(hitBuffer[i]);
+        }
+
+        hitCount = 0;
     }
 
     public void SpawnBullet(Bullet bullet)
@@ -81,7 +102,15 @@ public class ProjectileManager : MonoBehaviour
         {
             case 0: return cannonShellRadius; // cannon shell
             case 1: return bulletRadius;  // regular bullet
-            default: return 0.1f;
+            default: return 1f;
         }
+    }
+
+    private void ApplyHit(HitEvent hit)
+    {
+        // damage system
+        // armor logic
+        // VFX spawn
+        // sound
     }
 }
