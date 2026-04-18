@@ -2,8 +2,11 @@ using UnityEngine;
 
 public class ProjectileManager : MonoBehaviour
 {
-    public Bullet[] bullets;
+    [SerializeField] private LayerMask collisionMask;
+    [SerializeField] private float cannonShellRadius = 1.5f;
+    [SerializeField] private float bulletRadius = 0.1f;
 
+    private Bullet[] bullets;
     private int activeCount = 0;
 
     void Awake()
@@ -55,13 +58,30 @@ public class ProjectileManager : MonoBehaviour
         {
             Vector3 direction = movement / distance;
 
-            if (Physics.Raycast(oldPosition, direction, out RaycastHit hit, distance))
+            if (Physics.SphereCast(
+                oldPosition,
+                GetRadius(bullet.type),
+                direction,
+                out RaycastHit hit,
+                distance,
+                collisionMask,
+                QueryTriggerInteraction.Ignore))
             {
-                bullet.position = hit.point;
+                bullet.position = hit.point + hit.normal * 0.01f;
                 return false; // destroy bullet
             }
         }
 
         return true;
+    }
+
+    private float GetRadius(byte type)
+    {
+        switch (type)
+        {
+            case 0: return cannonShellRadius; // cannon shell
+            case 1: return bulletRadius;  // regular bullet
+            default: return 0.1f;
+        }
     }
 }
