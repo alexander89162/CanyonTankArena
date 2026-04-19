@@ -666,9 +666,11 @@ MonoBehaviour:
   maxAmmo: 25
   currentAmmo: 25
   reloadTime: 3.8
+  fireCooldown: 0
   minigunBase: {fileID: 1132761039689416492}
   minigunBody: {fileID: 4165643794708771199}
   minigunBarrels: {fileID: 2212171305854700149}
+  barrelEnd: {fileID: 4492273770652761388}
   lowerTarget: 4
 --- !u!1 &7695468828355442639
 GameObject:

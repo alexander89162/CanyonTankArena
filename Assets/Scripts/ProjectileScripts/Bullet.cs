@@ -9,4 +9,5 @@ public struct Bullet
     public float damage;
 
     public byte type;
+    public GameObject owner;
 }

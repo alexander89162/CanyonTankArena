@@ -7,8 +7,10 @@ public class CannonAimer : WeaponAimer
 {
     [SerializeField] private Transform cannonBody;
     [SerializeField] private Transform cannonBarrel;
+    [SerializeField] private Transform barrelEnd;
     [SerializeField] private float clampLiftCannon;
     [SerializeField] private float clampLiftBarrel;
+    public float shellSpawnOffset = 20f;
     
     private Quaternion bodyRestRotation;
     private Quaternion barrelRestRotation;
@@ -39,8 +41,20 @@ public class CannonAimer : WeaponAimer
 
     public override void TryFire()
     {
-        Debug.Log("Fire() was called"); // TODO
-        //CannonFiring.Instance.RequestFire();
+        Debug.Log("TryFire() was called on cannon");
+        // TODO: check current ammo and state
+
+        Bullet b = new Bullet // TODO: values must not be hardcoded
+        {
+            position = barrelEnd.position + barrelEnd.forward * shellSpawnOffset,
+            velocity = barrelEnd.forward * 50f,
+            damage = 25f,
+            type = 0,
+            remainingLifetime = 3f,
+            owner = gameObject
+        };
+
+        ProjectileManager.Instance.SpawnBullet(b);
     }
 
     public override void ReloadWeapon(){} // TODO

@@ -7,7 +7,9 @@ public class MinigunAimer : WeaponAimer
     [SerializeField] private Transform minigunBase;
     [SerializeField] private Transform minigunBody;
     [SerializeField] private Transform minigunBarrels;
+    [SerializeField] private Transform barrelEnd;
     [SerializeField] private float lowerTarget = 4f; // make the gun point lower to better face the target
+    public float bulletSpawnOffset = 20f;
 
     private Quaternion baseRestRotation;
     private Quaternion bodyRestRotation;
@@ -38,7 +40,22 @@ public class MinigunAimer : WeaponAimer
 
     public override void TryFire()
     {
+        Debug.Log("TryFire() was called on minigun");
+        // TODO: check current ammo and state
+
+        Bullet b = new Bullet // TODO: values must not be hardcoded
+        {
+            position = barrelEnd.position + barrelEnd.forward * bulletSpawnOffset,
+            velocity = barrelEnd.forward * 50f,
+            damage = 25f,
+            type = 1,
+            remainingLifetime = 3f,
+            owner = gameObject
+        };
+
+        ProjectileManager.Instance.SpawnBullet(b);
         minigunBarrels.localRotation *= Quaternion.Euler(0, 20, 0); // temporary
+        Debug.Log($"Spawn offset: {bulletSpawnOffset}, SpawnPos: {barrelEnd.position + barrelEnd.forward * bulletSpawnOffset}");
     }
 
     public override void ReloadWeapon(){} // do nothing for now

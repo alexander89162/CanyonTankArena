@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class ProjectileManager : MonoBehaviour
 {
+    public static ProjectileManager Instance { get; private set; }
+
     [SerializeField] private LayerMask collisionMask;
     [SerializeField] private float cannonShellRadius = 1.5f;
     [SerializeField] private float bulletRadius = 0.1f;
@@ -30,6 +32,14 @@ public class ProjectileManager : MonoBehaviour
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
         bullets = new Bullet[1024];
         hitBuffer = new HitEvent[1024];
         radiusLookup = new float[256];
@@ -58,7 +68,10 @@ public class ProjectileManager : MonoBehaviour
             ApplyHit(hitBuffer[i]);
 
         hitCount = 0;
+    }
 
+    void LateUpdate()
+    {
         // 3) Render instanced projectiles
         RenderProjectiles();
     }
@@ -100,6 +113,12 @@ public class ProjectileManager : MonoBehaviour
                 collisionMask,
                 QueryTriggerInteraction.Ignore))
             {
+                GameObject hitRoot = hit.collider.transform.root.gameObject;
+                if (hitRoot == bullet.owner)
+                {
+                    return true; // ignore and continue
+                }
+
                 if (hitCount < hitBuffer.Length)
                 {
                     hitBuffer[hitCount++] = new HitEvent
@@ -107,7 +126,7 @@ public class ProjectileManager : MonoBehaviour
                         point = hit.point,
                         normal = hit.normal,
                         damage = bullet.damage,
-                        target = hit.collider.transform.root.gameObject,
+                        target = hitRoot,
                         bulletType = bullet.type
                     };
                 }

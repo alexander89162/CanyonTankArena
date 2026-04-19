@@ -411,8 +411,10 @@ MonoBehaviour:
   maxAmmo: 6
   currentAmmo: 6
   reloadTime: 2.6
+  fireCooldown: 0
   cannonBody: {fileID: 4804791775133336969}
   cannonBarrel: {fileID: 6859378360194369764}
+  barrelEnd: {fileID: 77823448893845741}
   clampLiftCannon: 40
   clampLiftBarrel: 30
 --- !u!1 &3237836485336562178
