@@ -31,7 +31,7 @@ public class BallisticAimer : WeaponAimer
         ballisticBody.localRotation   = bodyRestRotation   * Quaternion.Euler(0, yaw, 0);
     }
 
-    public override void Fire()
+    public override void TryFire()
     {
         if (currentAmmo <= 0) return;
         
@@ -57,5 +57,10 @@ public class BallisticAimer : WeaponAimer
             missileLoaded[i] = true;
             currentAmmo++;
         }
+    }
+
+    public override void OnWeaponSwapped()
+    {
+        fireCooldown = 0.8f;
     }
 }

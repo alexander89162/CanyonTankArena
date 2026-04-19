@@ -36,10 +36,15 @@ public class MinigunAimer : WeaponAimer
         minigunBody.localRotation = bodyRestRotation * Quaternion.Euler(pitch, 0, 0);
     }
 
-    public override void Fire()
+    public override void TryFire()
     {
         minigunBarrels.localRotation *= Quaternion.Euler(0, 20, 0); // temporary
     }
 
     public override void ReloadWeapon(){} // do nothing for now
+
+    public override void OnWeaponSwapped()
+    {
+        fireCooldown = 1.1f;
+    }
 }

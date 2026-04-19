@@ -10,6 +10,7 @@ public abstract class WeaponAimer : MonoBehaviour
     public int maxAmmo;
     public int currentAmmo;
     public float reloadTime;
+    public float fireCooldown;
 
     protected virtual void Awake()
     {
@@ -30,5 +31,6 @@ public abstract class WeaponAimer : MonoBehaviour
     }
     public abstract void ReloadWeapon();
     public abstract void AimAt(Vector3 worldTarget);
-    public abstract void Fire();
+    public abstract void TryFire(); // each aimer is responsible for spawning its own projectiles
+    public virtual void OnWeaponSwapped() { }
 }

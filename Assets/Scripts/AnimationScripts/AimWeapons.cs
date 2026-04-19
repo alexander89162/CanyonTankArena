@@ -10,10 +10,16 @@ public class AimWeapons : MonoBehaviour
     private WeaponAimer[] aimers;
     private int activeWeaponIndex = 0;
     private Transform target;
-    public enum WeaponState {Holding, Swapping, Reloading}
+    public enum WeaponState
+    {
+        Holding, // reloading is included in this state implicitly
+        Swapping, 
+        Disabled
+    }
     public bool playerControlled = false;
     private PlayerInput playerInput;
     private InputAction swapAction;
+    private InputAction firingAction;
 
     void Awake()
     {
@@ -27,6 +33,7 @@ public class AimWeapons : MonoBehaviour
         {
             playerInput = GetComponent<PlayerInput>();
             swapAction = playerInput.actions["SwapNextWeapon"];
+            firingAction = playerInput.actions["Fire"];
         }
     }
 
@@ -39,7 +46,12 @@ public class AimWeapons : MonoBehaviour
                 return;
             case WeaponState.Holding:
                 AimCurrentWeapon();
+                if (playerControlled && firingAction.IsPressed())
+                {
+                    aimers[activeWeaponIndex].TryFire();
+                }
                 return;
+            case WeaponState.Disabled: return;
         }
     }
 
@@ -60,6 +72,7 @@ public class AimWeapons : MonoBehaviour
                     .Chain(aimers[newWeaponIndex].ShowWeapon(swapDuration / 2))
                     .ChainCallback(() =>
                     {
+                        aimers[newWeaponIndex].OnWeaponSwapped();
                         SetState(WeaponState.Holding);
                     });
             });
@@ -103,8 +116,8 @@ public class AimWeapons : MonoBehaviour
         switch (newState)
         {
             case WeaponState.Holding: break;
-            case WeaponState.Reloading: break;
             case WeaponState.Swapping: break;
+            case WeaponState.Disabled: break;
         }
     }
 }

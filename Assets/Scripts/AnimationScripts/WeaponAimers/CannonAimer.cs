@@ -37,11 +37,16 @@ public class CannonAimer : WeaponAimer
         cannonBarrel.localRotation = barrelRestRotation * Quaternion.Euler(barrelPitch, 0, 0);
     }
 
-    public override void Fire()
+    public override void TryFire()
     {
         Debug.Log("Fire() was called"); // TODO
         //CannonFiring.Instance.RequestFire();
     }
 
     public override void ReloadWeapon(){} // TODO
+
+    public override void OnWeaponSwapped()
+    {
+        fireCooldown = 0.5f;
+    }
 }
