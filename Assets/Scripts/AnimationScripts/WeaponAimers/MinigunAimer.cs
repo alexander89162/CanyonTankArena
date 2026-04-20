@@ -43,6 +43,8 @@ public class MinigunAimer : WeaponAimer
 
     public override void TryFire(Vector3 targetPosition)
     {
+        minigunBarrels.localRotation *= Quaternion.Euler(0, 20, 0); // temporary
+
         if (fireTimer > 0) return;
         fireTimer = fireCooldown;
 
@@ -64,13 +66,12 @@ public class MinigunAimer : WeaponAimer
         };
 
         ProjectileManager.Instance.SpawnBullet(b);
-        minigunBarrels.localRotation *= Quaternion.Euler(0, 20, 0); // temporary
     }
 
     public override void ReloadWeapon(){} // do nothing for now
 
     public override void OnWeaponSwapped()
     {
-        fireTimer = 1.1f;
+        fireTimer = 0.5f;
     }
 }

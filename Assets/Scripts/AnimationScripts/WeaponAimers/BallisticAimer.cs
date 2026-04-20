@@ -33,7 +33,8 @@ public class BallisticAimer : WeaponAimer
 
     public override void TryFire(Vector3 targetPosition)
     {
-        if (currentAmmo <= 0) return;
+        if (fireTimer < 0 || currentAmmo <= 0) return;
+        fireTimer = fireCooldown;
         
         for (int i = 0; i < missiles.Length; i++)
         {
@@ -61,6 +62,6 @@ public class BallisticAimer : WeaponAimer
 
     public override void OnWeaponSwapped()
     {
-        fireCooldown = 0.8f;
+        fireCooldown = 0.5f;
     }
 }
