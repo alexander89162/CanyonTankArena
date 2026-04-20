@@ -9,11 +9,10 @@ public class MinigunAimer : WeaponAimer
     [SerializeField] private Transform minigunBarrels;
     [SerializeField] private Transform barrelEnd;
     [SerializeField] private float lowerTarget = 4f; // make the gun point lower to better face the target
-    public float bulletSpawnOffset = 3f;
+    public Vector3 bulletSpawnOffset = new Vector3(0.5f, 0f, 3f);
     public float bulletDamage = 12f;
     public float projectileSpeed = 350f;
     public float bulletMaxLifetime = 2f;
-    [SerializeField] private Vector3 firingRotationOffset;
 
     private Quaternion baseRestRotation;
     private Quaternion bodyRestRotation;
@@ -53,7 +52,7 @@ public class MinigunAimer : WeaponAimer
 
         Bullet b = new Bullet
         {
-            position = barrelEnd.position + dir * bulletSpawnOffset,
+            position = barrelEnd.position + barrelEnd.TransformDirection(bulletSpawnOffset),
             velocity = dir * projectileSpeed,
             damage = bulletDamage,
             type = 1,

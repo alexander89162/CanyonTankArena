@@ -10,13 +10,11 @@ public class CannonAimer : WeaponAimer
     [SerializeField] private Transform barrelEnd;
     [SerializeField] private float clampLiftCannon;
     [SerializeField] private float clampLiftBarrel;
-    public float shellSpawnOffset = 5f;
+    public Vector3 shellSpawnOffset = new Vector3(0f, 0f, 3f);
     public float shellDamage = 35f;
     public float projectileSpeed = 150f;
     public float shellMaxLifetime = 4f;
-    [SerializeField] private Vector3 firingRotationOffset;
     
-    private Quaternion rotationOffset;
     private Quaternion bodyRestRotation;
     private Quaternion barrelRestRotation;
 
@@ -25,7 +23,6 @@ public class CannonAimer : WeaponAimer
         base.Awake();
         bodyRestRotation   = cannonBody.localRotation;
         barrelRestRotation = cannonBarrel.localRotation;
-        rotationOffset = Quaternion.Euler(firingRotationOffset);
     }
 
     public override void AimAt(Vector3 worldTarget)
@@ -56,7 +53,7 @@ public class CannonAimer : WeaponAimer
 
         Bullet b = new Bullet
         {
-            position = barrelEnd.position + dir * shellSpawnOffset,
+            position = barrelEnd.position + barrelEnd.TransformDirection(shellSpawnOffset),
             velocity = dir * projectileSpeed,
             damage = shellDamage,
             type = 0,

@@ -166,7 +166,7 @@ public class ProjectileManager : MonoBehaviour
             Matrix4x4 m = Matrix4x4.TRS(
                 b.position,
                 b.velocity.sqrMagnitude > 0.0001f 
-                    ? Quaternion.LookRotation(b.velocity)
+                    ? Quaternion.LookRotation(b.velocity) * Quaternion.Euler(-90f, 0f, 0f)
                     : Quaternion.identity,
                 Vector3.one * 100f
             );

@@ -6,7 +6,6 @@ public class BallisticAimer : WeaponAimer
 {
     [SerializeField] private Transform ballisticBody;
     [SerializeField] private Transform[] missiles;
-    [SerializeField] private Vector3 firingRotationOffset;
 
     private Quaternion bodyRestRotation;
     private bool[] missileLoaded;
