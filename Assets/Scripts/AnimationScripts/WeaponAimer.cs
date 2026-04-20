@@ -31,6 +31,6 @@ public abstract class WeaponAimer : MonoBehaviour
     }
     public abstract void ReloadWeapon();
     public abstract void AimAt(Vector3 worldTarget);
-    public abstract void TryFire(); // each aimer is responsible for spawning its own projectiles
+    public abstract void TryFire(Vector3 targetPosition); // each aimer is responsible for spawning its own projectiles
     public virtual void OnWeaponSwapped() { }
 }

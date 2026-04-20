@@ -6,6 +6,7 @@ public class BallisticAimer : WeaponAimer
 {
     [SerializeField] private Transform ballisticBody;
     [SerializeField] private Transform[] missiles;
+    [SerializeField] private Vector3 firingRotationOffset;
 
     private Quaternion bodyRestRotation;
     private bool[] missileLoaded;
@@ -31,7 +32,7 @@ public class BallisticAimer : WeaponAimer
         ballisticBody.localRotation   = bodyRestRotation   * Quaternion.Euler(0, yaw, 0);
     }
 
-    public override void TryFire()
+    public override void TryFire(Vector3 targetPosition)
     {
         if (currentAmmo <= 0) return;
         

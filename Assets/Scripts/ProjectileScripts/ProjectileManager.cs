@@ -116,6 +116,7 @@ public class ProjectileManager : MonoBehaviour
                 GameObject hitRoot = hit.collider.transform.root.gameObject;
                 if (hitRoot == bullet.owner)
                 {
+                    bullet.position = newPosition;
                     return true; // ignore and continue
                 }
 
@@ -167,7 +168,7 @@ public class ProjectileManager : MonoBehaviour
                 b.velocity.sqrMagnitude > 0.0001f 
                     ? Quaternion.LookRotation(b.velocity)
                     : Quaternion.identity,
-                Vector3.one
+                Vector3.one * 100f
             );
 
             switch (b.type)

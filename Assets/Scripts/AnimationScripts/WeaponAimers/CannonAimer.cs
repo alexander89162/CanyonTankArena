@@ -10,8 +10,13 @@ public class CannonAimer : WeaponAimer
     [SerializeField] private Transform barrelEnd;
     [SerializeField] private float clampLiftCannon;
     [SerializeField] private float clampLiftBarrel;
-    public float shellSpawnOffset = 20f;
+    public float shellSpawnOffset = 5f;
+    public float shellDamage = 35f;
+    public float projectileSpeed = 150f;
+    public float shellMaxLifetime = 4f;
+    [SerializeField] private Vector3 firingRotationOffset;
     
+    private Quaternion rotationOffset;
     private Quaternion bodyRestRotation;
     private Quaternion barrelRestRotation;
 
@@ -20,6 +25,7 @@ public class CannonAimer : WeaponAimer
         base.Awake();
         bodyRestRotation   = cannonBody.localRotation;
         barrelRestRotation = cannonBarrel.localRotation;
+        rotationOffset = Quaternion.Euler(firingRotationOffset);
     }
 
     public override void AimAt(Vector3 worldTarget)
@@ -39,18 +45,22 @@ public class CannonAimer : WeaponAimer
         cannonBarrel.localRotation = barrelRestRotation * Quaternion.Euler(barrelPitch, 0, 0);
     }
 
-    public override void TryFire()
+    public override void TryFire(Vector3 targetPosition)
     {
-        Debug.Log("TryFire() was called on cannon");
         // TODO: check current ammo and state
 
-        Bullet b = new Bullet // TODO: values must not be hardcoded
+        Vector3 targetPos = targetPosition;
+        Vector3 origin = barrelEnd.position;
+
+        Vector3 dir = (targetPos - origin).normalized;
+
+        Bullet b = new Bullet
         {
-            position = barrelEnd.position + barrelEnd.forward * shellSpawnOffset,
-            velocity = barrelEnd.forward * 50f,
-            damage = 25f,
+            position = barrelEnd.position + dir * shellSpawnOffset,
+            velocity = dir * projectileSpeed,
+            damage = shellDamage,
             type = 0,
-            remainingLifetime = 3f,
+            remainingLifetime = shellMaxLifetime,
             owner = gameObject
         };
 

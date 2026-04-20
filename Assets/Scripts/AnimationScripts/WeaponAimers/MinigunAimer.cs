@@ -9,7 +9,11 @@ public class MinigunAimer : WeaponAimer
     [SerializeField] private Transform minigunBarrels;
     [SerializeField] private Transform barrelEnd;
     [SerializeField] private float lowerTarget = 4f; // make the gun point lower to better face the target
-    public float bulletSpawnOffset = 20f;
+    public float bulletSpawnOffset = 3f;
+    public float bulletDamage = 12f;
+    public float projectileSpeed = 350f;
+    public float bulletMaxLifetime = 2f;
+    [SerializeField] private Vector3 firingRotationOffset;
 
     private Quaternion baseRestRotation;
     private Quaternion bodyRestRotation;
@@ -34,28 +38,31 @@ public class MinigunAimer : WeaponAimer
         float pitch = -Mathf.Atan2(toEnemy.y, new Vector2(toEnemy.x, toEnemy.z).magnitude) * Mathf.Rad2Deg;
         pitch += lowerTarget;
 
-        minigunBase.localRotation      = baseRestRotation * Quaternion.Euler(0, yaw, 0);
+        minigunBase.localRotation = baseRestRotation * Quaternion.Euler(0, yaw, 0);
         minigunBody.localRotation = bodyRestRotation * Quaternion.Euler(pitch, 0, 0);
     }
 
-    public override void TryFire()
+    public override void TryFire(Vector3 targetPosition)
     {
-        Debug.Log("TryFire() was called on minigun");
         // TODO: check current ammo and state
 
-        Bullet b = new Bullet // TODO: values must not be hardcoded
+        Vector3 targetPos = targetPosition;
+        Vector3 origin = barrelEnd.position;
+
+        Vector3 dir = (targetPos - origin).normalized;
+
+        Bullet b = new Bullet
         {
-            position = barrelEnd.position + barrelEnd.forward * bulletSpawnOffset,
-            velocity = barrelEnd.forward * 50f,
-            damage = 25f,
+            position = barrelEnd.position + dir * bulletSpawnOffset,
+            velocity = dir * projectileSpeed,
+            damage = bulletDamage,
             type = 1,
-            remainingLifetime = 3f,
+            remainingLifetime = bulletMaxLifetime,
             owner = gameObject
         };
 
         ProjectileManager.Instance.SpawnBullet(b);
         minigunBarrels.localRotation *= Quaternion.Euler(0, 20, 0); // temporary
-        Debug.Log($"Spawn offset: {bulletSpawnOffset}, SpawnPos: {barrelEnd.position + barrelEnd.forward * bulletSpawnOffset}");
     }
 
     public override void ReloadWeapon(){} // do nothing for now

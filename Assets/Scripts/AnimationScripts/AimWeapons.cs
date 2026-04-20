@@ -48,7 +48,7 @@ public class AimWeapons : MonoBehaviour
                 AimCurrentWeapon();
                 if (playerControlled && firingAction.IsPressed())
                 {
-                    aimers[activeWeaponIndex].TryFire();
+                    aimers[activeWeaponIndex].TryFire(targetingSystem.GetTargetPosition());
                 }
                 return;
             case WeaponState.Disabled: return;
@@ -57,8 +57,6 @@ public class AimWeapons : MonoBehaviour
 
     public void SwapToWeapon(int newWeaponIndex)
     {
-        if (currentState == WeaponState.Swapping) return;
-
         SetState(WeaponState.Swapping);
         Sequence.Create()
             .Chain(aimers[activeWeaponIndex].HideWeapon(swapDuration / 2))
@@ -100,15 +98,10 @@ public class AimWeapons : MonoBehaviour
                 SwapToWeapon(next);
                 return;
             }
-            aimers[activeWeaponIndex].AimAt(GetTarget());
+            aimers[activeWeaponIndex].AimAt(targetingSystem.GetTargetPosition());
         }
         else
             aimers[activeWeaponIndex].AimAt(target.position);
-    }
-
-    public Vector3 GetTarget()
-    {
-        return targetingSystem.GetTargetPosition();
     }
 
     public void SetState(WeaponState newState)
@@ -119,5 +112,7 @@ public class AimWeapons : MonoBehaviour
             case WeaponState.Swapping: break;
             case WeaponState.Disabled: break;
         }
+
+        currentState = newState;
     }
 }
