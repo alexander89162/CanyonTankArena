@@ -160,4 +160,37 @@ public class SaveManager : MonoBehaviour
         ScoreManager.Instance?.SaveHighScore();
         ScoreManager.Instance.currentScore = 0;
     }
+
+    // ====================== SKILL TREE ======================
+
+    public void SaveTechData(PlayerTechData skillData)
+    {
+        PlayerSaveData data;
+
+        if (File.Exists(saveFilePath))
+        {
+            string json = File.ReadAllText(saveFilePath);
+            data = JsonUtility.FromJson<PlayerSaveData>(json) ?? new PlayerSaveData();
+        }
+        else
+        {
+            data = new PlayerSaveData();
+        }
+
+        data.skillData = skillData;
+
+        string jsonToSave = JsonUtility.ToJson(data, true);
+        File.WriteAllText(saveFilePath, jsonToSave);
+    }
+
+    public PlayerTechData LoadTechData()
+    {
+        if (!File.Exists(saveFilePath))
+            return new PlayerTechData();
+
+        string json = File.ReadAllText(saveFilePath);
+        PlayerSaveData data = JsonUtility.FromJson<PlayerSaveData>(json);
+
+        return data?.skillData ?? new PlayerTechData();
+    }
 }

@@ -54,6 +54,38 @@ public class PlayerInventory : MonoBehaviour
         SaveManager.Instance?.SaveGame();
     }
 
+    public void RemoveItem(string itemID, int quantity = 1)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i].itemID == itemID)
+            {
+                items[i].quantity -= quantity;
+                Debug.Log($"Removed {quantity} of {itemID}. Remaining: {items[i].quantity}");
+                if (items[i].quantity <= 0)
+                {
+                    items.RemoveAt(i);
+                    Debug.Log($"{itemID} removed from inventory.");
+                }
+                OnInventoryChanged?.Invoke();
+                SaveManager.Instance?.SaveGame();
+                return;
+            }
+        }
+        Debug.LogWarning($"Attempted to remove item that doesn't exist: {itemID}");
+    }
+
+    public int GetItemCount(string itemID)
+    {
+        int count = 0;
+        foreach (var item in items)
+        {
+            if (item.itemID == itemID)
+                count += item.quantity;
+        }
+        return count;
+    }
+
     public void TriggerInventoryChanged()
     {
         OnInventoryChanged?.Invoke();

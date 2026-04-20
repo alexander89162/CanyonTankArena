@@ -10385,6 +10385,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4740533810720972689, guid: 152715cfdd32c5b4399787b811e563bc, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4740533810720972689, guid: 152715cfdd32c5b4399787b811e563bc, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4740533810720972689, guid: 152715cfdd32c5b4399787b811e563bc, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7965481536819783218, guid: 152715cfdd32c5b4399787b811e563bc, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -11382,6 +11394,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19bc73e8f4cb44246bfb6bb287d048e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
+  tankStats: {fileID: 9151786106702864221}
   maxHealth: 100
   destroyOnDeath: 1
   deathDelay: 0.1
@@ -12336,6 +12349,7 @@ GameObject:
   - component: {fileID: 9151786106702864220}
   - component: {fileID: 4739567273154559931}
   - component: {fileID: 7336376476264844300}
+  - component: {fileID: 9151786106702864221}
   m_Layer: 6
   m_Name: minitank-v10-green t3
   m_TagString: Player
@@ -13292,7 +13306,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1620810626775029413}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ae97e5853cb6b84eaa627164fc930d8, type: 3}
   m_Name: 
@@ -13605,6 +13619,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19bc73e8f4cb44246bfb6bb287d048e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
+  tankStats: {fileID: 0}
   maxHealth: 100
   destroyOnDeath: 1
   deathDelay: 0.1
@@ -16977,6 +16992,26 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   useWeaponForwardAsPrimary: 1
+--- !u!114 &9151786106702864221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620810626775029413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 600aa172a24739448a0e703f8ce67e18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TankStats
+  baseMaxHealth: 500
+  baseDamageMultiplier: 1
+  baseSpeedMultiplier: 1
+  baseFireRateMultiplier: 1
+  maxHealth: 300
+  damageMultiplier: 1
+  speedMultiplier: 1
+  fireRateMultiplier: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class HealthComponent : MonoBehaviour
 {
+    public PlayerTankStats tankStats; 
+
     [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] private bool destroyOnDeath = true;       // for enemies
@@ -23,7 +25,16 @@ public class HealthComponent : MonoBehaviour
 
     private void Awake()
     {
-        currentHealth = maxHealth;
+        if (gameObject.CompareTag("Player") && tankStats != null)
+        {
+            tankStats.ApplySkillBonuses();
+            maxHealth = tankStats.maxHealth;
+            currentHealth = maxHealth;
+        }
+        else
+        {
+            currentHealth = maxHealth;
+        }
     }
 
     public void Initialize(float newMaxHealth)
