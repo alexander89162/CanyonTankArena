@@ -11,6 +11,7 @@ public abstract class WeaponAimer : MonoBehaviour
     public int currentAmmo;
     public float reloadTime;
     public float fireCooldown;
+    public float fireTimer = 0;
 
     protected virtual void Awake()
     {

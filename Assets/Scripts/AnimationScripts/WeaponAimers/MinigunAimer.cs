@@ -43,6 +43,9 @@ public class MinigunAimer : WeaponAimer
 
     public override void TryFire(Vector3 targetPosition)
     {
+        if (fireTimer > 0) return;
+        fireTimer = fireCooldown;
+
         // TODO: check current ammo and state
 
         Vector3 targetPos = targetPosition;
@@ -68,6 +71,6 @@ public class MinigunAimer : WeaponAimer
 
     public override void OnWeaponSwapped()
     {
-        fireCooldown = 1.1f;
+        fireTimer = 1.1f;
     }
 }

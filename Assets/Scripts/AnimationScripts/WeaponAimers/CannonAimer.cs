@@ -44,7 +44,10 @@ public class CannonAimer : WeaponAimer
 
     public override void TryFire(Vector3 targetPosition)
     {
-        // TODO: check current ammo and state
+        if (fireTimer > 0) return;
+        fireTimer = fireCooldown;
+
+        // TODO: check current ammo
 
         Vector3 targetPos = targetPosition;
         Vector3 origin = barrelEnd.position;
@@ -68,6 +71,6 @@ public class CannonAimer : WeaponAimer
 
     public override void OnWeaponSwapped()
     {
-        fireCooldown = 0.5f;
+        fireTimer = 0.5f;
     }
 }
