@@ -11,14 +11,15 @@ public class TankController : MonoBehaviour
     public UIVirtualJoystick movementJoystick;
 
     [Header("Dash")]
-    [SerializeField] private float dashDistance = 2f;
+    [SerializeField] private float dashDistance = 30f;
     [SerializeField] private float dashCooldown = 0.35f;
-    [SerializeField] private float dashStepDistance = 0.25f;
+    [SerializeField] private float dashStepDistance = 0.5f;
 
     [Header("Dash After Image")]
-    [SerializeField] private float afterImageLifetime = 0.18f;
-    [SerializeField] private Color afterImageTint = new Color(1f, 1f, 1f, 0.08f);
+    [SerializeField] private float afterImageLifetime = 0.32f;
+    [SerializeField] private Color afterImageTint = new Color(1f, 1f, 1f, 0.04f);
     [SerializeField] private int afterImageGhostCount = 4;
+    [SerializeField] private float afterImageMinSpacing = 3f;
 
     private int turretIndex = 0;
     private Transform activeTurret;
@@ -267,25 +268,54 @@ public class TankController : MonoBehaviour
         if (dashSamples == null || dashSamples.Count == 0)
             return;
 
-        int ghostLimit = Mathf.Min(afterImageGhostCount, dashSamples.Count);
+        List<Pose> spacedSamples = BuildSpacedAfterImageSamples(dashSamples);
+        if (spacedSamples.Count == 0)
+            return;
+
+        int ghostLimit = Mathf.Min(afterImageGhostCount, spacedSamples.Count);
         if (ghostLimit <= 0)
             return;
 
         if (ghostLimit == 1)
         {
-            SpawnAfterImageGhost(dashSamples[dashSamples.Count - 1], afterImageTint.a);
+            SpawnAfterImageGhost(spacedSamples[spacedSamples.Count - 1], afterImageTint.a * 0.6f);
             return;
         }
 
         for (int i = 0; i < ghostLimit; i++)
         {
             float sampleT = (float)i / (ghostLimit - 1);
-            int sampleIndex = Mathf.RoundToInt(sampleT * (dashSamples.Count - 1));
+            int sampleIndex = Mathf.RoundToInt(sampleT * (spacedSamples.Count - 1));
             float blend = sampleT;
-            SpawnAfterImageGhost(dashSamples[sampleIndex], Mathf.Lerp(afterImageTint.a, afterImageTint.a * 0.2f, blend));
+            SpawnAfterImageGhost(spacedSamples[sampleIndex], Mathf.Lerp(afterImageTint.a, afterImageTint.a * 0.12f, blend));
         }
     }
 
+    private List<Pose> BuildSpacedAfterImageSamples(List<Pose> dashSamples)
+    {
+        List<Pose> spacedSamples = new List<Pose>(dashSamples.Count);
+        float minSpacing = Mathf.Max(0.01f, afterImageMinSpacing);
+
+        for (int i = 0; i < dashSamples.Count; i++)
+        {
+            Pose sample = dashSamples[i];
+            if (spacedSamples.Count == 0)
+            {
+                spacedSamples.Add(sample);
+                continue;
+            }
+
+            Pose previous = spacedSamples[spacedSamples.Count - 1];
+            if ((sample.position - previous.position).sqrMagnitude >= minSpacing * minSpacing)
+                spacedSamples.Add(sample);
+        }
+
+        Pose endSample = dashSamples[dashSamples.Count - 1];
+        if (spacedSamples.Count == 0 || (endSample.position - spacedSamples[spacedSamples.Count - 1].position).sqrMagnitude > 0.0001f)
+            spacedSamples.Add(endSample);
+
+        return spacedSamples;
+    }
     private void SpawnAfterImageGhost(Pose pose, float alpha)
     {
         GameObject ghostRoot = new GameObject($"{gameObject.name}_AfterImage");
