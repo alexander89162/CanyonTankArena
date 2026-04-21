@@ -99,8 +99,8 @@ public class CrosshairScript : MonoBehaviour
             aimController = ResolvePreferredAimController();
         }
 
-        if (aimController == null)
-            Debug.LogWarning("CrosshairScript: No AimController found in scene. Add one to your player tank.");
+       // if (aimController == null)
+            //Debug.LogWarning("CrosshairScript: No AimController found in scene. Add one to your player tank.");
         
         // Apply visual settings
         if (crosshairImage != null)

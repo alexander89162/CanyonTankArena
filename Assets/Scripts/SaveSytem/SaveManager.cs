@@ -28,7 +28,7 @@ public class SaveManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         saveFilePath = Path.Combine(Application.persistentDataPath, "playerSave.json");
-        Debug.Log("SaveManager Awake - Save path: " + saveFilePath);
+        //Debug.Log("SaveManager Awake - Save path: " + saveFilePath);
     }
 
     private void OnEnable()

@@ -17,7 +17,7 @@ public class EnemyDrop : MonoBehaviour
         
         if (spawner == null)
         {
-            Debug.LogWarning("DropSpawner not found in scene! Loot will not spawn physically.");
+           // Debug.LogWarning("DropSpawner not found in scene! Loot will not spawn physically.");
         }
     }
 
