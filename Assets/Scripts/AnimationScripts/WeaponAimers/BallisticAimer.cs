@@ -8,11 +8,13 @@ public class BallisticAimer : WeaponAimer
     [SerializeField] private Transform ballisticBody;
     [SerializeField] private Transform[] missiles;
     [SerializeField] private GameObject missilePrefab;
+    public float missileReloadTime = 3.5f;
     public float missileGravityMultiplier = 15f;
     public float missileHideBackwardsOffset = 0.04f;
 
     private Quaternion bodyRestRotation;
     private Vector3[] missileRestPositions;
+    private float[] missileReloadTimers;
     private bool[] missileLoaded;
 
     protected override void Awake()
@@ -21,6 +23,7 @@ public class BallisticAimer : WeaponAimer
         bodyRestRotation   = ballisticBody.localRotation;
         missileLoaded = new bool[missiles.Length];
         missileRestPositions = new Vector3[missiles.Length];
+        missileReloadTimers = new float[missiles.Length];
         for (int i = 0; i < missileLoaded.Length; i++)
         {
             missileLoaded[i] = true;
@@ -93,6 +96,26 @@ public class BallisticAimer : WeaponAimer
 
     public override void DoWhileHolding()
     {
-        //
+        for (int i = 0; i < missiles.Length; i++)
+        {
+            if (missileLoaded[i]) continue;
+
+            missileReloadTimers[i] += Time.deltaTime;
+            if (missileReloadTimers[i] >= missileReloadTime)
+            {
+                missileReloadTimers[i] = 0f;
+                ReloadSingleMissile(i);
+            }
+        }
+    }
+
+    private void ReloadSingleMissile(int index)
+    {
+        Tween.LocalPosition(missiles[index], missileRestPositions[index], duration: 0.3f, Ease.OutQuad)
+        .OnComplete(() =>
+        {
+            missileLoaded[index] = true;
+            currentAmmo++;
+        });
     }
 }
