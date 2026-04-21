@@ -73,4 +73,9 @@ public class CannonAimer : WeaponAimer
     {
         fireTimer = 0.5f;
     }
+
+    public override void DoWhileHolding()
+    {
+        //
+    }
 }

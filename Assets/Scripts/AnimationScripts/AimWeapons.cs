@@ -46,6 +46,7 @@ public class AimWeapons : MonoBehaviour
                 return;
             case WeaponState.Holding:
                 aimers[activeWeaponIndex].fireTimer -= Time.deltaTime;
+                aimers[activeWeaponIndex].DoWhileHolding();
                 AimCurrentWeapon();
                 if (playerControlled && firingAction.IsPressed())
                 {

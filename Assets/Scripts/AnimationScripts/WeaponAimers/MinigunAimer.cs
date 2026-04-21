@@ -74,4 +74,9 @@ public class MinigunAimer : WeaponAimer
     {
         fireTimer = 0.5f;
     }
+
+    public override void DoWhileHolding()
+    {
+        // TODO: manage barrel spinning as a heat-based counter
+    }
 }
