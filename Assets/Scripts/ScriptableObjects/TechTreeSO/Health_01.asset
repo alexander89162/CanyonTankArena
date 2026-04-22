@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: Health_01
   m_EditorClassIdentifier: Assembly-CSharp::TechNodeSO
   nodeName: Health
-  description: 
+  description: Increase Max Health
   icon: {fileID: 0}
-  techPointCost: 0
   requiredItems:
   - item: {fileID: 11400000, guid: 31c3afd9acb14ca4ca21dd966a9dd82d, type: 2}
     amount: 10
@@ -23,4 +22,6 @@ MonoBehaviour:
   healthBonus: 50
   speedBonus: 0
   fireRateBonus: 0
+  prerequisites: []
+  editorPosition: {x: 215, y: 330}
   nodeID: 0bf0c8af-878e-4d03-a368-d9b2c77b2947

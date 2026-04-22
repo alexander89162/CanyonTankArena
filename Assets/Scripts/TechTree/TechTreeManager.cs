@@ -9,6 +9,9 @@ public class TechTreeManager : MonoBehaviour
 
     private PlayerTechData currentTechData = new PlayerTechData();
 
+    // Add at the bottom
+    public List<TechNodeSO> GetAllTechNodes() => allTechNodes;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -20,21 +23,23 @@ public class TechTreeManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public bool CanUnlockNode(TechNodeSO node)
+   public bool CanUnlockNode(TechNodeSO node)
     {
-        if (node == null) return false;
-        if (currentTechData.unlockedNodeIDs.Contains(node.nodeID)) return false;
-
-        // Check tech points
-        if (currentTechData.techPointsAvailable < node.techPointCost)
+        if (node == null || currentTechData.unlockedNodeIDs.Contains(node.nodeID))
             return false;
+
+        // Check prerequisites
+        foreach (var prereq in node.prerequisites)
+        {
+            if (prereq != null && !IsNodeUnlocked(prereq))
+                return false;
+        }
 
         // Check item costs
         foreach (var cost in node.requiredItems)
         {
             if (cost.item == null) continue;
-            int owned = PlayerInventory.Instance?.GetItemCount(cost.item.itemID) ?? 0;
-            if (owned < cost.amount)
+            if (PlayerInventory.Instance.GetItemCount(cost.item.itemID) < cost.amount)
                 return false;
         }
 
@@ -44,9 +49,6 @@ public class TechTreeManager : MonoBehaviour
     public bool UnlockNode(TechNodeSO node)
     {
         if (!CanUnlockNode(node)) return false;
-
-        // Spend tech points
-        currentTechData.techPointsAvailable -= node.techPointCost;
 
         // Spend items
         foreach (var cost in node.requiredItems)

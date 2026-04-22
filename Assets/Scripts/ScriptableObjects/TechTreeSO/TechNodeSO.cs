@@ -9,9 +9,7 @@ public class TechNodeSO : ScriptableObject
     [TextArea(3, 6)] public string description = "";
     public Sprite icon;
 
-    [Header("Costs")]
-    public int techPointCost = 1;
-    
+   
     [Header("Item Costs")]
     public List<ItemCost> requiredItems = new List<ItemCost>();
 
@@ -20,6 +18,11 @@ public class TechNodeSO : ScriptableObject
     public float healthBonus = 0f;
     public float speedBonus = 0f;
     public float fireRateBonus = 0f;
+
+    public List<TechNodeSO> prerequisites = new List<TechNodeSO>();
+
+    [Header("Editor")]
+    public Vector2 editorPosition = Vector2.zero;
 
     [Header("Save")]
     public string nodeID = "";

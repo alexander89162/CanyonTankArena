@@ -244,7 +244,7 @@ public class TechTreeSceneView : MonoBehaviour
 
     RectTransform CreateNodeView(TechTreeNode node)
     {
-        GameObject nodeObject = new GameObject(node.nodeName, typeof(RectTransform), typeof(Image));
+        GameObject nodeObject = new GameObject(node.nodeName, typeof(RectTransform), typeof(Image), typeof(Button));
         nodeObject.transform.SetParent(nodeLayer, false);
 
         RectTransform rect = nodeObject.GetComponent<RectTransform>();
@@ -255,9 +255,12 @@ public class TechTreeSceneView : MonoBehaviour
         rect.anchoredPosition = new Vector2(node.position.x, -node.position.y);
 
         Image background = nodeObject.GetComponent<Image>();
-    background.sprite = GetFallbackSprite();
-    background.type = Image.Type.Simple;
+        background.sprite = GetFallbackSprite();
+        background.type = Image.Type.Simple;
         background.color = node.locked ? nodeLockedColor : nodeColor;
+
+        Button button = nodeObject.GetComponent<Button>();
+        button.onClick.AddListener(() => OnNodeClicked(node));
 
         GameObject titleObject = new GameObject("Title", typeof(RectTransform), typeof(TextMeshProUGUI));
         titleObject.transform.SetParent(nodeObject.transform, false);
@@ -307,6 +310,22 @@ public class TechTreeSceneView : MonoBehaviour
         }
 
         return rect;
+    }
+
+    private void OnNodeClicked(TechTreeNode nodeData)
+    {
+        TechNodeSO techNode = TechTreeManager.Instance.GetAllTechNodes()
+            .Find(t => t.nodeID == nodeData.id);
+
+        if (techNode != null)
+        {
+            if (TechTreeManager.Instance.UnlockNode(techNode))
+            {
+                // Refresh the tree visually
+                if (GetComponent<TechTreeController>() != null)
+                    GetComponent<TechTreeController>().OnSkillUnlocked();
+            }
+        }
     }
 
     void CreateEdgeView(RectTransform fromRect, RectTransform toRect)
