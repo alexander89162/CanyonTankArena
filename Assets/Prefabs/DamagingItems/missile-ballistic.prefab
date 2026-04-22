@@ -9,6 +9,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 9211cc0fe88b57b4bbca8b4a0dcf46ef, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9211cc0fe88b57b4bbca8b4a0dcf46ef, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9211cc0fe88b57b4bbca8b4a0dcf46ef, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9211cc0fe88b57b4bbca8b4a0dcf46ef, type: 3}
       propertyPath: m_LocalPosition.x
       value: 182.27913
       objectReference: {fileID: 0}
@@ -48,9 +60,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9211cc0fe88b57b4bbca8b4a0dcf46ef, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 9211cc0fe88b57b4bbca8b4a0dcf46ef, type: 3}
       propertyPath: m_Name
-      value: missile
+      value: missile-ballistic
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -77,3 +93,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af8cae1526dedd6458a28195cd08f378, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Missile
+  lifeTime: 10

@@ -9,8 +9,12 @@ public class BallisticAimer : WeaponAimer
     [SerializeField] private Transform[] missiles;
     [SerializeField] private GameObject missilePrefab;
     public float missileReloadTime = 3.5f;
-    public float missileGravityMultiplier = 15f;
+    public float missileLaunchSpeed = 120f;
+    public float missileForwardAcceleration = 3f;
+    public float missileGravityMultiplier = 120f;
     public float missileHideBackwardsOffset = 0.04f;
+    public float liftMissileLaunchAngle = -50f;
+    public Vector3 rotationOnSpawn = new Vector3(-90, 0, 0);
 
     private Quaternion bodyRestRotation;
     private Vector3[] missileRestPositions;
@@ -61,21 +65,13 @@ public class BallisticAimer : WeaponAimer
         }
     }
 
+    // this weapon uses passive reload, avoid using this unless forced full reload
     public override void ReloadWeapon()
     {
         for (int i = 0; i < missiles.Length; i++)
         {
             if (missileLoaded[i]) continue;
-
-            Tween.LocalPosition(missiles[i], missileRestPositions[i], duration: 0.3f, startDelay: i * 1f)
-                .OnComplete(() =>
-                {
-                    missileLoaded[i] = true;
-                    currentAmmo++;
-                });
-
-            missileLoaded[i] = true;
-            currentAmmo++;
+            missileReloadTimers[i] = missileReloadTime; // force timer to trigger next frame
         }
     }
 
@@ -88,10 +84,17 @@ public class BallisticAimer : WeaponAimer
     private void SpawnMissile(int i, Vector3 targetPosition)
     {
         Vector3 startPos = missiles[i].position;
-        Quaternion startRot = missiles[i].rotation;
+        Quaternion startRot = missiles[i].rotation * Quaternion.Euler(rotationOnSpawn);
 
-        GameObject missile = Instantiate(missilePrefab, startPos, startRot);
-        missile.GetComponent<Missile>().Launch(targetPosition, missileGravityMultiplier);
+        Vector3 toTarget = (targetPosition - startPos).normalized;
+        Quaternion toTargetRot = Quaternion.LookRotation(toTarget, ballisticBody.up);
+        float dot = Vector3.Dot(startRot * Vector3.forward, toTarget);
+        float t = Mathf.Clamp01(dot);
+
+        Quaternion spawnRot = Quaternion.AngleAxis(liftMissileLaunchAngle, ballisticBody.right) * Quaternion.Slerp(startRot, toTargetRot, t);
+
+        GameObject missile = Instantiate(missilePrefab, startPos, spawnRot);
+        missile.GetComponent<Missile>().Launch(targetPosition, missileLaunchSpeed, missileForwardAcceleration, missileGravityMultiplier);
     }
 
     public override void DoWhileHolding()

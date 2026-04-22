@@ -1,13 +1,22 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Missile : MonoBehaviour
 {
+    public float lifeTime = 10f;
     private Vector3 currentVelocity;
     private float gravityMultiplier = 9.81f;
+    private float forwardAcceleration;
+    private float lifetimeRemaining = -1f;
 
     void Update()
     {
+        if (lifetimeRemaining == -1) return;
+        lifetimeRemaining -= Time.deltaTime;
+        if (lifetimeRemaining <= 0f) { Destroy(gameObject); return; }
+
         // 1) Handle movement
+        currentVelocity += currentVelocity.normalized * forwardAcceleration * Time.deltaTime;
         currentVelocity += Vector3.down * gravityMultiplier * Time.deltaTime;
         transform.position += currentVelocity * Time.deltaTime;
 
@@ -15,21 +24,14 @@ public class Missile : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(currentVelocity);
     }
 
-    public void Launch(Vector3 targetPosition, float missileGravityMultiplier)
+    public void Launch(Vector3 targetPosition, 
+        float missileLaunchSpeed, float missileForwardAcceleration, 
+        float missileGravityMultiplier)
     {
         gravityMultiplier = missileGravityMultiplier;
-        Vector3 toTarget = targetPosition - transform.position;
-        Vector3 toTargetXZ = new Vector3(toTarget.x, 0f, toTarget.z);
-        
-        float distance = toTargetXZ.magnitude;
-        float heightDiff = toTarget.y;
-        float angle = 45f * Mathf.Deg2Rad; // launch angle, can be serialized
+        forwardAcceleration = missileForwardAcceleration;
 
-        float v0 = Mathf.Sqrt(gravityMultiplier * distance * distance /
-                (2f * Mathf.Cos(angle) * Mathf.Cos(angle) *
-                (distance * Mathf.Tan(angle) - heightDiff)));
-
-        currentVelocity = toTargetXZ.normalized * v0 * Mathf.Cos(angle)
-                        + Vector3.up * v0 * Mathf.Sin(angle);
+        currentVelocity = transform.forward * missileLaunchSpeed;
+        lifetimeRemaining = lifeTime;
     }
 }
