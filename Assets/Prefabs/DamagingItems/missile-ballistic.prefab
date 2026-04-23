@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: missile-ballistic
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9211cc0fe88b57b4bbca8b4a0dcf46ef, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -75,6 +79,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9211cc0fe88b57b4bbca8b4a0dcf46ef, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7172917971364261764}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9211cc0fe88b57b4bbca8b4a0dcf46ef, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4896170561526861550}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9211cc0fe88b57b4bbca8b4a0dcf46ef, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9114327698458736035}
   m_SourcePrefab: {fileID: 100100000, guid: 9211cc0fe88b57b4bbca8b4a0dcf46ef, type: 3}
 --- !u!1 &4689584322494506198 stripped
 GameObject:
@@ -94,3 +104,62 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Missile
   lifeTime: 10
+  explosionPrefab: {fileID: 0}
+  triggerExplosionMask:
+    serializedVersion: 2
+    m_Bits: 969
+  damageMask:
+    serializedVersion: 2
+    m_Bits: 968
+  explosionDamage: 60
+  explosionRadius: 20
+--- !u!54 &4896170561526861550
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4689584322494506198}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 1
+--- !u!136 &9114327698458736035
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4689584322494506198}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.01
+  m_Height: 0.07
+  m_Direction: 2
+  m_Center: {x: 0.000000028870998, y: -0.000060820472, z: 0.006921171}
