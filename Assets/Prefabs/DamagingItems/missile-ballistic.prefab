@@ -111,8 +111,33 @@ MonoBehaviour:
   damageMask:
     serializedVersion: 2
     m_Bits: 968
-  explosionDamage: 60
-  explosionRadius: 20
+  explosionDamage: 120
+  explosionInnerRadius: 12
+  explosionOuterRadius: 20
+  damageFalloff:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.7137432
+      value: 0.97105026
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1.002393
+      value: 0.011815518
+      inSlope: -0.03918431
+      outSlope: -0.03918431
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.48427093
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!54 &4896170561526861550
 Rigidbody:
   m_ObjectHideFlags: 0
