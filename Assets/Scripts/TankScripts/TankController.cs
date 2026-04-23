@@ -387,7 +387,7 @@ public class TankController : MonoBehaviour
             if (sourceMaterial == null)
                 continue;
 
-            Material ghostMaterial = new Material(sourceMaterial);
+            Material ghostMaterial = CreateGhostMaterial(sourceMaterial);
             SetMaterialTransparent(ghostMaterial);
             ApplyGhostColor(ghostMaterial, targetColor);
             Destroy(ghostMaterial, afterImageLifetime);
@@ -416,11 +416,19 @@ public class TankController : MonoBehaviour
         if (ghostMaterial == null)
             return;
 
+        ghostMaterial.SetOverrideTag("RenderType", "Transparent");
+
+        if (ghostMaterial.HasProperty("_Mode"))
+            ghostMaterial.SetFloat("_Mode", 3f);
+
         if (ghostMaterial.HasProperty("_Surface"))
             ghostMaterial.SetFloat("_Surface", 1f);
 
         if (ghostMaterial.HasProperty("_Blend"))
             ghostMaterial.SetFloat("_Blend", 0f);
+
+        if (ghostMaterial.HasProperty("_AlphaClip"))
+            ghostMaterial.SetFloat("_AlphaClip", 0f);
 
         if (ghostMaterial.HasProperty("_SrcBlend"))
             ghostMaterial.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
@@ -431,7 +439,46 @@ public class TankController : MonoBehaviour
         if (ghostMaterial.HasProperty("_ZWrite"))
             ghostMaterial.SetFloat("_ZWrite", 0f);
 
+        ghostMaterial.DisableKeyword("_ALPHATEST_ON");
+        ghostMaterial.EnableKeyword("_ALPHABLEND_ON");
+        ghostMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        ghostMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+
         ghostMaterial.renderQueue = 3000;
+    }
+
+    private Material CreateGhostMaterial(Material sourceMaterial)
+    {
+        Shader transparentShader = Shader.Find("Universal Render Pipeline/Unlit");
+        if (transparentShader == null)
+            transparentShader = Shader.Find("Unlit/Transparent");
+
+        Material ghostMaterial = transparentShader != null
+            ? new Material(transparentShader)
+            : new Material(sourceMaterial);
+
+        CopySourceTexture(sourceMaterial, ghostMaterial);
+        return ghostMaterial;
+    }
+
+    private void CopySourceTexture(Material sourceMaterial, Material ghostMaterial)
+    {
+        if (sourceMaterial == null || ghostMaterial == null)
+            return;
+
+        if (sourceMaterial.HasProperty("_BaseMap") && ghostMaterial.HasProperty("_BaseMap"))
+        {
+            ghostMaterial.SetTexture("_BaseMap", sourceMaterial.GetTexture("_BaseMap"));
+            ghostMaterial.SetTextureOffset("_BaseMap", sourceMaterial.GetTextureOffset("_BaseMap"));
+            ghostMaterial.SetTextureScale("_BaseMap", sourceMaterial.GetTextureScale("_BaseMap"));
+        }
+
+        if (sourceMaterial.HasProperty("_MainTex") && ghostMaterial.HasProperty("_MainTex"))
+        {
+            ghostMaterial.SetTexture("_MainTex", sourceMaterial.GetTexture("_MainTex"));
+            ghostMaterial.SetTextureOffset("_MainTex", sourceMaterial.GetTextureOffset("_MainTex"));
+            ghostMaterial.SetTextureScale("_MainTex", sourceMaterial.GetTextureScale("_MainTex"));
+        }
     }
 
     private void OnDestroy()
