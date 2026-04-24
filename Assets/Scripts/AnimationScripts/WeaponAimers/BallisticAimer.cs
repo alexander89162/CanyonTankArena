@@ -15,6 +15,7 @@ public class BallisticAimer : WeaponAimer
     public float missileHideBackwardsOffset = 0.04f;
     public float liftMissileLaunchAngle = -50f;
     public Vector3 rotationOnSpawn = new Vector3(-90, 0, 0);
+    public float missileExplosionScale = 1f;
 
     private Quaternion bodyRestRotation;
     private Vector3[] missileRestPositions;
@@ -94,7 +95,7 @@ public class BallisticAimer : WeaponAimer
         Quaternion spawnRot = Quaternion.AngleAxis(liftMissileLaunchAngle, ballisticBody.right) * Quaternion.Slerp(startRot, toTargetRot, t);
 
         GameObject missile = Instantiate(missilePrefab, startPos, spawnRot);
-        missile.GetComponent<Missile>().Launch(targetPosition, missileLaunchSpeed, missileForwardAcceleration, missileGravityMultiplier);
+        missile.GetComponent<Missile>().Launch(targetPosition, missileLaunchSpeed, missileForwardAcceleration, missileGravityMultiplier, missileExplosionScale);
     }
 
     public override void DoWhileHolding()

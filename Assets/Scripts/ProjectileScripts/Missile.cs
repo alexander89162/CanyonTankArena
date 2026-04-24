@@ -6,13 +6,13 @@ collision by its gameObject's RigidBody component.*/
 public class Missile : MonoBehaviour
 {
     public float lifeTime = 10f;
-    public GameObject explosionPrefab;
     public LayerMask triggerExplosionMask;
     public LayerMask damageMask;
     public float explosionDamage = 20f;
     public float explosionInnerRadius = 8f;
     public float explosionOuterRadius = 20f;
     public AnimationCurve damageFalloff = AnimationCurve.EaseInOut(0, 1, 1, 0);
+    public float explosionScale = 1f;
 
     private Rigidbody rb;
     private Vector3 currentVelocity;
@@ -45,13 +45,14 @@ public class Missile : MonoBehaviour
 
     public void Launch(Vector3 targetPosition, 
         float missileLaunchSpeed, float missileForwardAcceleration, 
-        float missileGravityMultiplier)
+        float missileGravityMultiplier, float missileExplosionScale)
     {
         gravityMultiplier = missileGravityMultiplier;
         forwardAcceleration = missileForwardAcceleration;
 
         currentVelocity = transform.forward * missileLaunchSpeed;
         lifetimeRemaining = lifeTime;
+        explosionScale = missileExplosionScale;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -69,8 +70,7 @@ public class Missile : MonoBehaviour
     private void Explode()
     {
         // 1) Spawn explosion prefab
-        if (explosionPrefab != null)
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        ExplosionPool.Instance.Spawn(transform.position, Quaternion.identity, explosionScale);
 
         // 2) Apply damage to nearby enemies
         Collider[] hits = Physics.OverlapSphere(transform.position, explosionOuterRadius, damageMask);
