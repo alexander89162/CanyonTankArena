@@ -408,15 +408,20 @@ MonoBehaviour:
   weaponEnabled: 1
   meshRenderer: {fileID: 90474143298115388}
   weaponRootBone: {fileID: 4804791775133336969}
-  maxAmmo: 6
-  currentAmmo: 6
-  reloadTime: 2.6
-  fireCooldown: 0
+  maxAmmo: 5
+  currentAmmo: 5
+  reloadTime: 2.8
+  fireCooldown: 0.4
+  fireTimer: 0
   cannonBody: {fileID: 4804791775133336969}
   cannonBarrel: {fileID: 6859378360194369764}
   barrelEnd: {fileID: 77823448893845741}
   clampLiftCannon: 40
   clampLiftBarrel: 30
+  shellSpawnOffset: {x: 0, y: 0, z: 3}
+  shellDamage: 35
+  projectileSpeed: 150
+  shellMaxLifetime: 6
 --- !u!1 &3237836485336562178
 GameObject:
   m_ObjectHideFlags: 0

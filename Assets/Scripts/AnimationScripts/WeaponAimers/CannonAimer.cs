@@ -13,10 +13,11 @@ public class CannonAimer : WeaponAimer
     public Vector3 shellSpawnOffset = new Vector3(0f, 0f, 3f);
     public float shellDamage = 35f;
     public float projectileSpeed = 150f;
-    public float shellMaxLifetime = 4f;
+    public float shellMaxLifetime = 6f;
     
     private Quaternion bodyRestRotation;
     private Quaternion barrelRestRotation;
+    private float reloadTimer = 0f;
 
     protected override void Awake()
     {
@@ -45,9 +46,9 @@ public class CannonAimer : WeaponAimer
     public override void TryFire(Vector3 targetPosition)
     {
         if (fireTimer > 0) return;
+        if (currentAmmo <= 0) return;
         fireTimer = fireCooldown;
-
-        // TODO: check current ammo
+        currentAmmo--;
 
         Vector3 targetPos = targetPosition;
         Vector3 origin = barrelEnd.position;
@@ -67,7 +68,17 @@ public class CannonAimer : WeaponAimer
         ProjectileManager.Instance.SpawnBullet(b);
     }
 
-    public override void ReloadWeapon(){} // TODO
+    public override void ReloadWeapon() // this weapon reloads passively
+    {
+        if (currentAmmo >= maxAmmo) { reloadTimer = 0f; return; }
+
+        reloadTimer += Time.deltaTime;
+        if (reloadTimer >= reloadTime) // here, reloadTime is for a single shell to reload
+        {
+            currentAmmo++;
+            reloadTimer -= reloadTime;
+        }
+    }
 
     public override void OnWeaponSwapped()
     {
@@ -76,6 +87,6 @@ public class CannonAimer : WeaponAimer
 
     public override void DoWhileHolding()
     {
-        //
+        ReloadWeapon();
     }
 }

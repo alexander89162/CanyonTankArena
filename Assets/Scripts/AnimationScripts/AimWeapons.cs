@@ -52,6 +52,8 @@ public class AimWeapons : MonoBehaviour
                 {
                     aimers[activeWeaponIndex].TryFire(targetingSystem.GetTargetPosition());
                 }
+                // else if (!playerControlled && (target.transform.position - transform.position).sqrMagnitude > 1600f)
+                //     aimers[activeWeaponIndex].TryFire(target.position);
                 return;
             case WeaponState.Disabled: return;
         }
