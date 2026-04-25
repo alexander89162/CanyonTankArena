@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class PauseManager : MonoBehaviour
+public class PauseMenuController : MonoBehaviour
 {
     private UIDocument pauseDocument; 
 
@@ -150,6 +150,8 @@ void OnEnable()
     {
         ResumeGame(); // reset time scale before loading
         SceneManager.LoadScene("StartMenu"); 
+        ScoreManager.Instance?.SaveHighScore();
+        ScoreManager.Instance.currentScore = 0;
     }
 
     public void QuitGame()

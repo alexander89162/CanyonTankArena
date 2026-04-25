@@ -10,10 +10,16 @@ public class AimWeapons : MonoBehaviour
     private WeaponAimer[] aimers;
     private int activeWeaponIndex = 0;
     private Transform target;
-    public enum WeaponState {Holding, Swapping, Reloading}
+    public enum WeaponState
+    {
+        Holding, // reloading is included in this state implicitly
+        Swapping, 
+        Disabled
+    }
     public bool playerControlled = false;
     private PlayerInput playerInput;
     private InputAction swapAction;
+    private InputAction firingAction;
 
     void Awake()
     {
@@ -27,6 +33,7 @@ public class AimWeapons : MonoBehaviour
         {
             playerInput = GetComponent<PlayerInput>();
             swapAction = playerInput.actions["SwapNextWeapon"];
+            firingAction = playerInput.actions["Fire"];
         }
     }
 
@@ -38,15 +45,22 @@ public class AimWeapons : MonoBehaviour
                 AimCurrentWeapon();
                 return;
             case WeaponState.Holding:
+                aimers[activeWeaponIndex].fireTimer -= Time.deltaTime;
+                aimers[activeWeaponIndex].DoWhileHolding();
                 AimCurrentWeapon();
+                if (playerControlled && firingAction.IsPressed())
+                {
+                    aimers[activeWeaponIndex].TryFire(targetingSystem.GetTargetPosition());
+                }
+                // else if (!playerControlled && (target.transform.position - transform.position).sqrMagnitude > 1600f)
+                //     aimers[activeWeaponIndex].TryFire(target.position);
                 return;
+            case WeaponState.Disabled: return;
         }
     }
 
     public void SwapToWeapon(int newWeaponIndex)
     {
-        if (currentState == WeaponState.Swapping) return;
-
         SetState(WeaponState.Swapping);
         Sequence.Create()
             .Chain(aimers[activeWeaponIndex].HideWeapon(swapDuration / 2))
@@ -60,6 +74,7 @@ public class AimWeapons : MonoBehaviour
                     .Chain(aimers[newWeaponIndex].ShowWeapon(swapDuration / 2))
                     .ChainCallback(() =>
                     {
+                        aimers[newWeaponIndex].OnWeaponSwapped();
                         SetState(WeaponState.Holding);
                     });
             });
@@ -87,15 +102,10 @@ public class AimWeapons : MonoBehaviour
                 SwapToWeapon(next);
                 return;
             }
-            aimers[activeWeaponIndex].AimAt(GetTarget());
+            aimers[activeWeaponIndex].AimAt(targetingSystem.GetTargetPosition());
         }
         else
             aimers[activeWeaponIndex].AimAt(target.position);
-    }
-
-    public Vector3 GetTarget()
-    {
-        return targetingSystem.GetTargetPosition();
     }
 
     public void SetState(WeaponState newState)
@@ -103,8 +113,10 @@ public class AimWeapons : MonoBehaviour
         switch (newState)
         {
             case WeaponState.Holding: break;
-            case WeaponState.Reloading: break;
             case WeaponState.Swapping: break;
+            case WeaponState.Disabled: break;
         }
+
+        currentState = newState;
     }
 }

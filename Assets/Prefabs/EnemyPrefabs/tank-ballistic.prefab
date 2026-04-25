@@ -458,10 +458,20 @@ MonoBehaviour:
   maxAmmo: 2
   currentAmmo: 2
   reloadTime: 4
+  fireCooldown: 0
+  fireTimer: 0
   ballisticBody: {fileID: 2434394840739719841}
   missiles:
   - {fileID: 1180548276422870632}
   - {fileID: 2914707749025144088}
+  missilePrefab: {fileID: 0}
+  missileReloadTime: 3.5
+  missileLaunchSpeed: 180
+  missileForwardAcceleration: 3
+  missileGravityMultiplier: 120
+  missileHideBackwardsOffset: 0.04
+  liftMissileLaunchAngle: -10
+  rotationOnSpawn: {x: -90, y: 0, z: 0}
 --- !u!1 &5266946501906647126
 GameObject:
   m_ObjectHideFlags: 0

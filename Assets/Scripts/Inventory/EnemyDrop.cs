@@ -3,6 +3,7 @@ using UnityEngine;
 public class EnemyDrop : MonoBehaviour
 {
     [SerializeField] private DropTableSO dropTable;
+    [SerializeField] private int scoreValue;
     
     [Header("Loot Settings")]
     [SerializeField] private float dropChance = 0.85f;
@@ -16,7 +17,7 @@ public class EnemyDrop : MonoBehaviour
         
         if (spawner == null)
         {
-            Debug.LogWarning("DropSpawner not found in scene! Loot will not spawn physically.");
+           // Debug.LogWarning("DropSpawner not found in scene! Loot will not spawn physically.");
         }
     }
 
@@ -26,6 +27,11 @@ public class EnemyDrop : MonoBehaviour
         if (Random.value > dropChance) return;
 
         var drops = dropTable.RollDrops();
+
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.AddScore(scoreValue, gameObject.name);
+        }
 
         foreach (var drop in drops)
         {

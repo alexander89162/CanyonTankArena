@@ -12,17 +12,14 @@ public class DamageController : MonoBehaviour
 
     public void TakeDamage(float damageAmount)
     {
-
         float remainingDamage = damageAmount;
     
         health.TakeDamage(remainingDamage);
 
         if (health.IsDead)
         {
-            
             //health.SetFullHealth();  // Reset health to max for testing purposes
-            Debug.Log($"[DamageController] {gameObject.name} has been destroyed!");
-            
+            Debug.Log($"[DamageController] {gameObject.name} has been destroyed!");   
         }
     }
     [ContextMenu("Test damage")]

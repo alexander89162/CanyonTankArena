@@ -50,7 +50,7 @@ public class StartMenuController : MonoBehaviour
         Time.timeScale = 1f;
 
         // Start async load (single mode replaces menu)
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Demo3video");
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Demo1-V2");
         asyncLoad.allowSceneActivation = false; 
 
         // Fake progress while waiting (or use asyncLoad.progress)

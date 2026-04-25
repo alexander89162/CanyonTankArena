@@ -1,3 +1,4 @@
+//using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,7 +31,7 @@ public class CrosshairScript : MonoBehaviour
     [SerializeField] private LayerMask aimLayerMask = -1;
 
     [Tooltip("Draw debug ray for AimController fallback")]
-    [SerializeField] private bool showDebugRay = false;
+    [SerializeField] private bool showDebugRay = false; 
 
     [Tooltip("How often to retry finding the active AimController when missing")]
     [SerializeField] private float aimResolveInterval = 0.5f;
@@ -55,7 +56,7 @@ public class CrosshairScript : MonoBehaviour
     [SerializeField] private Color obstacleInnerRingColor = new Color(0.62f, 0.62f, 0.62f, 1f);
     
     [Tooltip("Size of the crosshair")]
-    [SerializeField] private float crosshairSize = 1f;
+    [SerializeField] private float crosshairSize = 1.5f;
     
     private RectTransform rectTransform;
     private Image crosshairImage;
@@ -98,8 +99,8 @@ public class CrosshairScript : MonoBehaviour
             aimController = ResolvePreferredAimController();
         }
 
-        if (aimController == null)
-            Debug.LogWarning("CrosshairScript: No AimController found in scene. Add one to your player tank.");
+       // if (aimController == null)
+            //Debug.LogWarning("CrosshairScript: No AimController found in scene. Add one to your player tank.");
         
         // Apply visual settings
         if (crosshairImage != null)
@@ -257,16 +258,18 @@ public class CrosshairScript : MonoBehaviour
         {
             targetPosition = aimController.GetTargetPosition();
         }
-        else if (aimController != null)
+        else if (aimController == null)
         {
             Vector3 aimDirection = aimController.GetAimDirection().normalized;
             Transform raySource = aimController.GetCannonTransform();
             if (raySource == null)
                 raySource = aimController.GetTurretTransform();
+                
+                Debug.Log($"[Crosshair] Using fallback raycast from {(raySource != null ? raySource.name : "aimController position")} in direction {/*aimDirection*/Vector3.forward} (no AimController target)");
 
-            Vector3 rayOrigin = (raySource != null ? raySource.position : aimController.transform.position) + aimDirection * muzzleForwardOffset;
+            Vector3 rayOrigin = (raySource != null ? raySource.position : aimController.transform.position) + /*aimDirection*/ Vector3.zero * muzzleForwardOffset;
 
-            bool hitFound = TryRaycastIgnoringAimControllerSelf(rayOrigin, aimDirection, maxAimDistance, aimLayerMask, out RaycastHit hit);
+            bool hitFound = TryRaycastIgnoringAimControllerSelf(rayOrigin, /*aimDirection*/ Vector3.forward, maxAimDistance, aimLayerMask, out RaycastHit hit);
 
             if (hitFound)
             {
@@ -274,10 +277,10 @@ public class CrosshairScript : MonoBehaviour
             }
             else
             {
-                targetPosition = rayOrigin + aimDirection * maxAimDistance;
+                targetPosition = rayOrigin /*+ aimDirection*/ * maxAimDistance;
             }
 
-            if (showDebugRay)
+            if (showDebugRay && aimController != null)
                 Debug.DrawRay(rayOrigin, aimDirection * maxAimDistance, Color.cyan);
         }
         else

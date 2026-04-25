@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1761357289083529924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1572871080024246147}
+  - component: {fileID: 7420034116500856806}
+  m_Layer: 0
+  m_Name: ProjectileSystem_V1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1572871080024246147
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1761357289083529924}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 451.9647, y: 56.60019, z: -95.21761}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7420034116500856806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1761357289083529924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a06094b80b070df409fb06e0b49b0c2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectileManager
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 968
+  cannonShellRadius: 1.5
+  bulletRadius: 0.1
+  cannonShellMesh: {fileID: 4493585093827132993, guid: 594e47a6fc9242748a0b8abc5b77df13, type: 3}
+  cannonMeshMaterial: {fileID: 2100000, guid: 516b17667ba70274a99180e358f6753c, type: 2}
+  bulletMesh: {fileID: 2534964839176971238, guid: 5694a581c15439a40bde353242d92a38, type: 3}
+  bulletMaterial: {fileID: 2100000, guid: 516b17667ba70274a99180e358f6753c, type: 2}

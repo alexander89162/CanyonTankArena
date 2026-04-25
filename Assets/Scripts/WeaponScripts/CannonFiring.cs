@@ -5,6 +5,7 @@ using System;
 
 public class CannonFiring : MonoBehaviour
 {
+    public static CannonFiring Instance { get; private set; }
     [Header("References — usually same as AimController")]
     [SerializeField] private Transform cannonTransform;     // barrel / muzzle pivot
     [SerializeField] private Transform muzzlePoint;         // empty child at barrel tip

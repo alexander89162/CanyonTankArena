@@ -335,11 +335,14 @@ GameObject:
   - component: {fileID: 9127319107573624352}
   - component: {fileID: 1569132911155632130}
   - component: {fileID: 5877000822416222695}
+  - component: {fileID: -989811206117421267}
+  - component: {fileID: 3076929918084960618}
+  - component: {fileID: -3398281905814808126}
   - component: {fileID: 1208942831822770643}
   - component: {fileID: 4693065677844920671}
   m_Layer: 7
   m_Name: tank-minigun
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -512,7 +515,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19bc73e8f4cb44246bfb6bb287d048e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
-  maxHealth: 110
+  maxHealth: 50
   destroyOnDeath: 1
   deathDelay: 0.1
   OnHealthChanged:
@@ -521,6 +524,115 @@ MonoBehaviour:
   OnDeath:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-989811206117421267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6180137789946429802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ae97e5853cb6b84eaa627164fc930d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HPdebugger
+  damageReceiver: {fileID: 3076929918084960618}
+  heightOffset: 2.5
+  style:
+    m_Name: 
+    m_Normal:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Hover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Active:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Focused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnNormal:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnHover:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnActive:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_OnFocused:
+      m_Background: {fileID: 0}
+      m_ScaledBackgrounds: []
+      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
+    m_Border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Margin:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Padding:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Overflow:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Font: {fileID: 12800000, guid: 27f9ba588bd6da94bb6e14e4d3d778fb, type: 3}
+    m_FontSize: 30
+    m_FontStyle: 0
+    m_Alignment: 0
+    m_WordWrap: 0
+    m_RichText: 1
+    m_TextClipping: 0
+    m_ImagePosition: 0
+    m_ContentOffset: {x: 0, y: 0}
+    m_FixedWidth: 0
+    m_FixedHeight: 0
+    m_StretchWidth: 1
+    m_StretchHeight: 0
+--- !u!114 &3076929918084960618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6180137789946429802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbfda828bb8b84349a83dd119381bbfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageController
+  health: {fileID: 5877000822416222695}
+--- !u!114 &-3398281905814808126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6180137789946429802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be6463bedb4a76f479146a453306b639, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDrop
+  dropTable: {fileID: 11400000, guid: 6b726b7f75cae594c8bedcf4aedf5737, type: 2}
+  scoreValue: 250
+  dropChance: 0.75
 --- !u!114 &1208942831822770643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -554,9 +666,11 @@ MonoBehaviour:
   maxAmmo: 25
   currentAmmo: 25
   reloadTime: 3.8
+  fireCooldown: 0
   minigunBase: {fileID: 1132761039689416492}
   minigunBody: {fileID: 4165643794708771199}
   minigunBarrels: {fileID: 2212171305854700149}
+  barrelEnd: {fileID: 4492273770652761388}
   lowerTarget: 4
 --- !u!1 &7695468828355442639
 GameObject:

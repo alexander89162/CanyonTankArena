@@ -430,4 +430,10 @@ public class UnitManager : MonoBehaviour
         if (debug) Debug.Log("UnitManager changed state from " + currentState + " to " + newState);
         currentState = newState;
     }
+
+    public void tryOnbattleExit()
+    {
+            OnBattleExit?.Invoke();
+            Destroy(this);
+    }
 }

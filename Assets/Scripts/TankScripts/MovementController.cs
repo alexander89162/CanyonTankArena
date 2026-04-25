@@ -20,14 +20,18 @@ public class MovementController : MonoBehaviour
     private float verticalVelocity = 0f;
     public Vector3 currentVelocityV = Vector3.zero;
 
-    private TankSlopeForRig tankSlope;
+    private TankSlopeForRig tankSlopeRig;
+    private TankSlope tankSlope;
 
     void Awake()
     {
         controller = GetComponent<CharacterController>();
-        tankSlope = GetComponent<TankSlopeForRig>();
+        tankSlopeRig = GetComponent<TankSlopeForRig>();
+        tankSlope = GetComponent<TankSlope>();
 
-        if (tankSlope != null)
+        if (tankSlopeRig != null)
+            tankSlopeRig.tankRoot = transform;
+        else if (tankSlope != null)
             tankSlope.tankRoot = transform;
     }
 
@@ -82,9 +86,13 @@ public class MovementController : MonoBehaviour
             verticalVelocity = -2f;
         }
 
-        if (tankSlope != null)
+        if (tankSlopeRig != null)
         {
-            tankSlope.UpdateAlignment(currentVelocity);
+            tankSlopeRig.UpdateAlignment(currentVelocity);
+        }
+        else if (tankSlope != null)
+        {
+            tankSlope.UpdateAlignment(currentVelocity); 
         }
     }
 

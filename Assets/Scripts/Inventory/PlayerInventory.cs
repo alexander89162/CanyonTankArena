@@ -17,7 +17,7 @@ public class PlayerInventory : MonoBehaviour
             return;
         }
         Instance = this;
-        Debug.Log("PlayerInventory Initialized");
+        //Debug.Log("PlayerInventory Initialized");
     }
 
     public void AddItem(ItemSO itemSO, int quantity = 1)
