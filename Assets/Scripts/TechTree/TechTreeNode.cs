@@ -18,7 +18,6 @@ public class TechTreeNode : ScriptableObject
     // optional locked state for UI
     public bool locked = false;
 
-    // legacy fields kept for compatibility
     public int column = 0;
-    public int row = 0; // 0 = top, 1 = middle, 2 = bottom
+    public int row = 0;
 }

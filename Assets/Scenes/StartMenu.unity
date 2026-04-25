@@ -5139,6 +5139,8 @@ GameObject:
   - component: {fileID: 723681796}
   - component: {fileID: 723681797}
   - component: {fileID: 723681798}
+  - component: {fileID: 723681799}
+  - component: {fileID: 723681800}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -5222,7 +5224,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9f09e7a0d54c434ca71c60cffbdb252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
-  items: []
+  items:
+  - itemID: 98f7c680-8c22-4c3d-b1ac-b79f91825b06
+    quantity: 0
 --- !u!114 &723681798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5237,6 +5241,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
   currentScore: 0
   highScore: 0
+--- !u!114 &723681799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 723681792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 600aa172a24739448a0e703f8ce67e18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerTankStats
+  baseMaxHealth: 500
+  baseDamageMultiplier: 1
+  baseSpeedMultiplier: 1
+  baseFireRateMultiplier: 1
+  maxHealth: 0
+  damageMultiplier: 1
+  speedMultiplier: 1
+  fireRateMultiplier: 1
+--- !u!114 &723681800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 723681792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6ae2e23f774524428a7c2a901f1dc1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TechTreeManager
+  allTechNodes:
+  - {fileID: 11400000, guid: c6a5d6339d014a4458562f75d38b090f, type: 2}
+  - {fileID: 11400000, guid: 1f840334e7ae74749b3a200a384f7711, type: 2}
 --- !u!1001 &747743795
 PrefabInstance:
   m_ObjectHideFlags: 0

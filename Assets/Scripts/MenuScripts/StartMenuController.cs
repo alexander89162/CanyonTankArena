@@ -50,7 +50,9 @@ public class StartMenuController : MonoBehaviour
         Time.timeScale = 1f;
 
         // Start async load (single mode replaces menu)
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Demo1-V2");
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu");
+        SaveManager.Instance.LoadGame();
+        SaveManager.Instance.LoadTechData();
         asyncLoad.allowSceneActivation = false; 
 
         // Fake progress while waiting (or use asyncLoad.progress)

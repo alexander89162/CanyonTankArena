@@ -40,6 +40,14 @@ public class TankController : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        if(PlayerTankStats.Instance != null)
+        {
+            PlayerTankStats.Instance.ApplyTechBonuses();
+        }
+    }
+
     public void OnMove(InputAction.CallbackContext context)
     {
         keyboardMoveInput = context.ReadValue<Vector2>();

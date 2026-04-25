@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a27639006f3b9324694233ab7bbf5d42, type: 3}
+  m_Name: Health_02
+  m_EditorClassIdentifier: Assembly-CSharp::TechNodeSO
+  nodeName: Health+
+  description: Increase Max Health +100
+  icon: {fileID: 0}
+  requiredItems:
+  - item: {fileID: 11400000, guid: 31c3afd9acb14ca4ca21dd966a9dd82d, type: 2}
+    amount: 50
+  damageBonus: 0
+  healthBonus: 100
+  speedBonus: 0
+  fireRateBonus: 0
+  prerequisites:
+  - {fileID: 11400000, guid: c6a5d6339d014a4458562f75d38b090f, type: 2}
+  editorPosition: {x: 500, y: 330}
+  nodeID: cf615b3b-4a05-4249-a49c-49cfd27bca31

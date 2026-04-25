@@ -23,7 +23,16 @@ public class HealthComponent : MonoBehaviour
 
     private void Awake()
     {
-        currentHealth = maxHealth;
+        if (gameObject.CompareTag("Player") && PlayerTankStats.Instance != null)
+        {
+            PlayerTankStats.Instance.ApplyTechBonuses();
+            maxHealth = PlayerTankStats.Instance.maxHealth;
+            currentHealth = maxHealth;
+        }
+        else
+        {
+            currentHealth = maxHealth;
+        }
     }
 
     public void Initialize(float newMaxHealth)
@@ -55,15 +64,6 @@ public class HealthComponent : MonoBehaviour
                 if (gameObject.CompareTag("Player"))
                 {
                     ScoreManager.Instance?.SaveHighScore();
-                    /*
-                    GameUIManager uiManager = FindFirstObjectByType<GameUIManager>();
-                    if (uiManager != null)
-                    {
-                        // We use OnBattleExit event which is already wired up
-                        UnitManager unitManager = FindFirstObjectByType<UnitManager>();
-                        unitManager.tryOnbattleExit();
-                    }
-                    */
                     SceneManager.LoadScene("StartMenu"); // Reload current scene on player death
                 }
             }
@@ -74,6 +74,17 @@ public class HealthComponent : MonoBehaviour
     {
         if (isDead) return;
         currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
+        OnHealthChanged?.Invoke(HealthNormalized);
+    }
+
+    public void SetMaxHealth(float newMaxHealth)
+    {
+        // Preserve current health ratio when max health increases
+        float ratio = MaxHealth > 0 ? currentHealth / MaxHealth : 1f;
+        
+        maxHealth = newMaxHealth;
+        currentHealth = maxHealth * ratio;
+        
         OnHealthChanged?.Invoke(HealthNormalized);
     }
 

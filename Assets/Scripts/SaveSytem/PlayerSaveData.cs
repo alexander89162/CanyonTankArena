@@ -8,4 +8,7 @@ public class PlayerSaveData
 
     //saves players highscore
     public int highScore = 0;
+
+    //saves players unlocked tech nodes
+    public PlayerTechData techData = new PlayerTechData();
 }
