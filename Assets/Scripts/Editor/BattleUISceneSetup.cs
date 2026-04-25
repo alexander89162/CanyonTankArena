@@ -49,7 +49,7 @@ public static class BattleUISceneSetup
         CameraController cameraController = ResolveComponentForPlayer<CameraController>(playerTransform);
         AimController aimController = ResolveComponentForPlayer<AimController>(playerTransform);
         CannonFiring cannonFiring = ResolveComponentForPlayer<CannonFiring>(playerTransform);
-        PauseManager pauseManager = ResolveSceneComponent<PauseManager>();
+        PauseMenuController pauseManager = ResolveSceneComponent<PauseMenuController>();
 
         Transform healthRoot = battleUiRoot.transform.Find("HealthTopRight");
         Transform ammoRoot = battleUiRoot.transform.Find("AmmoBottom");
@@ -750,7 +750,7 @@ public static class BattleUISceneSetup
         return null;
     }
 
-    static void SetupMobileTouchControls(Transform battleUiRoot, TankController tankController, CameraController cameraController, AimController aimController, CannonFiring cannonFiring, PauseManager pauseManager)
+    static void SetupMobileTouchControls(Transform battleUiRoot, TankController tankController, CameraController cameraController, AimController aimController, CannonFiring cannonFiring, PauseMenuController pauseManager)
     {
         if (battleUiRoot == null)
             return;
@@ -949,7 +949,7 @@ public static class BattleUISceneSetup
         buttonLabel.raycastTarget = false;
     }
 
-    static void CreatePauseButton(Transform parent, Sprite uiSprite, PauseManager pauseManager)
+    static void CreatePauseButton(Transform parent, Sprite uiSprite, PauseMenuController pauseManager)
     {
         GameObject root = GetOrCreateChild(parent.gameObject, "PauseButton");
         RectTransform rootRect = EnsureRectTransform(root);
