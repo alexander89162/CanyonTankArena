@@ -104,7 +104,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Missile
   lifeTime: 10
-  explosionPrefab: {fileID: 0}
   triggerExplosionMask:
     serializedVersion: 2
     m_Bits: 969
@@ -112,14 +111,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 968
   explosionDamage: 120
-  explosionInnerRadius: 12
-  explosionOuterRadius: 20
+  explosionInnerRadius: 25
+  explosionOuterRadius: 55
   damageFalloff:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.7137432
-      value: 0.97105026
+      time: 0.5
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -127,8 +126,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 1.002393
-      value: 0.011815518
+      time: 0.99963915
+      value: 0.0039765798
       inSlope: -0.03918431
       outSlope: -0.03918431
       tangentMode: 0
@@ -138,6 +137,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  explosionScale: 1
 --- !u!54 &4896170561526861550
 Rigidbody:
   m_ObjectHideFlags: 0
