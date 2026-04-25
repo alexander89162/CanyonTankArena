@@ -58,7 +58,7 @@ public class TankController : MonoBehaviour
             playerInput = GetComponent<PlayerInput>();
 
         if (cachedRenderers == null || cachedRenderers.Length == 0)
-            cachedRenderers = GetComponentsInChildren<Renderer>(true);
+            RefreshCachedRenderers();
 
         CacheActions();
         TryBindDashButton();
@@ -72,6 +72,7 @@ public class TankController : MonoBehaviour
     private void Start()
     {
         TryBindDashButton();
+        RefreshCachedRenderers();
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -262,22 +263,42 @@ public class TankController : MonoBehaviour
 
     private void SpawnDashAfterImages(List<Pose> dashSamples)
     {
+        RefreshCachedRenderers();
+        Debug.Log($"[AfterImage] RefreshCachedRenderers found {cachedRenderers.Length} renderers");
+
         if (cachedRenderers == null || cachedRenderers.Length == 0)
+        {
+            Debug.LogWarning("[AfterImage] No renderers found - returning early");
             return;
+        }
 
         if (dashSamples == null || dashSamples.Count == 0)
+        {
+            Debug.LogWarning("[AfterImage] No dash samples provided - returning early");
             return;
+        }
 
+        Debug.Log($"[AfterImage] Building spaced samples from {dashSamples.Count} dash samples (minSpacing={afterImageMinSpacing})");
         List<Pose> spacedSamples = BuildSpacedAfterImageSamples(dashSamples);
+        Debug.Log($"[AfterImage] Got {spacedSamples.Count} spaced samples after filtering");
         if (spacedSamples.Count == 0)
+        {
+            Debug.LogWarning("[AfterImage] No spaced samples after filtering - returning early");
             return;
+        }
 
         int ghostLimit = Mathf.Min(afterImageGhostCount, spacedSamples.Count);
         if (ghostLimit <= 0)
+        {
+            Debug.LogWarning("[AfterImage] Ghost limit is 0 or less - returning early");
             return;
+        }
+
+        Debug.Log($"[AfterImage] Spawning {ghostLimit} ghost afterimages");
 
         if (ghostLimit == 1)
         {
+            Debug.Log($"[AfterImage] Single ghost mode - spawning at position {spacedSamples[spacedSamples.Count - 1].position}");
             SpawnAfterImageGhost(spacedSamples[spacedSamples.Count - 1], afterImageTint.a * 0.6f);
             return;
         }
@@ -287,7 +308,9 @@ public class TankController : MonoBehaviour
             float sampleT = (float)i / (ghostLimit - 1);
             int sampleIndex = Mathf.RoundToInt(sampleT * (spacedSamples.Count - 1));
             float blend = sampleT;
-            SpawnAfterImageGhost(spacedSamples[sampleIndex], Mathf.Lerp(afterImageTint.a, afterImageTint.a * 0.12f, blend));
+            float alpha = Mathf.Lerp(afterImageTint.a, afterImageTint.a * 0.12f, blend);
+            Debug.Log($"[AfterImage] Ghost {i}: sampleIndex={sampleIndex}, position={spacedSamples[sampleIndex].position}, alpha={alpha}");
+            SpawnAfterImageGhost(spacedSamples[sampleIndex], alpha);
         }
     }
 
@@ -318,27 +341,38 @@ public class TankController : MonoBehaviour
     }
     private void SpawnAfterImageGhost(Pose pose, float alpha)
     {
+        Debug.Log($"[AfterImage] SpawnAfterImageGhost called with pose={pose.position}, alpha={alpha}");
         GameObject ghostRoot = new GameObject($"{gameObject.name}_AfterImage");
         ghostRoot.transform.SetPositionAndRotation(pose.position, pose.rotation);
         ghostRoot.transform.localScale = transform.localScale;
+        Debug.Log($"[AfterImage] Created ghostRoot at {ghostRoot.transform.position}");
 
+        int ghostChildCount = 0;
         for (int i = 0; i < cachedRenderers.Length; i++)
         {
             Renderer sourceRenderer = cachedRenderers[i];
             if (sourceRenderer == null || !sourceRenderer.enabled || !sourceRenderer.gameObject.activeInHierarchy)
+            {
+                Debug.Log($"[AfterImage] Renderer {i} filtered: null={sourceRenderer == null}, enabled={sourceRenderer?.enabled}, activeInHierarchy={sourceRenderer?.gameObject.activeInHierarchy}");
                 continue;
+            }
 
             MeshFilter sourceMeshFilter = sourceRenderer.GetComponent<MeshFilter>();
             SkinnedMeshRenderer sourceSkinnedMeshRenderer = sourceRenderer as SkinnedMeshRenderer;
 
             if (sourceMeshFilter == null && sourceSkinnedMeshRenderer == null)
+            {
+                Debug.Log($"[AfterImage] Renderer {i} has no mesh: MeshFilter={sourceMeshFilter}, SkinnedMeshRenderer={sourceSkinnedMeshRenderer}");
                 continue;
+            }
 
+            ghostChildCount++;
+            Debug.Log($"[AfterImage] Creating ghost child for renderer '{sourceRenderer.gameObject.name}'");
             GameObject ghostChild = new GameObject(sourceRenderer.gameObject.name);
             ghostChild.transform.SetParent(ghostRoot.transform, false);
-            ghostChild.transform.localPosition = sourceRenderer.transform.localPosition;
-            ghostChild.transform.localRotation = sourceRenderer.transform.localRotation;
-            ghostChild.transform.localScale = sourceRenderer.transform.localScale;
+            ghostChild.transform.position = sourceRenderer.transform.position;
+            ghostChild.transform.rotation = sourceRenderer.transform.rotation;
+            ghostChild.transform.localScale = sourceRenderer.transform.lossyScale;
 
             Mesh ghostMesh = null;
 
@@ -354,9 +388,12 @@ public class TankController : MonoBehaviour
 
             if (ghostMesh == null)
             {
+                Debug.LogWarning($"[AfterImage] Failed to get mesh for renderer '{sourceRenderer.gameObject.name}'");
                 Destroy(ghostChild);
                 continue;
             }
+
+            Debug.Log($"[AfterImage] Got mesh for renderer: {ghostMesh.name} with {ghostMesh.vertexCount} vertices");
 
             if (sourceSkinnedMeshRenderer != null)
                 Destroy(ghostMesh, afterImageLifetime);
@@ -365,11 +402,14 @@ public class TankController : MonoBehaviour
             ghostMeshFilter.sharedMesh = ghostMesh;
 
             MeshRenderer ghostRenderer = ghostChild.AddComponent<MeshRenderer>();
-            ghostRenderer.sharedMaterials = BuildGhostMaterials(sourceRenderer.sharedMaterials, alpha);
+            Material[] ghostMats = BuildGhostMaterials(sourceRenderer.sharedMaterials, alpha);
+            Debug.Log($"[AfterImage] Created {ghostMats.Length} ghost materials");
+            ghostRenderer.sharedMaterials = ghostMats;
             ghostRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             ghostRenderer.receiveShadows = false;
         }
 
+        Debug.Log($"[AfterImage] Finished spawning ghost with {ghostChildCount} child renderers");
         Destroy(ghostRoot, afterImageLifetime);
     }
 
@@ -479,6 +519,11 @@ public class TankController : MonoBehaviour
             ghostMaterial.SetTextureOffset("_MainTex", sourceMaterial.GetTextureOffset("_MainTex"));
             ghostMaterial.SetTextureScale("_MainTex", sourceMaterial.GetTextureScale("_MainTex"));
         }
+    }
+
+    private void RefreshCachedRenderers()
+    {
+        cachedRenderers = GetComponentsInChildren<Renderer>(true);
     }
 
     private void OnDestroy()
