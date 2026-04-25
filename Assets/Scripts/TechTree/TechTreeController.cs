@@ -27,7 +27,7 @@ public class TechTreeController : MonoBehaviour
                 nodeName = techNode.nodeName,
                 position = techNode.editorPosition,
                 description = techNode.description,
-                cost = techNode.requiredItems.Count, // Simplified cost calculation
+                cost = techNode.requiredItems.Count,
                 locked = !TechTreeManager.Instance.IsNodeUnlocked(techNode),
                 icon = techNode.icon
             };

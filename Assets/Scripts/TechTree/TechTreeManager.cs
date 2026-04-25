@@ -9,7 +9,6 @@ public class TechTreeManager : MonoBehaviour
 
     private PlayerTechData currentTechData = new PlayerTechData();
 
-    // Add at the bottom
     public List<TechNodeSO> GetAllTechNodes() => allTechNodes;
 
     private void Awake()
@@ -62,6 +61,12 @@ public class TechTreeManager : MonoBehaviour
         // Unlock
         currentTechData.unlockedNodeIDs.Add(node.nodeID);
         
+        if (PlayerTankStats.Instance != null)
+        {
+            PlayerTankStats.Instance.ApplyTechBonuses();
+            PlayerTankStats.Instance.ApplyToCurrentPlayerTank();
+        }
+
         SaveTechTree();
         Debug.Log($" Unlocked tech: {node.nodeName}");
         return true;
@@ -70,13 +75,6 @@ public class TechTreeManager : MonoBehaviour
     public bool IsNodeUnlocked(TechNodeSO node)
     {
         return currentTechData.unlockedNodeIDs.Contains(node.nodeID);
-    }
-
-    public void AddTechPoints(int amount)
-    {
-        currentTechData.techPointsAvailable += amount;
-        currentTechData.totalTechPointsEarned += amount;
-        SaveTechTree();
     }
 
     // Add this to SkillTreeManager
@@ -89,6 +87,24 @@ public class TechTreeManager : MonoBehaviour
                 unlocked.Add(node);
         }
         return unlocked;
+    }
+
+    public PlayerTechData GetCurrentTechData()
+    {
+
+        return currentTechData;
+    }
+
+    public List<string> GetUnlockedNodeIDs()
+    {
+        return new List<string>(currentTechData.unlockedNodeIDs);
+    }
+
+    public void LoadFromData(PlayerTechData loadedData)
+    {
+        currentTechData = loadedData;
+        if (PlayerTankStats.Instance != null)
+            PlayerTankStats.Instance.ApplyTechBonuses();
     }
 
     // Save / Load

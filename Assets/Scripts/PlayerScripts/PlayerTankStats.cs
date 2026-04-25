@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerTankStats : MonoBehaviour
 {
+    public static PlayerTankStats Instance { get; private set; }
+
     [Header("Base Stats")]
     public float baseMaxHealth = 100f;
     public float baseDamageMultiplier = 1f;
@@ -14,10 +16,24 @@ public class PlayerTankStats : MonoBehaviour
     public float speedMultiplier = 1f;
     public float fireRateMultiplier = 1f;
 
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+        ApplyTechBonuses();
+    }
+
     private void Start()
     {
         ResetToBaseStats();
-        ApplySkillBonuses();
+        ApplyTechBonuses();
+        ApplyToCurrentPlayerTank();
     }
 
 
@@ -29,20 +45,40 @@ public class PlayerTankStats : MonoBehaviour
         fireRateMultiplier = 1f;
     }
 
-    public void ApplySkillBonuses()
+    public void ApplyTechBonuses()
     {
         ResetToBaseStats();
 
-        if (TechTreeManager.Instance == null) return;
-
-        foreach (var node in TechTreeManager.Instance.GetAllUnlockedNodes())
+        if (TechTreeManager.Instance != null) 
         {
-            maxHealth += node.healthBonus;
-            damageMultiplier += node.damageBonus;
-            speedMultiplier += node.speedBonus;
-            fireRateMultiplier += node.fireRateBonus;
+
+            foreach (var node in TechTreeManager.Instance.GetAllUnlockedNodes())
+            {
+                maxHealth += node.healthBonus;
+                damageMultiplier += node.damageBonus;
+                speedMultiplier += node.speedBonus;
+                fireRateMultiplier += node.fireRateBonus;
+            }
+
+            Debug.Log("Tech bonuses applied to tank stats");
+
+        }
+    }
+
+    public void ApplyToCurrentPlayerTank()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+        {
+            Debug.LogWarning("TankStats: No Player tagged object found in scene.");
+            return;
         }
 
-        Debug.Log("Tech bonuses applied to tank stats");
+        HealthComponent health = player.GetComponentInChildren<HealthComponent>();
+        if (health != null)
+        {
+            health.SetMaxHealth(maxHealth);
+            Debug.Log("TankStats: Applied bonuses to player tank");
+        }
     }
 }

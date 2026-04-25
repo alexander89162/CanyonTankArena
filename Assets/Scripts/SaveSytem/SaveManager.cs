@@ -69,8 +69,12 @@ public class SaveManager : MonoBehaviour
 
         PlayerSaveData data = new PlayerSaveData { 
             inventoryItems = PlayerInventory.Instance.items, 
-            highScore = ScoreManager.Instance.highScore 
+            highScore = ScoreManager.Instance.highScore,
+            techData = new PlayerTechData{
+                unlockedNodeIDs = TechTreeManager.Instance.GetUnlockedNodeIDs(),
+            }
             };
+
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(saveFilePath, json);
@@ -101,9 +105,15 @@ public class SaveManager : MonoBehaviour
             ScoreManager.Instance.highScore = data.highScore;
             Debug.Log($" High Score Loaded: {data.highScore}");
         }
+
+        if (TechTreeManager.Instance != null)
+        {
+            TechTreeManager.Instance.LoadFromData(data.techData);
+            Debug.Log($" Tech Data Loaded: Unlocked Nodes: {data.techData.unlockedNodeIDs.Count}");
+        }
     }
 
-    //func to clear the inventory
+    //func to clear the inventory, highscore, and tech tree, used for testing and debugging
     public void ClearInventory()
     {
         if (PlayerInventory.Instance != null)
@@ -118,6 +128,12 @@ public class SaveManager : MonoBehaviour
             ScoreManager.Instance.currentScore = 0;
             ScoreManager.Instance.highScore = 0;
             Debug.Log("  Score Reset");
+        }
+
+        if (TechTreeManager.Instance != null)
+        {
+            TechTreeManager.Instance.LoadFromData(new PlayerTechData());
+            Debug.Log("  Tech Tree Reset");
         }
     }
  
@@ -157,13 +173,13 @@ public class SaveManager : MonoBehaviour
     private void OnApplicationQuit()
     {
         SaveGame();
+        TechTreeManager.Instance?.SaveTechTree();
         ScoreManager.Instance?.SaveHighScore();
         ScoreManager.Instance.currentScore = 0;
     }
 
-    // ====================== SKILL TREE ======================
-
-    public void SaveTechData(PlayerTechData skillData)
+    //func to save the tech tree data
+    public void SaveTechData(PlayerTechData techData)
     {
         PlayerSaveData data;
 
@@ -177,12 +193,13 @@ public class SaveManager : MonoBehaviour
             data = new PlayerSaveData();
         }
 
-        data.skillData = skillData;
+        data.techData = techData;
 
         string jsonToSave = JsonUtility.ToJson(data, true);
         File.WriteAllText(saveFilePath, jsonToSave);
     }
 
+    //func to load the tech tree data
     public PlayerTechData LoadTechData()
     {
         if (!File.Exists(saveFilePath))
@@ -191,6 +208,6 @@ public class SaveManager : MonoBehaviour
         string json = File.ReadAllText(saveFilePath);
         PlayerSaveData data = JsonUtility.FromJson<PlayerSaveData>(json);
 
-        return data?.skillData ?? new PlayerTechData();
+        return data?.techData ?? new PlayerTechData();
     }
 }

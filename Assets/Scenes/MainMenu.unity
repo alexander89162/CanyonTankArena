@@ -208,7 +208,6 @@ GameObject:
   m_Component:
   - component: {fileID: 333333334}
   - component: {fileID: 333333335}
-  - component: {fileID: 333333336}
   m_Layer: 0
   m_Name: TechTreeSceneView
   m_TagString: Untagged
@@ -251,21 +250,6 @@ MonoBehaviour:
   edgeColor: {r: 0.62, g: 0.86, b: 1, a: 0.95}
   titleColor: {r: 1, g: 1, b: 1, a: 0.98}
   subtitleColor: {r: 0.78, g: 0.84, b: 0.78, a: 0.95}
---- !u!114 &333333336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 333333333}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6ae2e23f774524428a7c2a901f1dc1a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TechTreeManager
-  allTechNodes:
-  - {fileID: 11400000, guid: c6a5d6339d014a4458562f75d38b090f, type: 2}
-  - {fileID: 11400000, guid: 1f840334e7ae74749b3a200a384f7711, type: 2}
 --- !u!1 &651605733
 GameObject:
   m_ObjectHideFlags: 0

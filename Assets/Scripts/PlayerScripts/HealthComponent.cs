@@ -5,8 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class HealthComponent : MonoBehaviour
 {
-    public PlayerTankStats tankStats; 
-
     [Header("Health")]
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] private bool destroyOnDeath = true;       // for enemies
@@ -25,10 +23,10 @@ public class HealthComponent : MonoBehaviour
 
     private void Awake()
     {
-        if (gameObject.CompareTag("Player") && tankStats != null)
+        if (gameObject.CompareTag("Player") && PlayerTankStats.Instance != null)
         {
-            tankStats.ApplySkillBonuses();
-            maxHealth = tankStats.maxHealth;
+            PlayerTankStats.Instance.ApplyTechBonuses();
+            maxHealth = PlayerTankStats.Instance.maxHealth;
             currentHealth = maxHealth;
         }
         else
@@ -66,15 +64,6 @@ public class HealthComponent : MonoBehaviour
                 if (gameObject.CompareTag("Player"))
                 {
                     ScoreManager.Instance?.SaveHighScore();
-                    /*
-                    GameUIManager uiManager = FindFirstObjectByType<GameUIManager>();
-                    if (uiManager != null)
-                    {
-                        // We use OnBattleExit event which is already wired up
-                        UnitManager unitManager = FindFirstObjectByType<UnitManager>();
-                        unitManager.tryOnbattleExit();
-                    }
-                    */
                     SceneManager.LoadScene("StartMenu"); // Reload current scene on player death
                 }
             }
@@ -85,6 +74,17 @@ public class HealthComponent : MonoBehaviour
     {
         if (isDead) return;
         currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
+        OnHealthChanged?.Invoke(HealthNormalized);
+    }
+
+    public void SetMaxHealth(float newMaxHealth)
+    {
+        // Preserve current health ratio when max health increases
+        float ratio = MaxHealth > 0 ? currentHealth / MaxHealth : 1f;
+        
+        maxHealth = newMaxHealth;
+        currentHealth = maxHealth * ratio;
+        
         OnHealthChanged?.Invoke(HealthNormalized);
     }
 

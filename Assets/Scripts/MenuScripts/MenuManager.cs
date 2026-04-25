@@ -95,17 +95,17 @@ public class MenuManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"[Garage] Switched to tab {index}");
+        //Debug.Log($"[Garage] Switched to tab {index}");
     }
 
     private void StartMatch()
     {
         if (string.IsNullOrEmpty(arenaSceneName))
         {
-            Debug.LogError("Arena scene name not set!");
+            //Debug.LogError("Arena scene name not set!");
             return;
         }
-        Debug.Log($"Starting match → {arenaSceneName}");
+        //Debug.Log($"Starting match → {arenaSceneName}");
         SceneManager.LoadScene(arenaSceneName);
     }
 
