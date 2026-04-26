@@ -666,12 +666,62 @@ MonoBehaviour:
   maxAmmo: 25
   currentAmmo: 25
   reloadTime: 3.8
-  fireCooldown: 0
+  fireCooldown: 0.2
+  fireTimer: 0
   minigunBase: {fileID: 1132761039689416492}
   minigunBody: {fileID: 4165643794708771199}
   minigunBarrels: {fileID: 2212171305854700149}
   barrelEnd: {fileID: 4492273770652761388}
   lowerTarget: 4
+  bulletSpawnOffset: {x: 0.5, y: 0, z: 3}
+  bulletDamage: 12
+  projectileSpeed: 180
+  bulletMaxLifetime: 3
+  barrelsSpinSpeed: 800
+  delayBeforeFire: 2.2
+  cooldownMultiplier: 2
+  spinCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2.3486848
+      outSlope: 2.3486848
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.23302095
+    - serializedVersion: 3
+      time: 0.008527258
+      value: 0.1937947
+      inSlope: 0.03400429
+      outSlope: 0.03400429
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.70808417
+    - serializedVersion: 3
+      time: 0.25090748
+      value: 0.22901997
+      inSlope: 0.40685016
+      outSlope: 0.40685016
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1.9642104
+      outSlope: 1.9642104
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.06921965
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &7695468828355442639
 GameObject:
   m_ObjectHideFlags: 0
