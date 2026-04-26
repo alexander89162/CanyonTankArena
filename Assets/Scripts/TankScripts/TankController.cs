@@ -344,73 +344,84 @@ public class TankController : MonoBehaviour
         Debug.Log($"[AfterImage] SpawnAfterImageGhost called with pose={pose.position}, alpha={alpha}");
         GameObject ghostRoot = new GameObject($"{gameObject.name}_AfterImage");
         ghostRoot.transform.SetPositionAndRotation(pose.position, pose.rotation);
-        ghostRoot.transform.localScale = transform.localScale;
+        ghostRoot.transform.localScale = Vector3.one;
         Debug.Log($"[AfterImage] Created ghostRoot at {ghostRoot.transform.position}");
 
-        int ghostChildCount = 0;
-        for (int i = 0; i < cachedRenderers.Length; i++)
+        Renderer sourceRenderer = FindPrimaryGhostRenderer();
+        if (sourceRenderer == null)
         {
-            Renderer sourceRenderer = cachedRenderers[i];
-            if (sourceRenderer == null || !sourceRenderer.enabled || !sourceRenderer.gameObject.activeInHierarchy)
-            {
-                Debug.Log($"[AfterImage] Renderer {i} filtered: null={sourceRenderer == null}, enabled={sourceRenderer?.enabled}, activeInHierarchy={sourceRenderer?.gameObject.activeInHierarchy}");
-                continue;
-            }
-
-            MeshFilter sourceMeshFilter = sourceRenderer.GetComponent<MeshFilter>();
-            SkinnedMeshRenderer sourceSkinnedMeshRenderer = sourceRenderer as SkinnedMeshRenderer;
-
-            if (sourceMeshFilter == null && sourceSkinnedMeshRenderer == null)
-            {
-                Debug.Log($"[AfterImage] Renderer {i} has no mesh: MeshFilter={sourceMeshFilter}, SkinnedMeshRenderer={sourceSkinnedMeshRenderer}");
-                continue;
-            }
-
-            ghostChildCount++;
-            Debug.Log($"[AfterImage] Creating ghost child for renderer '{sourceRenderer.gameObject.name}'");
-            GameObject ghostChild = new GameObject(sourceRenderer.gameObject.name);
-            ghostChild.transform.SetParent(ghostRoot.transform, false);
-            ghostChild.transform.position = sourceRenderer.transform.position;
-            ghostChild.transform.rotation = sourceRenderer.transform.rotation;
-            ghostChild.transform.localScale = sourceRenderer.transform.lossyScale;
-
-            Mesh ghostMesh = null;
-
-            if (sourceSkinnedMeshRenderer != null)
-            {
-                ghostMesh = new Mesh();
-                sourceSkinnedMeshRenderer.BakeMesh(ghostMesh);
-            }
-            else if (sourceMeshFilter != null)
-            {
-                ghostMesh = sourceMeshFilter.sharedMesh;
-            }
-
-            if (ghostMesh == null)
-            {
-                Debug.LogWarning($"[AfterImage] Failed to get mesh for renderer '{sourceRenderer.gameObject.name}'");
-                Destroy(ghostChild);
-                continue;
-            }
-
-            Debug.Log($"[AfterImage] Got mesh for renderer: {ghostMesh.name} with {ghostMesh.vertexCount} vertices");
-
-            if (sourceSkinnedMeshRenderer != null)
-                Destroy(ghostMesh, afterImageLifetime);
-
-            MeshFilter ghostMeshFilter = ghostChild.AddComponent<MeshFilter>();
-            ghostMeshFilter.sharedMesh = ghostMesh;
-
-            MeshRenderer ghostRenderer = ghostChild.AddComponent<MeshRenderer>();
-            Material[] ghostMats = BuildGhostMaterials(sourceRenderer.sharedMaterials, alpha);
-            Debug.Log($"[AfterImage] Created {ghostMats.Length} ghost materials");
-            ghostRenderer.sharedMaterials = ghostMats;
-            ghostRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            ghostRenderer.receiveShadows = false;
+            Debug.LogWarning("[AfterImage] No suitable renderer found for ghost mesh");
+            Destroy(ghostRoot);
+            return;
         }
 
-        Debug.Log($"[AfterImage] Finished spawning ghost with {ghostChildCount} child renderers");
+        Mesh ghostMesh = BuildGhostMesh(sourceRenderer);
+        if (ghostMesh == null)
+        {
+            Debug.LogWarning($"[AfterImage] Failed to build ghost mesh for renderer '{sourceRenderer.gameObject.name}'");
+            Destroy(ghostRoot);
+            return;
+        }
+
+        ghostRoot.transform.localScale = GetGhostScale(sourceRenderer);
+
+        MeshFilter ghostMeshFilter = ghostRoot.AddComponent<MeshFilter>();
+        ghostMeshFilter.sharedMesh = ghostMesh;
+
+        MeshRenderer ghostRenderer = ghostRoot.AddComponent<MeshRenderer>();
+        ghostRenderer.sharedMaterials = BuildGhostMaterials(sourceRenderer.sharedMaterials, alpha);
+        ghostRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        ghostRenderer.receiveShadows = false;
+
+        if (sourceRenderer is SkinnedMeshRenderer)
+            Destroy(ghostMesh, afterImageLifetime);
+
+        Debug.Log($"[AfterImage] Finished spawning single ghost mesh '{ghostMesh.name}' for '{sourceRenderer.gameObject.name}'");
         Destroy(ghostRoot, afterImageLifetime);
+    }
+
+    private Renderer FindPrimaryGhostRenderer()
+    {
+        for (int i = 0; i < cachedRenderers.Length; i++)
+        {
+            Renderer renderer = cachedRenderers[i];
+            if (renderer == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy)
+                continue;
+
+            if (renderer.GetComponent<MeshFilter>() != null || renderer is SkinnedMeshRenderer)
+                return renderer;
+        }
+
+        return null;
+    }
+
+    private Mesh BuildGhostMesh(Renderer sourceRenderer)
+    {
+        MeshFilter sourceMeshFilter = sourceRenderer.GetComponent<MeshFilter>();
+        SkinnedMeshRenderer sourceSkinnedMeshRenderer = sourceRenderer as SkinnedMeshRenderer;
+
+        if (sourceSkinnedMeshRenderer != null)
+        {
+            Mesh bakedMesh = new Mesh();
+            sourceSkinnedMeshRenderer.BakeMesh(bakedMesh);
+            return bakedMesh;
+        }
+
+        if (sourceMeshFilter != null)
+            return sourceMeshFilter.sharedMesh;
+
+        return null;
+    }
+
+    private Vector3 GetGhostScale(Renderer sourceRenderer)
+    {
+        Vector3 scale = sourceRenderer.transform.lossyScale;
+        float maxComponent = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
+        if (maxComponent <= 0f)
+            return Vector3.one;
+
+        float normalized = 1f / maxComponent;
+        return new Vector3(scale.x * normalized, scale.y * normalized, scale.z * normalized);
     }
 
     private Material[] BuildGhostMaterials(Material[] sourceMaterials, float alpha)
