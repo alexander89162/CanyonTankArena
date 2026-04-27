@@ -12,8 +12,14 @@ public class TankController : MonoBehaviour
 
     [Header("Dash")]
     [SerializeField] private float dashDistance = 30f;
-    [SerializeField] private float dashCooldown = 0.35f;
+    [SerializeField] private float dashCooldown = 3f;
     [SerializeField] private float dashStepDistance = 0.5f;
+
+    [Header("Dash Audio")]
+    [SerializeField] private AudioClip dashSound;
+    [SerializeField, Range(0f, 1f)] private float dashSoundVolume = 1f;
+    [SerializeField] private float dashSoundPitch = 1.6f;
+    [SerializeField] private float dashSoundStartOffset = 0.075f;
 
     [Header("Dash After Image")]
     [SerializeField] private float afterImageLifetime = 0.32f;
@@ -35,6 +41,7 @@ public class TankController : MonoBehaviour
     private UIVirtualButton dashButton;
     private bool dashButtonBound;
     private Renderer[] cachedRenderers;
+    private AudioSource dashAudioSource;
 
     private const string TanksActionMapName = "Tanks";
     private const string MoveActionName = "Move";
@@ -60,8 +67,29 @@ public class TankController : MonoBehaviour
         if (cachedRenderers == null || cachedRenderers.Length == 0)
             RefreshCachedRenderers();
 
+        if (dashAudioSource == null)
+        {
+            dashAudioSource = GetComponent<AudioSource>();
+            if (dashAudioSource == null)
+                dashAudioSource = gameObject.AddComponent<AudioSource>();
+
+            dashAudioSource.playOnAwake = false;
+            dashAudioSource.spatialBlend = 0f;
+            dashAudioSource.dopplerLevel = 0f;
+        }
+
         CacheActions();
         TryBindDashButton();
+    }
+
+    private void Reset()
+    {
+        TryAssignDashSound();
+    }
+
+    private void OnValidate()
+    {
+        TryAssignDashSound();
     }
 
     private void OnEnable()
@@ -198,6 +226,7 @@ public class TankController : MonoBehaviour
             return;
 
         nextDashTime = Time.time + dashCooldown;
+        PlayDashSound();
 
         if (characterController != null)
         {
@@ -206,6 +235,52 @@ public class TankController : MonoBehaviour
         }
 
         transform.position += dashDirection * dashDistance;
+    }
+
+    private void PlayDashSound()
+    {
+        AudioClip clipToPlay = dashSound;
+        if (clipToPlay == null)
+        {
+            CannonFiring cannonFiring = GetComponentInChildren<CannonFiring>(true);
+            if (cannonFiring == null)
+                cannonFiring = GetComponentInParent<CannonFiring>();
+
+            if (cannonFiring != null)
+                clipToPlay = cannonFiring.fireSound;
+
+            if (clipToPlay == null && CannonFiring.Instance != null)
+                clipToPlay = CannonFiring.Instance.fireSound;
+        }
+
+        if (clipToPlay != null)
+        {
+            if (dashAudioSource == null)
+            {
+                dashAudioSource = GetComponent<AudioSource>();
+                if (dashAudioSource == null)
+                    dashAudioSource = gameObject.AddComponent<AudioSource>();
+
+                dashAudioSource.playOnAwake = false;
+                dashAudioSource.spatialBlend = 0f;
+                dashAudioSource.dopplerLevel = 0f;
+            }
+
+            dashAudioSource.Stop();
+            dashAudioSource.clip = clipToPlay;
+            dashAudioSource.volume = dashSoundVolume;
+            dashAudioSource.pitch = Mathf.Max(0.01f, dashSoundPitch);
+            dashAudioSource.time = Mathf.Clamp(dashSoundStartOffset, 0f, Mathf.Max(0f, clipToPlay.length - 0.01f));
+            dashAudioSource.Play();
+        }
+    }
+
+    private void TryAssignDashSound()
+    {
+#if UNITY_EDITOR
+        if (dashSound == null)
+            dashSound = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/dash.mp3");
+#endif
     }
 
     private void DashAlongGround(Vector3 dashDirection)
