@@ -674,7 +674,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuManager
   uiDocument: {fileID: 1501178744}
-  arenaSceneName: Demo1-V2
+  arenaSceneName: Demo3-V3
   techTreeView: {fileID: 333333335}
 --- !u!114 &1501178744
 MonoBehaviour:

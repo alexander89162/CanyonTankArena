@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Demo2video.unity
     guid: ada18961820a4e544ae43479ae024aa0
+  - enabled: 1
+    path: Assets/Scenes/Demo3-V3.unity
+    guid: 64e61e45c0ebbee4abbbc5d47177c30a
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
