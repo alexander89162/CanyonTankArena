@@ -245,7 +245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 0}
-  nodeSize: {x: 220, y: 96}
+  nodeSize: {x: 260, y: 150}
   nodeColor: {r: 0.14, g: 0.18, b: 0.16, a: 0.96}
   nodeLockedColor: {r: 0.32, g: 0.32, b: 0.32, a: 0.95}
   edgeColor: {r: 0.62, g: 0.86, b: 1, a: 0.95}
