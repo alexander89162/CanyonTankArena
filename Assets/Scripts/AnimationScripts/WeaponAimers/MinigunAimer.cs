@@ -30,6 +30,12 @@ public class MinigunAimer : WeaponAimer
         base.Awake();
         baseRestRotation = minigunBase.localRotation;
         bodyRestRotation = minigunBody.localRotation;
+
+        if (gameObject.CompareTag("Player") && PlayerTankStats.Instance != null && PlayerTankStats.Instance.minigunDamageMultiplier != 0f)
+        {
+            //PlayerTankStats.Instance.ApplyTechBonuses();
+            bulletDamage += bulletDamage * PlayerTankStats.Instance.minigunDamageMultiplier;
+        }
     }
 
     public override void AimAt(Vector3 worldTarget)

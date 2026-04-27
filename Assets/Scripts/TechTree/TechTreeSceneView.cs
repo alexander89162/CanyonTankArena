@@ -8,6 +8,8 @@ using TMPro;
 
 public class TechTreeSceneView : MonoBehaviour
 {
+    public static TechTreeSceneView Instance { get; private set; }
+
     [SerializeField] private TechTreeData data;
     [SerializeField] private Vector2 nodeSize = new Vector2(220f, 96f);
     [SerializeField] private Color nodeColor = new Color(0.14f, 0.18f, 0.16f, 0.96f);
@@ -56,7 +58,7 @@ public class TechTreeSceneView : MonoBehaviour
         }
     }
 
-    void QueueRebuild()
+    public void QueueRebuild()
     {
         if (Application.isPlaying)
         {

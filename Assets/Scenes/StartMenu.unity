@@ -5255,10 +5255,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTankStats
   baseMaxHealth: 500
   baseDamageMultiplier: 1
+  baseCannonDamageMultiplier: 1
+  baseMinigunDamageMultiplier: 1
   baseSpeedMultiplier: 1
   baseFireRateMultiplier: 1
   maxHealth: 0
   damageMultiplier: 1
+  cannonDamageMultiplier: 1
+  minigunDamageMultiplier: 1
   speedMultiplier: 1
   fireRateMultiplier: 1
 --- !u!114 &723681800
@@ -5276,6 +5280,10 @@ MonoBehaviour:
   allTechNodes:
   - {fileID: 11400000, guid: c6a5d6339d014a4458562f75d38b090f, type: 2}
   - {fileID: 11400000, guid: 1f840334e7ae74749b3a200a384f7711, type: 2}
+  - {fileID: 11400000, guid: a2cd3de7a5f860443bdb548ef5805651, type: 2}
+  - {fileID: 11400000, guid: 80e92447cf44f9b4380bf9a0971c5432, type: 2}
+  - {fileID: 11400000, guid: a1eb76a0cb3dccb458f9caa364567464, type: 2}
+  - {fileID: 11400000, guid: 809ca608522f67c41bd5aa2ad20738ca, type: 2}
 --- !u!1001 &747743795
 PrefabInstance:
   m_ObjectHideFlags: 0

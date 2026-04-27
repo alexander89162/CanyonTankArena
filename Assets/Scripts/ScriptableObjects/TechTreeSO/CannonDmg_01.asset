@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a27639006f3b9324694233ab7bbf5d42, type: 3}
-  m_Name: Health_01
+  m_Name: CannonDmg_01
   m_EditorClassIdentifier: Assembly-CSharp::TechNodeSO
-  nodeName: Health
-  description: Increase Max Health +50
+  nodeName: Cannon Damage
+  description: Increase Cannon Damage x10%
   icon: {fileID: 0}
   requiredItems:
   - item: {fileID: 11400000, guid: 31c3afd9acb14ca4ca21dd966a9dd82d, type: 2}
-    amount: 10
+    amount: 20
   damageBonus: 0
-  cannonDamageBonus: 0
-  healthBonus: 50
+  cannonDamageBonus: 0.1
+  healthBonus: 0
   speedBonus: 0
   fireRateBonus: 0
   prerequisites: []
-  editorPosition: {x: 215, y: 330}
-  nodeID: 0bf0c8af-878e-4d03-a368-d9b2c77b2947
+  editorPosition: {x: 215, y: 500}
+  nodeID: 45ae595d-4827-464e-b9f1-0acbc0207917

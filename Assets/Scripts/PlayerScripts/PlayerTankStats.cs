@@ -6,15 +6,19 @@ public class PlayerTankStats : MonoBehaviour
 
     [Header("Base Stats")]
     public float baseMaxHealth = 100f;
-    public float baseDamageMultiplier = 1f;
-    public float baseSpeedMultiplier = 1f;
-    public float baseFireRateMultiplier = 1f;
+    public float baseDamageMultiplier = 0f;
+    public float baseCannonDamageMultiplier = 0f;
+    public float baseMinigunDamageMultiplier = 0f;
+    public float baseSpeedMultiplier = 0f;
+    public float baseFireRateMultiplier = 0f;
 
     [Header("Current Stats (Modified by Skills)")]
     public float maxHealth;
-    public float damageMultiplier = 1f;
-    public float speedMultiplier = 1f;
-    public float fireRateMultiplier = 1f;
+    public float damageMultiplier = 0f;
+    public float cannonDamageMultiplier = 0f;
+    public float minigunDamageMultiplier = 0f;
+    public float speedMultiplier = 0f;
+    public float fireRateMultiplier = 0f;
 
     private void Awake()
     {
@@ -40,9 +44,11 @@ public class PlayerTankStats : MonoBehaviour
     public void ResetToBaseStats()
     {
         maxHealth = baseMaxHealth;
-        damageMultiplier = 1f;
-        speedMultiplier = 1f;
-        fireRateMultiplier = 1f;
+        damageMultiplier = 0f;
+        cannonDamageMultiplier = 0f;
+        minigunDamageMultiplier = 0f;
+        speedMultiplier = 0f;
+        fireRateMultiplier = 0f;
     }
 
     public void ApplyTechBonuses()
@@ -56,6 +62,8 @@ public class PlayerTankStats : MonoBehaviour
             {
                 maxHealth += node.healthBonus;
                 damageMultiplier += node.damageBonus;
+                cannonDamageMultiplier += node.cannonDamageBonus;
+                minigunDamageMultiplier += node.minigunDamageBonus;
                 speedMultiplier += node.speedBonus;
                 fireRateMultiplier += node.fireRateBonus;
             }

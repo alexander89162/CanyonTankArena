@@ -15,6 +15,8 @@ public class TechNodeSO : ScriptableObject
 
     [Header("Effects")]
     public float damageBonus = 0f;
+    public float cannonDamageBonus = 0f;
+    public float minigunDamageBonus = 0f;
     public float healthBonus = 0f;
     public float speedBonus = 0f;
     public float fireRateBonus = 0f;

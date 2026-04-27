@@ -69,6 +69,7 @@ public class TechTreeManager : MonoBehaviour
 
         SaveTechTree();
         Debug.Log($" Unlocked tech: {node.nodeName}");
+        //TechTreeSceneView.Instance?.QueueRebuild();
         return true;
     }
 
