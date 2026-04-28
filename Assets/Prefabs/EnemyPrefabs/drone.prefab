@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1993685012595064227}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: bodyBone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2636140878881269563}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: door_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,7 +155,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7315916854106180247}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: propellor2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -300,7 +300,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6317849869482449097}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -377,10 +377,10 @@ MonoBehaviour:
   hoverAmplitude: 10
   hoverFrequency: 0.35
   propellers:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 4379630139671424315}
+  - {fileID: 7315916854106180247}
+  - {fileID: 4979332610605277302}
+  - {fileID: 8641308427753764205}
   propellerSpeed: 1800
   debug: 0
 --- !u!114 &1548096234284035057
@@ -456,13 +456,16 @@ MonoBehaviour:
   droneBodyBone: {fileID: 1993685012595064227}
   weaponBone1: {fileID: 6237938920600968843}
   weaponBone2: {fileID: 221552068821785936}
+  weaponBone3End: {fileID: 6317285158222925233}
   missilePrefab: {fileID: 1492125259254952849, guid: b6c328ebbbb43d34195bdb7816e924a8, type: 3}
   missileLaunchSpeed: 120
   missileForwardAcceleration: 3
   missileGravityMultiplier: 0
   liftMissileLaunchAngle: 0
-  rotationOnSpawn: {x: -90, y: 0, z: 0}
+  rotationOnSpawn: {x: -90, y: 0, z: 90}
   missileExplosionScale: 0.7
+  minSqrDistanceToAim: 400
+  maxAimDown: 45
 --- !u!1 &3203449252046659173
 GameObject:
   m_ObjectHideFlags: 0
@@ -602,7 +605,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 221552068821785936}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: weaponBone2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -817,7 +820,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1685284731733507117}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: propellor4_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -848,7 +851,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4173286596085877390}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: propellor1_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -879,7 +882,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4979332610605277302}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: propellor3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -912,7 +915,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8733393988838646557}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: propellor3_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -943,7 +946,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8641308427753764205}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: propellor4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -976,7 +979,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9168273823501367116}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: propellor2_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1007,7 +1010,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6317285158222925233}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: weaponBone3_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1038,7 +1041,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1250432818672806797}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: weaponBone3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1148,7 +1151,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4300868342774707420}
   - component: {fileID: 8266711811036142523}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: drone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1248,7 +1251,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7904416833311062068}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Armature
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1280,7 +1283,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4379630139671424315}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: propellor1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1313,7 +1316,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6237938920600968843}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: weaponBone1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

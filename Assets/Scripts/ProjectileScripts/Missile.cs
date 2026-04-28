@@ -23,9 +23,6 @@ public class Missile : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-
-        int ownerLayer = gameObject.layer;
-        damageMask &= ~(1 << ownerLayer); // no damage to self
     }
 
     void Update()
