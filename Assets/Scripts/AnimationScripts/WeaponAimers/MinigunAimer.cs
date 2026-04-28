@@ -83,7 +83,7 @@ public class MinigunAimer : WeaponAimer
         if (weaponLocked == true) return;
 
         weaponLocked = true;
-        Tween.Delay(reloadTime, () => 
+        Tween.Delay(target: this, reloadTime, () => 
         {
             currentAmmo = maxAmmo; 
             weaponLocked = false; 
