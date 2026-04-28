@@ -335,6 +335,8 @@ GameObject:
   - component: {fileID: 5074052596553476364}
   - component: {fileID: 1548096234284035057}
   - component: {fileID: 1702063030174186579}
+  - component: {fileID: 3801937030188701374}
+  - component: {fileID: 8970985230446263704}
   m_Layer: 7
   m_Name: drone
   m_TagString: Enemy
@@ -415,6 +417,52 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageController
   health: {fileID: 1548096234284035057}
+--- !u!114 &3801937030188701374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903603807085015186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 541e30b3f40f20e4484de67f82c19beb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AimWeapons
+  targetingSystem: {fileID: 0}
+  firingRange: 80
+  swapDuration: 0.3
+  playerControlled: 0
+--- !u!114 &8970985230446263704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903603807085015186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4756e79b5f1962b4ead3d9f32cb23bab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DroneAimer
+  weaponEnabled: 1
+  meshRenderer: {fileID: 8266711811036142523}
+  weaponRootBone: {fileID: 6237938920600968843}
+  maxAmmo: 1
+  currentAmmo: 1
+  reloadTime: 1.2
+  fireCooldown: 1.2
+  fireTimer: 0
+  droneBodyBone: {fileID: 1993685012595064227}
+  weaponBone1: {fileID: 6237938920600968843}
+  weaponBone2: {fileID: 221552068821785936}
+  missilePrefab: {fileID: 1492125259254952849, guid: b6c328ebbbb43d34195bdb7816e924a8, type: 3}
+  missileLaunchSpeed: 120
+  missileForwardAcceleration: 3
+  missileGravityMultiplier: 0
+  liftMissileLaunchAngle: 0
+  rotationOnSpawn: {x: -90, y: 0, z: 0}
+  missileExplosionScale: 0.7
 --- !u!1 &3203449252046659173
 GameObject:
   m_ObjectHideFlags: 0

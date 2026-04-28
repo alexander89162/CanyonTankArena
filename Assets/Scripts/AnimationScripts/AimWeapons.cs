@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 public class AimWeapons : MonoBehaviour
 {
     public TargetingSystem targetingSystem;
+    public float firingRange = 80f;
+    private float firingRangeSquared; // automatically updated to match firingRange
     public float swapDuration = 0.3f;
     private WeaponState currentState;
     private WeaponAimer[] aimers;
@@ -17,6 +19,7 @@ public class AimWeapons : MonoBehaviour
         Disabled
     }
     public bool playerControlled = false;
+    private bool allowedToFire = true;
     private PlayerInput playerInput;
     private InputAction swapAction;
     private InputAction firingAction;
@@ -25,6 +28,7 @@ public class AimWeapons : MonoBehaviour
     {
         aimers = GetComponents<WeaponAimer>();
         HideOtherWeapons(0); // hide all except index 0
+        firingRangeSquared = firingRange * firingRange;
 
         if (playerControlled) targetingSystem = GetComponent<TargetingSystem>();
         target = GameObject.FindWithTag("Player").transform;
@@ -48,11 +52,11 @@ public class AimWeapons : MonoBehaviour
                 aimers[activeWeaponIndex].fireTimer -= Time.deltaTime;
                 aimers[activeWeaponIndex].DoWhileHolding();
                 AimCurrentWeapon();
-                if (playerControlled && firingAction.IsPressed())
+                if (playerControlled && firingAction.IsPressed() && allowedToFire)
                 {
                     aimers[activeWeaponIndex].TryFire(targetingSystem.GetTargetPosition());
                 }
-                else if (!playerControlled && (target.transform.position - transform.position).sqrMagnitude > 1600f)
+                else if (!playerControlled && (target.transform.position - transform.position).sqrMagnitude > firingRangeSquared && allowedToFire)
                     aimers[activeWeaponIndex].TryFire(target.position);
                 return;
             case WeaponState.Disabled: return;
@@ -118,5 +122,10 @@ public class AimWeapons : MonoBehaviour
         }
 
         currentState = newState;
+    }
+
+    private void OnValidate()
+    {
+        firingRangeSquared = firingRange * firingRange;
     }
 }

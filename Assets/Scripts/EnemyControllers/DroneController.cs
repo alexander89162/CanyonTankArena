@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -10,6 +8,7 @@ the drone's movement, rotation, attack pattern, and troop deployment*/
 public class DroneController : MonoBehaviour
 {
     public string droneActions; // the file containing the specific actions this drone will follow
+    //[SerializeField] private AimWeapons aimWeapons; // enable/disable shooting
     private List<Move> moves;
     private List<BrakingManeuver> brakingManeuvers;
     private List<DeploymentAction> deploymentActions;
