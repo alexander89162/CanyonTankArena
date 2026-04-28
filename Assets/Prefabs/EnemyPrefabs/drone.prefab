@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cee3bf7f2b45ca444953804a9310057b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DroneController
-  droneActions: dronePath1
+  droneActions: noMovements
   hoverAmplitude: 10
   hoverFrequency: 0.35
   propellers:
@@ -450,7 +450,7 @@ MonoBehaviour:
   weaponRootBone: {fileID: 6237938920600968843}
   maxAmmo: 1
   currentAmmo: 1
-  reloadTime: 1.2
+  reloadTime: 3.5
   fireCooldown: 1.2
   fireTimer: 0
   droneBodyBone: {fileID: 1993685012595064227}
@@ -461,10 +461,10 @@ MonoBehaviour:
   missileLaunchSpeed: 120
   missileForwardAcceleration: 3
   missileGravityMultiplier: 0
-  liftMissileLaunchAngle: 0
+  liftMissileLaunchAngle: -10
   rotationOnSpawn: {x: -90, y: 0, z: 90}
   missileExplosionScale: 0.7
-  minSqrDistanceToAim: 400
+  minSqrDistanceToAim: 800
   maxAimDown: 45
 --- !u!1 &3203449252046659173
 GameObject:

@@ -21,6 +21,7 @@ public class BallisticAimer : WeaponAimer
     private Vector3[] missileRestPositions;
     private float[] missileReloadTimers;
     private bool[] missileLoaded;
+    private Vector3 lastPos;
 
     protected override void Awake()
     {
@@ -34,6 +35,12 @@ public class BallisticAimer : WeaponAimer
             missileLoaded[i] = true;
             missileRestPositions[i] = missiles[i].localPosition;
         }
+        lastPos = transform.position;
+    }
+
+    void LateUpdate()
+    {
+        lastPos = transform.position;
     }
 
     public override void AimAt(Vector3 worldTarget)
@@ -43,9 +50,9 @@ public class BallisticAimer : WeaponAimer
         Vector3 toEnemyWorld = worldTarget - transform.position;
         Vector3 toEnemy = transform.InverseTransformDirection(toEnemyWorld);
 
-        float yaw   = Mathf.Atan2(toEnemy.x, toEnemy.z) * Mathf.Rad2Deg;
+        float yaw = Mathf.Atan2(toEnemy.x, toEnemy.z) * Mathf.Rad2Deg;
 
-        ballisticBody.localRotation   = bodyRestRotation   * Quaternion.Euler(0, yaw, 0);
+        ballisticBody.localRotation = bodyRestRotation * Quaternion.Euler(0, yaw, 0);
     }
 
     public override void TryFire(Vector3 targetPosition)
@@ -94,8 +101,9 @@ public class BallisticAimer : WeaponAimer
 
         Quaternion spawnRot = Quaternion.AngleAxis(liftMissileLaunchAngle, ballisticBody.right) * Quaternion.Slerp(startRot, toTargetRot, t);
 
+        Vector3 currentVelocity = (transform.position - lastPos) / Time.deltaTime;
         GameObject missile = Instantiate(missilePrefab, startPos, spawnRot);
-        missile.GetComponent<Missile>().Launch(targetPosition, missileLaunchSpeed, missileForwardAcceleration, missileGravityMultiplier, missileExplosionScale);
+        missile.GetComponent<Missile>().Launch(targetPosition, missileLaunchSpeed, missileForwardAcceleration, missileGravityMultiplier, missileExplosionScale, currentVelocity);
     }
 
     public override void DoWhileHolding()

@@ -23,6 +23,7 @@ public class DroneAimer : WeaponAimer
     private Quaternion weaponBone1RestRot;
     private Quaternion weaponBone2RestRot;
     private bool reloading = false;
+    private Vector3 lastPos;
 
     protected override void Awake()
     {
@@ -30,6 +31,12 @@ public class DroneAimer : WeaponAimer
         bodyRestRotation = droneBodyBone.localRotation;
         weaponBone1RestRot = weaponBone1.localRotation;
         weaponBone2RestRot = weaponBone2.localRotation;
+        lastPos = transform.position;
+    }
+
+    void LateUpdate()
+    {
+        lastPos = transform.position;
     }
 
     public override void AimAt(Vector3 worldTarget)
@@ -65,8 +72,9 @@ public class DroneAimer : WeaponAimer
         if (sqrDistance < minSqrDistanceToAim) return;
 
         fireTimer = fireCooldown;
-        
-        SpawnMissile(targetPosition);
+        Vector3 droneVelocity = (transform.position - lastPos) / Time.deltaTime;
+
+        SpawnMissile(targetPosition, droneVelocity);
         currentAmmo--;
     }
 
@@ -82,7 +90,7 @@ public class DroneAimer : WeaponAimer
     public override void OnWeaponSwapped(){}
 
     /*Spawn a missile from the tip of the drone's launcher towards target*/
-    private void SpawnMissile(Vector3 targetPosition)
+    private void SpawnMissile(Vector3 targetPosition, Vector3 droneVel)
     {
         Vector3 startPos = weaponBone3End.position;
         Quaternion startRot = weaponBone3End.rotation * Quaternion.Euler(rotationOnSpawn);
@@ -92,10 +100,20 @@ public class DroneAimer : WeaponAimer
         float dot = Vector3.Dot(startRot * Vector3.forward, toTarget);
         float t = Mathf.Clamp01(dot);
 
-        //Quaternion spawnRot = Quaternion.AngleAxis(liftMissileLaunchAngle, weaponBone2.right) * Quaternion.Slerp(startRot, toTargetRot, t);
+        Quaternion spawnRot = Quaternion.AngleAxis(liftMissileLaunchAngle, weaponBone2.right) * Quaternion.Slerp(startRot, toTargetRot, t);
 
-        GameObject missile = Instantiate(missilePrefab, startPos, startRot);
-        missile.GetComponent<Missile>().Launch(targetPosition, missileLaunchSpeed, missileForwardAcceleration, missileGravityMultiplier, missileExplosionScale);
+        // Clamp by working on the direction vector instead of euler angles
+        Vector3 launchDir = spawnRot * Vector3.forward;
+        Vector3 launchDirFlat = new Vector3(launchDir.x, 0f, launchDir.z).normalized;
+        float pitchAngle = Mathf.Atan2(-launchDir.y, new Vector2(launchDir.x, launchDir.z).magnitude) * Mathf.Rad2Deg;
+        pitchAngle = Mathf.Clamp(pitchAngle, -maxAimDown, maxAimDown);
+
+        // Rebuild direction from clamped pitch and original horizontal direction
+        Vector3 clampedDir = Quaternion.AngleAxis(-pitchAngle, Vector3.Cross(launchDirFlat, Vector3.up)) * launchDirFlat;
+        spawnRot = Quaternion.LookRotation(clampedDir, weaponBone2.up);
+
+        GameObject missile = Instantiate(missilePrefab, startPos, spawnRot);
+        missile.GetComponent<Missile>().Launch(targetPosition, missileLaunchSpeed, missileForwardAcceleration, missileGravityMultiplier, missileExplosionScale, droneVel);
     }
 
     public override void DoWhileHolding()
