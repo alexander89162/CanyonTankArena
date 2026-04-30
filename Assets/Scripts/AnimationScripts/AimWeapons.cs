@@ -20,6 +20,7 @@ public class AimWeapons : MonoBehaviour
     }
     public bool playerControlled = false;
     private bool allowedToFire = true;
+    private float lastFiringTime = 0f;
     private PlayerInput playerInput;
     private InputAction swapAction;
     private InputAction firingAction;
@@ -56,8 +57,12 @@ public class AimWeapons : MonoBehaviour
                 {
                     aimers[activeWeaponIndex].TryFire(targetingSystem.GetTargetPosition());
                 }
-                else if (!playerControlled && (target.transform.position - transform.position).sqrMagnitude > firingRangeSquared && allowedToFire)
-                    aimers[activeWeaponIndex].TryFire(target.position);
+                else if (!playerControlled && (target.transform.position - transform.position).sqrMagnitude < firingRangeSquared && allowedToFire)
+                    if (aimers[activeWeaponIndex].ChoiceToFire(lastFiringTime))
+                    {
+                        aimers[activeWeaponIndex].TryFire(target.position);
+                        lastFiringTime = Time.time;
+                    }
                 return;
             case WeaponState.Disabled: return;
         }

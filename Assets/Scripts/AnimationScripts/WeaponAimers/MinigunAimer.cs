@@ -118,4 +118,9 @@ public class MinigunAimer : WeaponAimer
 
         firedLastFrame = false;
     }
+
+    public override bool ChoiceToFire(float lastFiringTime)
+    {
+        return true; // this weapon fires continuous bursts
+    }
 }

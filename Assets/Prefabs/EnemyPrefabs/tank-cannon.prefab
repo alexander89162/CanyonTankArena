@@ -194,13 +194,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   enemyTarget: {fileID: 0}
   repathInterval: 0.3
+  standardMoveStep: 40
   minRepathInterval: 0.1
   maxRepathInterval: 3
-  moveStep: 40
   idealCircleRadius: 150
   sideStepGrowthRate: 1
   collisionAvoidanceMultiplier: 2
   sampleFallbackRadius: 100
+  maxEngagementDist: 500
   unstuckProbes: 8
   unstuckProbeDist: 60
   debug: 0
@@ -395,7 +396,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AimWeapons
   targetingSystem: {fileID: 0}
-  firingRange: 80
+  firingRange: 350
   swapDuration: 0.7
   playerControlled: 0
 --- !u!114 &6630620664104389440
@@ -416,8 +417,9 @@ MonoBehaviour:
   maxAmmo: 4
   currentAmmo: 4
   reloadTime: 2.8
-  fireCooldown: 0.4
+  fireCooldown: 0.5
   fireTimer: 0
+  idealTimeBetweenFires: 2
   cannonBody: {fileID: 4804791775133336969}
   cannonBarrel: {fileID: 6859378360194369764}
   barrelEnd: {fileID: 77823448893845741}
