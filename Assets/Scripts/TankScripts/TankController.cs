@@ -143,6 +143,31 @@ public class TankController : MonoBehaviour
             CycleTurret();
     }
 
+    public float DashCooldownDuration => Mathf.Max(0f, dashCooldown);
+
+    public float DashCooldownRemaining
+    {
+        get
+        {
+            if (dashCooldown <= 0f)
+                return 0f;
+
+            return Mathf.Max(0f, nextDashTime - Time.time);
+        }
+    }
+
+    public float DashCooldownNormalized
+    {
+        get
+        {
+            float duration = DashCooldownDuration;
+            if (duration <= 0f)
+                return 0f;
+
+            return Mathf.Clamp01(DashCooldownRemaining / duration);
+        }
+    }
+
     private void Update()
     {
         if (Time.timeScale <= 0f)

@@ -406,6 +406,8 @@ public static class BattleUISceneSetup
                 playerController = playerTransform.GetComponentInChildren<TankController>(true);
         }
 
+        CreateDashCooldownIndicator(battleUiRoot.transform, playerController);
+
         SerializedObject serializedHud = new SerializedObject(hudController);
         serializedHud.FindProperty("playerController").objectReferenceValue = playerController;
         serializedHud.FindProperty("healthBar").objectReferenceValue = healthSlider;
@@ -983,6 +985,76 @@ public static class BattleUISceneSetup
         buttonLabel.fontStyle = FontStyles.Bold;
         buttonLabel.color = Color.white;
         buttonLabel.raycastTarget = false;
+    }
+
+    static void CreateDashCooldownIndicator(Transform battleUiRoot, TankController tankController)
+    {
+        if (battleUiRoot == null)
+            return;
+
+        Sprite circleSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+        Sprite fallbackSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
+        if (circleSprite == null)
+            circleSprite = fallbackSprite;
+
+        GameObject root = GetOrCreateChild(battleUiRoot.gameObject, "DashCooldown");
+        RectTransform rootRect = EnsureRectTransform(root);
+        rootRect.anchorMin = new Vector2(1f, 0f);
+        rootRect.anchorMax = new Vector2(1f, 0f);
+        rootRect.pivot = new Vector2(1f, 0f);
+        rootRect.sizeDelta = new Vector2(96f, 96f);
+        rootRect.anchoredPosition = new Vector2(-24f, 132f);
+
+        Image iconImage = GetOrCreateImage(root.transform, "Icon", circleSprite, new Color(1f, 1f, 1f, 0.95f));
+        RectTransform iconRect = iconImage.GetComponent<RectTransform>();
+        iconRect.anchorMin = Vector2.zero;
+        iconRect.anchorMax = Vector2.one;
+        iconRect.offsetMin = Vector2.zero;
+        iconRect.offsetMax = Vector2.zero;
+        iconImage.type = Image.Type.Simple;
+        iconImage.preserveAspect = true;
+
+        TextMeshProUGUI iconArrow = GetOrCreateTMPText(root.transform, "IconArrow", "▲", 34, TextAlignmentOptions.Center);
+        RectTransform arrowRect = iconArrow.GetComponent<RectTransform>();
+        arrowRect.anchorMin = Vector2.zero;
+        arrowRect.anchorMax = Vector2.one;
+        arrowRect.offsetMin = Vector2.zero;
+        arrowRect.offsetMax = Vector2.zero;
+        iconArrow.color = Color.white;
+        iconArrow.raycastTarget = false;
+
+        Image cooldownFill = GetOrCreateImage(root.transform, "CooldownFill", circleSprite, new Color(0.2f, 0.82f, 1f, 0.82f));
+        RectTransform fillRect = cooldownFill.GetComponent<RectTransform>();
+        fillRect.anchorMin = Vector2.zero;
+        fillRect.anchorMax = Vector2.one;
+        fillRect.offsetMin = Vector2.zero;
+        fillRect.offsetMax = Vector2.zero;
+        cooldownFill.type = Image.Type.Filled;
+        cooldownFill.fillMethod = Image.FillMethod.Radial360;
+        cooldownFill.fillOrigin = (int)Image.Origin360.Top;
+        cooldownFill.fillClockwise = false;
+        cooldownFill.fillAmount = 0f;
+        cooldownFill.raycastTarget = false;
+
+        TextMeshProUGUI cooldownText = GetOrCreateTMPText(root.transform, "CooldownText", string.Empty, 24, TextAlignmentOptions.Center);
+        RectTransform textRect = cooldownText.GetComponent<RectTransform>();
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
+        textRect.offsetMin = Vector2.zero;
+        textRect.offsetMax = Vector2.zero;
+        cooldownText.fontStyle = FontStyles.Bold;
+        cooldownText.color = Color.white;
+        cooldownText.raycastTarget = false;
+
+        iconArrow.transform.SetAsLastSibling();
+        cooldownText.transform.SetAsLastSibling();
+
+        DashCooldownIndicator indicator = root.GetComponent<DashCooldownIndicator>();
+        if (indicator == null)
+            indicator = root.AddComponent<DashCooldownIndicator>();
+
+        indicator.SetTankController(tankController);
+        indicator.SetVisualReferences(iconImage, cooldownFill, cooldownText);
     }
 
     static Image GetOrCreateImage(Transform parent, string name, Sprite sprite, Color color)
