@@ -23,9 +23,6 @@ public class Missile : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-
-        int ownerLayer = gameObject.layer;
-        damageMask &= ~(1 << ownerLayer); // no damage to self
     }
 
     void Update()
@@ -45,12 +42,13 @@ public class Missile : MonoBehaviour
 
     public void Launch(Vector3 targetPosition, 
         float missileLaunchSpeed, float missileForwardAcceleration, 
-        float missileGravityMultiplier, float missileExplosionScale)
+        float missileGravityMultiplier, float missileExplosionScale,
+        Vector3 hostVelocity)
     {
         gravityMultiplier = missileGravityMultiplier;
         forwardAcceleration = missileForwardAcceleration;
 
-        currentVelocity = transform.forward * missileLaunchSpeed;
+        currentVelocity = transform.forward * missileLaunchSpeed + hostVelocity;
         lifetimeRemaining = lifeTime;
         explosionScale = missileExplosionScale;
     }

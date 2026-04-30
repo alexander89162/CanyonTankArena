@@ -7,22 +7,29 @@ public class PredictionChase : MonoBehaviour
 {
     public Transform enemyTarget;
     public float repathInterval = 0.3f;
-    public float moveStep = 40f;
+    public float standardMoveStep = 40f;
+    public float minRepathInterval = 0.1f;
+    public float maxRepathInterval = 3f;
     public float idealCircleRadius = 130f; // AI will try to circle at this distance
     public float sideStepGrowthRate = 0.5f; // how fast moveDestination moves away (sideways) from target as distance to target increases
     public float collisionAvoidanceMultiplier = 2f;
     public float sampleFallbackRadius = 100f;
+    public float maxEngagementDist = 500f;
+    public int unstuckProbes = 8;
+    public float unstuckProbeDist = 60f;
 
     private NavMeshAgent agent;
     private TankSlopeForRig tankSlope;
     private AttackState currentState;
     private float repathTimer = 0f;
+    private float moveStep = 40f;
     private Vector3 moveDestination;
     private float orbitSign = 1;
     private Vector3 toEnemy;
     private Vector3 sidePoint;
     private Vector3 desiredDir;
-    private Vector3 lastPos;
+    private Vector3 lastPos; // to compute velocity
+    private Vector3 lastForward; // to compute angular velocity
     private NavMeshHit hit;
     private float dist = 0f;
     private Vector3 exitPoint {get; set;}
@@ -35,7 +42,8 @@ public class PredictionChase : MonoBehaviour
         Deploying,
         Wandering,
         CatchingUp,
-        Circling
+        Circling,
+        Unstucking // high repathInterval, commit to a specific path to avoid being stuck
     }
 
     void Awake()
@@ -48,6 +56,7 @@ public class PredictionChase : MonoBehaviour
         enemyTarget = GameObject.FindWithTag("Player").transform.root;
 
         lastPos = transform.position;
+        lastForward = transform.forward;
         idealCircleRadius += Random.Range(-30f, 30f);
 
         SetState(AttackState.Deploying);
@@ -76,10 +85,22 @@ public class PredictionChase : MonoBehaviour
 
         if (currentState == AttackState.Deploying
             || currentState == AttackState.CatchingUp 
-            || currentState == AttackState.Circling)
+            || currentState == AttackState.Circling
+            || currentState == AttackState.Unstucking)
         {
             if (repathTimer > repathInterval)
             {
+                float angularVel = Vector3.Angle(transform.forward, lastForward) / Time.deltaTime;
+                lastForward = transform.forward;
+
+                if (vel.magnitude < 0.3f && angularVel < 3f)
+                {
+                    SetState(AttackState.Unstucking);
+                    repathInterval = 2.5f;
+                }
+                else
+                    AdjustRepathInterval(vel);
+
                 Repath();
             }
         }
@@ -125,7 +146,7 @@ public class PredictionChase : MonoBehaviour
                     SetState(AttackState.Circling);
                     return;
                 }
-                break;
+                return;
             case AttackState.Circling:
                 toEnemy = enemyTarget.position - transform.position;
                 dist = toEnemy.magnitude;
@@ -161,20 +182,54 @@ public class PredictionChase : MonoBehaviour
                 }
                 //if (debug) Debug.Log($"dist:{dist} sideOffset:{sideOffset} orbitSign:{orbitSign} sidePoint:{sidePoint} desiredDir:{desiredDir}");
 
-                break;
+                return;
+            case AttackState.Unstucking:
+                float bestScore = float.MaxValue;
+                Vector3 bestProbe = transform.position;
+
+                for (int i = 0; i < unstuckProbes; i++)
+                {
+                    float angle = i * (360f / unstuckProbes) * Mathf.Deg2Rad;
+                    Vector3 candidate = transform.position + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * unstuckProbeDist;
+
+                    if (NavMesh.SamplePosition(candidate, out hit, sampleFallbackRadius, NavMesh.AllAreas))
+                    {
+                        float sqrDistToPlayer = (hit.position - enemyTarget.position).sqrMagnitude;
+                        float idealSqr = idealCircleRadius * idealCircleRadius;
+                        float score = Mathf.Abs(sqrDistToPlayer - idealSqr);
+
+                        if (score < bestScore)
+                        {
+                            bestScore = score;
+                            bestProbe = hit.position;
+                        }
+                    }
+                }
+
+                moveDestination = bestProbe;
+                agent.SetDestination(moveDestination);
+                
+                if ((transform.position - lastPos).magnitude / Time.deltaTime > 0.5f)
+                {
+                    SetState(AttackState.CatchingUp);
+                    repathTimer = 0f;
+                }
+
+                return;
         }
+    }
+
+    private void AdjustRepathInterval(Vector3 vel)
+    {
+        // Set repathInterval based on distance from target
+        float dist = (enemyTarget.position - transform.position).magnitude;
+        float t = Mathf.Clamp01(dist / maxEngagementDist);
+        repathInterval = Mathf.Lerp(minRepathInterval, maxRepathInterval, t);
+        moveStep = Mathf.Clamp(standardMoveStep * t, 20f, 990f); // closer = smaller steps, farther = bigger steps
     }
 
     public void SetState(AttackState newState)
     {
-        // switch (newState)
-        // {
-        //     case AttackState.Deploying: break;
-        //     case AttackState.Wandering: break;
-        //     case AttackState.CatchingUp: break;
-        //     case AttackState.Circling: break;
-        // }
-
         #if UNITY_EDITOR
         if (debug) Debug.Log($"Changed from {currentState} to {newState}");
         #endif

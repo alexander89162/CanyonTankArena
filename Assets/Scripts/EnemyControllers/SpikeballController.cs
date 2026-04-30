@@ -43,8 +43,10 @@ public class SpikeballController : MonoBehaviour
     public bool hasBouncedThisLaunch = false;
     private float lastGroundedTimer = 0f;
     private Vector3 lastPos;
+    #if UNITY_EDITOR
     [Space(12)]
     public bool debug = false;
+    #endif
 
     public enum AttackState
     {

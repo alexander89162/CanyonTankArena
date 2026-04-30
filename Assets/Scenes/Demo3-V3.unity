@@ -11403,6 +11403,14 @@ PrefabInstance:
       propertyPath: shellMaxLifetime
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4074868694894563791, guid: 45472e1ca537e6249be82bbd18508230, type: 3}
+      propertyPath: missilePrefab
+      value: 
+      objectReference: {fileID: 4689584322494506198, guid: ddca89963c80ffc4cac2f9fb78673438, type: 3}
+    - target: {fileID: 4074868694894563791, guid: 45472e1ca537e6249be82bbd18508230, type: 3}
+      propertyPath: missileExplosionScale
+      value: 0.7
+      objectReference: {fileID: 0}
     - target: {fileID: 5366099153861611751, guid: 45472e1ca537e6249be82bbd18508230, type: 3}
       propertyPath: m_ActionEvents.Array.data[19].m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -13471,8 +13479,31 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1761357289083529924, guid: ef6ad4584a4343a40abdd883aa86de47, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6589776954464276674}
   m_SourcePrefab: {fileID: 100100000, guid: ef6ad4584a4343a40abdd883aa86de47, type: 3}
+--- !u!1 &6589776954464276673 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1761357289083529924, guid: ef6ad4584a4343a40abdd883aa86de47, type: 3}
+  m_PrefabInstance: {fileID: 6589776954464276672}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6589776954464276674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6589776954464276673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf8288f2b64b33a46894cd1609adf30a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExplosionPool
+  explosionPrefab: {fileID: 7372408742141871527, guid: b6b8edf8c08fcec4189a94c2bb82fc61, type: 3}
+  defaultCapacity: 16
+  maxSize: 128
 --- !u!137 &6626480924533775879
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0

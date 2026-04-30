@@ -1,4 +1,5 @@
 using UnityEngine;
+using PrimeTween;
 
 /*Aimer implementation for minigun.
 NOTE: this aimer has rig issues so offsets are hardcoded into the angle math*/
@@ -13,17 +14,28 @@ public class MinigunAimer : WeaponAimer
     public float bulletDamage = 12f;
     public float projectileSpeed = 350f;
     public float bulletMaxLifetime = 2f;
+    public float barrelsSpinSpeed = 800f;
+    public float delayBeforeFire = 2.2f;
+    public float cooldownMultiplier = 2f;
+    public AnimationCurve spinCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     private Quaternion baseRestRotation;
     private Quaternion bodyRestRotation;
-    private Quaternion barrelsRestRotation;
+    private float spinningTime = 0f;
+    private bool firedLastFrame = false; // synced internally, not necessarily to real current frame
+    private bool weaponLocked = false; // lock during reload, stun, etc
 
     protected override void Awake()
     {
         base.Awake();
-        baseRestRotation    = minigunBase.localRotation;
-        bodyRestRotation    = minigunBody.localRotation;
-        barrelsRestRotation = minigunBarrels.localRotation;
+        baseRestRotation = minigunBase.localRotation;
+        bodyRestRotation = minigunBody.localRotation;
+
+        if (gameObject.CompareTag("Player") && PlayerTankStats.Instance != null && PlayerTankStats.Instance.minigunDamageMultiplier != 0f)
+        {
+            //PlayerTankStats.Instance.ApplyTechBonuses();
+            bulletDamage += bulletDamage * PlayerTankStats.Instance.minigunDamageMultiplier;
+        }
     }
 
     public override void AimAt(Vector3 worldTarget)
@@ -43,12 +55,16 @@ public class MinigunAimer : WeaponAimer
 
     public override void TryFire(Vector3 targetPosition)
     {
-        minigunBarrels.localRotation *= Quaternion.Euler(0, 20, 0); // temporary
+        if (currentAmmo > 0) firedLastFrame = true; // add rotation even when not ready to shoot bullets
+        else
+        {
+            ReloadWeapon();
+            return;
+        }
 
-        if (fireTimer > 0) return;
+        if (fireTimer > 0 || spinningTime < delayBeforeFire || weaponLocked) return;
         fireTimer = fireCooldown;
-
-        // TODO: check current ammo and state
+        currentAmmo--;
 
         Vector3 targetPos = targetPosition;
         Vector3 origin = barrelEnd.position;
@@ -68,15 +84,38 @@ public class MinigunAimer : WeaponAimer
         ProjectileManager.Instance.SpawnBullet(b);
     }
 
-    public override void ReloadWeapon(){} // do nothing for now
+    public override void ReloadWeapon()
+    {
+        if (weaponLocked == true) return;
+
+        weaponLocked = true;
+        Tween.Delay(target: this, reloadTime, () => 
+        {
+            currentAmmo = maxAmmo; 
+            weaponLocked = false; 
+        });
+    }
 
     public override void OnWeaponSwapped()
     {
         fireTimer = 0.5f;
+        spinningTime = 0f;
     }
 
     public override void DoWhileHolding()
     {
-        // TODO: manage barrel spinning as a heat-based counter
+        float dt = Time.deltaTime;
+        if (!firedLastFrame)
+            spinningTime -= dt * cooldownMultiplier;
+        else
+            spinningTime += dt;
+
+        spinningTime = Mathf.Clamp(spinningTime, 0f, delayBeforeFire);
+
+        float t = spinningTime / delayBeforeFire;
+        float easedT = spinCurve.Evaluate(t);
+        minigunBarrels.localRotation *= Quaternion.Euler(0, easedT * barrelsSpinSpeed * dt, 0);
+
+        firedLastFrame = false;
     }
 }
