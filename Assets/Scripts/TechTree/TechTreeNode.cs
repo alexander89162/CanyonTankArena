@@ -10,6 +10,7 @@ public class TechTreeNode : ScriptableObject
     public string nodeName = "New Node";
     [TextArea(3, 6)] public string description;
     public int cost = 0;
+    public string costText = "";
     public Sprite icon;
 
     // position on the editor canvas (in pixels)

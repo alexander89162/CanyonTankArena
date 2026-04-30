@@ -28,6 +28,7 @@ public class TechTreeController : MonoBehaviour
                 position = techNode.editorPosition,
                 description = techNode.description,
                 cost = techNode.requiredItems.Count,
+                costText = BuildCostString(techNode),
                 locked = !TechTreeManager.Instance.IsNodeUnlocked(techNode),
                 icon = techNode.icon
             };
@@ -52,6 +53,26 @@ public class TechTreeController : MonoBehaviour
 
         sceneView.SetData(data);
     }
+
+    private string BuildCostString(TechNodeSO node)
+{
+    if (node == null) return "";
+
+    List<string> costs = new List<string>();
+
+    foreach (var itemCost in node.requiredItems)
+    {
+        if (itemCost.item != null && itemCost.amount > 0)
+        {
+            costs.Add($"{itemCost.amount} {itemCost.item.itemName}");
+        }
+    }
+
+    if (costs.Count == 0)
+        return "Free";
+
+    return string.Join(" + ", costs);
+}
 
     public void OnSkillUnlocked()
     {

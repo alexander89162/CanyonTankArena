@@ -24,6 +24,13 @@ public class CannonAimer : WeaponAimer
         base.Awake();
         bodyRestRotation   = cannonBody.localRotation;
         barrelRestRotation = cannonBarrel.localRotation;
+
+        if (gameObject.CompareTag("Player") && PlayerTankStats.Instance != null && PlayerTankStats.Instance.cannonDamageMultiplier != 0f)
+        {
+            //PlayerTankStats.Instance.ApplyTechBonuses();
+            shellDamage += shellDamage * PlayerTankStats.Instance.cannonDamageMultiplier;
+        }
+       
     }
 
     public override void AimAt(Vector3 worldTarget)
