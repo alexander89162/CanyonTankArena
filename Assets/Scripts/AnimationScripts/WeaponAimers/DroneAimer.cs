@@ -120,4 +120,9 @@ public class DroneAimer : WeaponAimer
     {
         fireTimer -= Time.deltaTime;
     }
+
+    public override bool ChoiceToFire(float lastFiringTime)
+    {
+        return true;
+    }
 }

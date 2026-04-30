@@ -209,12 +209,9 @@ public class PredictionChase : MonoBehaviour
                 moveDestination = bestProbe;
                 agent.SetDestination(moveDestination);
                 
-                if ((transform.position - lastPos).magnitude / Time.deltaTime > 0.5f)
-                {
-                    SetState(AttackState.CatchingUp);
-                    repathTimer = 0f;
-                }
-
+                // exit state after repath, the enemy can re-enter Unstucking state if still stuck
+                SetState(AttackState.CatchingUp);
+                repathTimer = 0f;
                 return;
         }
     }

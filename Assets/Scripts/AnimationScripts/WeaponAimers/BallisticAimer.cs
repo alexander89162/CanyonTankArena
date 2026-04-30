@@ -130,4 +130,11 @@ public class BallisticAimer : WeaponAimer
             currentAmmo++;
         });
     }
+
+    public override bool ChoiceToFire(float lastFiringTime)
+    {
+        float timeSinceLastFire = Time.time - lastFiringTime;
+        float normalized = timeSinceLastFire / idealTimeBetweenFires;
+        return Random.value < normalized * 0.01f;
+    }
 }
