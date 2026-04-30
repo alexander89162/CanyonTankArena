@@ -84,6 +84,14 @@ public class AimController: MonoBehaviour
         ApplyTurretRotation();
     }
 
+    private void Reset()
+    {
+    }
+
+    private void OnValidate()
+    {
+    }
+
     void Update()
     {
         //Gets the aim input

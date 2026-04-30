@@ -145,6 +145,12 @@ public class TankController : MonoBehaviour
 
     private void Update()
     {
+        if (Time.timeScale <= 0f)
+        {
+            StopDashAudio();
+            return;
+        }
+
         Vector2 effectiveMoveInput = GetEffectiveMoveInput();
 
         if (movement != null)
@@ -273,6 +279,19 @@ public class TankController : MonoBehaviour
             dashAudioSource.time = Mathf.Clamp(dashSoundStartOffset, 0f, Mathf.Max(0f, clipToPlay.length - 0.01f));
             dashAudioSource.Play();
         }
+    }
+
+    private void StopDashAudio()
+    {
+        if (dashAudioSource == null)
+            return;
+
+        if (!dashAudioSource.isPlaying)
+            return;
+
+        dashAudioSource.Stop();
+        dashAudioSource.time = 0f;
+        dashAudioSource.volume = 0f;
     }
 
     private void TryAssignDashSound()

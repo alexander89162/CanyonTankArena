@@ -12,6 +12,16 @@ public class MovementController : MonoBehaviour
     public float rotationSpeed;
     public float gravity;
 
+    [Header("Movement Audio")]
+    [SerializeField] private AudioClip movementSound;
+    [SerializeField, Range(0f, 1f)] private float movementSoundVolume = 0.9f;
+    [SerializeField] private float movementSoundFadeOutTime = 1f;
+
+    [Header("Turn Audio")]
+    [SerializeField] private AudioClip turnSound;
+    [SerializeField, Range(0f, 1f)] private float turnSoundVolume = 0.85f;
+    [SerializeField] private float turnSoundFadeOutTime = 0.15f;
+
     public Vector2 moveInput = Vector2.zero; 
     public bool isBoosting = false;
 
@@ -19,6 +29,8 @@ public class MovementController : MonoBehaviour
     private Vector3 currentVelocity = Vector3.zero;
     private float verticalVelocity = 0f;
     public Vector3 currentVelocityV = Vector3.zero;
+    private AudioSource movementAudioSource;
+    private AudioSource turnAudioSource;
 
     private TankSlopeForRig tankSlopeRig;
     private TankSlope tankSlope;
@@ -29,10 +41,27 @@ public class MovementController : MonoBehaviour
         tankSlopeRig = GetComponent<TankSlopeForRig>();
         tankSlope = GetComponent<TankSlope>();
 
+        EnsureMovementAudioSource();
+        EnsureTurnAudioSource();
+        TryAssignMovementSound();
+        TryAssignTurnSound();
+
         if (tankSlopeRig != null)
             tankSlopeRig.tankRoot = transform;
         else if (tankSlope != null)
             tankSlope.tankRoot = transform;
+    }
+
+    private void Reset()
+    {
+        TryAssignMovementSound();
+        TryAssignTurnSound();
+    }
+
+    private void OnValidate()
+    {
+        TryAssignMovementSound();
+        TryAssignTurnSound();
     }
 
     void Update()
@@ -94,6 +123,158 @@ public class MovementController : MonoBehaviour
         {
             tankSlope.UpdateAlignment(currentVelocity); 
         }
+
+        UpdateMovementAudio();
+        UpdateTurnAudio();
+    }
+
+    private void UpdateMovementAudio()
+    {
+        if (movementAudioSource == null || movementSound == null)
+            return;
+
+        if (Time.timeScale <= 0f)
+        {
+            StopAudioSource(movementAudioSource);
+            return;
+        }
+
+        float moveStrength = Mathf.Clamp01(Mathf.Abs(moveInput.x) + Mathf.Abs(moveInput.y));
+
+        if (moveStrength > 0.01f)
+        {
+            if (!movementAudioSource.isPlaying)
+            {
+                movementAudioSource.clip = movementSound;
+                movementAudioSource.loop = true;
+                movementAudioSource.Play();
+            }
+
+            movementAudioSource.volume = movementSoundVolume * moveStrength;
+            return;
+        }
+
+        if (!movementAudioSource.isPlaying)
+            return;
+
+        float fadeOutSpeed = 1f / Mathf.Max(0.01f, movementSoundFadeOutTime);
+        movementAudioSource.volume = Mathf.MoveTowards(movementAudioSource.volume, 0f, fadeOutSpeed * Time.deltaTime);
+
+        if (movementAudioSource.volume <= 0.001f)
+        {
+            movementAudioSource.Stop();
+            movementAudioSource.time = 0f;
+        }
+    }
+
+    private void UpdateTurnAudio()
+    {
+        if (turnAudioSource == null || turnSound == null)
+            return;
+
+        if (Time.timeScale <= 0f)
+        {
+            StopAudioSource(turnAudioSource);
+            return;
+        }
+
+        float turnStrength = Mathf.Abs(moveInput.x);
+
+        if (turnStrength > 0.01f)
+        {
+            if (!turnAudioSource.isPlaying)
+            {
+                turnAudioSource.clip = turnSound;
+                turnAudioSource.loop = true;
+                turnAudioSource.Play();
+            }
+
+            turnAudioSource.volume = turnSoundVolume * turnStrength;
+            return;
+        }
+
+        if (!turnAudioSource.isPlaying)
+            return;
+
+        float fadeOutSpeed = 1f / Mathf.Max(0.01f, turnSoundFadeOutTime);
+        turnAudioSource.volume = Mathf.MoveTowards(turnAudioSource.volume, 0f, fadeOutSpeed * Time.deltaTime);
+
+        if (turnAudioSource.volume <= 0.001f)
+        {
+            StopAudioSource(turnAudioSource);
+        }
+    }
+
+    private static void StopAudioSource(AudioSource audioSource)
+    {
+        if (audioSource == null)
+            return;
+
+        audioSource.Stop();
+        audioSource.time = 0f;
+        audioSource.volume = 0f;
+    }
+
+    private void EnsureMovementAudioSource()
+    {
+        if (movementAudioSource != null)
+            return;
+
+        Transform audioRoot = transform.Find("MovementAudio");
+        if (audioRoot == null)
+        {
+            GameObject audioObject = new GameObject("MovementAudio");
+            audioObject.transform.SetParent(transform, false);
+            audioRoot = audioObject.transform;
+        }
+
+        movementAudioSource = audioRoot.GetComponent<AudioSource>();
+        if (movementAudioSource == null)
+            movementAudioSource = audioRoot.gameObject.AddComponent<AudioSource>();
+
+        movementAudioSource.playOnAwake = false;
+        movementAudioSource.loop = true;
+        movementAudioSource.spatialBlend = 0f;
+        movementAudioSource.dopplerLevel = 0f;
+    }
+
+    private void EnsureTurnAudioSource()
+    {
+        if (turnAudioSource != null)
+            return;
+
+        Transform audioRoot = transform.Find("TurnAudio");
+        if (audioRoot == null)
+        {
+            GameObject audioObject = new GameObject("TurnAudio");
+            audioObject.transform.SetParent(transform, false);
+            audioRoot = audioObject.transform;
+        }
+
+        turnAudioSource = audioRoot.GetComponent<AudioSource>();
+        if (turnAudioSource == null)
+            turnAudioSource = audioRoot.gameObject.AddComponent<AudioSource>();
+
+        turnAudioSource.playOnAwake = false;
+        turnAudioSource.loop = true;
+        turnAudioSource.spatialBlend = 0f;
+        turnAudioSource.dopplerLevel = 0f;
+    }
+
+    private void TryAssignMovementSound()
+    {
+#if UNITY_EDITOR
+        if (movementSound == null)
+            movementSound = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/tankmovement.mp3");
+#endif
+    }
+
+    private void TryAssignTurnSound()
+    {
+#if UNITY_EDITOR
+        if (turnSound == null)
+            turnSound = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/turretturning.mp3");
+#endif
     }
 
     void OnControllerColliderHit(ControllerColliderHit hit)
