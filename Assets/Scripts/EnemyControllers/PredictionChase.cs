@@ -7,13 +7,14 @@ public class PredictionChase : MonoBehaviour
 {
     public Transform enemyTarget;
     public float repathInterval = 0.3f;
+    public float standardMoveStep = 40f;
     public float minRepathInterval = 0.1f;
     public float maxRepathInterval = 3f;
-    public float moveStep = 40f;
     public float idealCircleRadius = 130f; // AI will try to circle at this distance
     public float sideStepGrowthRate = 0.5f; // how fast moveDestination moves away (sideways) from target as distance to target increases
     public float collisionAvoidanceMultiplier = 2f;
     public float sampleFallbackRadius = 100f;
+    public float maxEngagementDist = 500f;
     public int unstuckProbes = 8;
     public float unstuckProbeDist = 60f;
 
@@ -21,12 +22,14 @@ public class PredictionChase : MonoBehaviour
     private TankSlopeForRig tankSlope;
     private AttackState currentState;
     private float repathTimer = 0f;
+    private float moveStep = 40f;
     private Vector3 moveDestination;
     private float orbitSign = 1;
     private Vector3 toEnemy;
     private Vector3 sidePoint;
     private Vector3 desiredDir;
-    private Vector3 lastPos;
+    private Vector3 lastPos; // to compute velocity
+    private Vector3 lastForward; // to compute angular velocity
     private NavMeshHit hit;
     private float dist = 0f;
     private Vector3 exitPoint {get; set;}
@@ -53,6 +56,7 @@ public class PredictionChase : MonoBehaviour
         enemyTarget = GameObject.FindWithTag("Player").transform.root;
 
         lastPos = transform.position;
+        lastForward = transform.forward;
         idealCircleRadius += Random.Range(-30f, 30f);
 
         SetState(AttackState.Deploying);
@@ -86,7 +90,10 @@ public class PredictionChase : MonoBehaviour
         {
             if (repathTimer > repathInterval)
             {
-                if (vel.sqrMagnitude < 0.5f)
+                float angularVel = Vector3.Angle(transform.forward, lastForward) / Time.deltaTime;
+                lastForward = transform.forward;
+
+                if (vel.magnitude < 0.3f && angularVel < 3f)
                 {
                     SetState(AttackState.Unstucking);
                     repathInterval = 2.5f;
@@ -215,9 +222,10 @@ public class PredictionChase : MonoBehaviour
     private void AdjustRepathInterval(Vector3 vel)
     {
         // Set repathInterval based on distance from target
-        float sqrDist = (enemyTarget.position - transform.position).sqrMagnitude;
-        float t = sqrDist / (moveStep * moveStep);
+        float dist = (enemyTarget.position - transform.position).magnitude;
+        float t = Mathf.Clamp01(dist / maxEngagementDist);
         repathInterval = Mathf.Lerp(minRepathInterval, maxRepathInterval, t*t*t);
+        moveStep = Mathf.Clamp(standardMoveStep * t, 10f, 999f); // closer = smaller steps, farther = bigger steps
     }
 
     public void SetState(AttackState newState)
