@@ -25,5 +25,5 @@ MonoBehaviour:
   speedBonus: 0
   fireRateBonus: 0
   prerequisites: []
-  editorPosition: {x: 215, y: 670}
+  editorPosition: {x: 175, y: 670}
   nodeID: 8678b057-47b2-4b2e-b98c-9bf146b1e171

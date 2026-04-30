@@ -20,9 +20,10 @@ MonoBehaviour:
     amount: 10
   damageBonus: 0
   cannonDamageBonus: 0
+  minigunDamageBonus: 0
   healthBonus: 50
   speedBonus: 0
   fireRateBonus: 0
   prerequisites: []
-  editorPosition: {x: 215, y: 330}
+  editorPosition: {x: 175, y: 330}
   nodeID: 0bf0c8af-878e-4d03-a368-d9b2c77b2947
