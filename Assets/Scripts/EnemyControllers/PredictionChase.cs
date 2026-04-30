@@ -224,8 +224,8 @@ public class PredictionChase : MonoBehaviour
         // Set repathInterval based on distance from target
         float dist = (enemyTarget.position - transform.position).magnitude;
         float t = Mathf.Clamp01(dist / maxEngagementDist);
-        repathInterval = Mathf.Lerp(minRepathInterval, maxRepathInterval, t*t*t);
-        moveStep = Mathf.Clamp(standardMoveStep * t, 10f, 999f); // closer = smaller steps, farther = bigger steps
+        repathInterval = Mathf.Lerp(minRepathInterval, maxRepathInterval, t);
+        moveStep = Mathf.Clamp(standardMoveStep * t, 20f, 990f); // closer = smaller steps, farther = bigger steps
     }
 
     public void SetState(AttackState newState)
