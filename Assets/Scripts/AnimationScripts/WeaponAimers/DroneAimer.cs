@@ -84,7 +84,8 @@ public class DroneAimer : WeaponAimer
         Tween.Delay(target: this, duration: reloadTime)
             .OnComplete(() => 
                 {currentAmmo = maxAmmo;
-                reloading = false;});
+                reloading = false;},
+                warnIfTargetDestroyed: false);
     }
 
     public override void OnWeaponSwapped(){}

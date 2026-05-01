@@ -128,7 +128,7 @@ public class BallisticAimer : WeaponAimer
         {
             missileLoaded[index] = true;
             currentAmmo++;
-        });
+        }, warnIfTargetDestroyed: false);
     }
 
     public override bool ChoiceToFire(float lastFiringTime)
