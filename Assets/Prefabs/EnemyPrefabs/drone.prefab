@@ -430,7 +430,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AimWeapons
   targetingSystem: {fileID: 0}
-  firingRange: 80
+  firingRange: 422500
   swapDuration: 0.3
   playerControlled: 0
 --- !u!114 &8970985230446263704
