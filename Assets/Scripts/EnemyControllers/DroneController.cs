@@ -13,7 +13,7 @@ public class DroneController : MonoBehaviour
     private List<BrakingManeuver> brakingManeuvers;
     private List<DeploymentAction> deploymentActions;
     private int currentNodeIndex = 1;
-    ControllerState currentState = ControllerState.Forward;
+    private ControllerState currentState = ControllerState.Forward;
     private float elapsedTime = 0f; // time from drone spawn. NEVER reset, used for deployment events and attack patterns
     private float segmentTimer = 0f; // reset on move to next segment
     private float segmentDuration = 0f;

@@ -6,8 +6,6 @@ collision by its gameObject's RigidBody component.*/
 public class Missile : MonoBehaviour
 {
     public float lifeTime = 10f;
-    public LayerMask triggerExplosionMask;
-    public LayerMask damageMask;
     public float explosionDamage = 20f;
     public float explosionInnerRadius = 8f;
     public float explosionOuterRadius = 20f;
@@ -15,6 +13,9 @@ public class Missile : MonoBehaviour
     public float explosionScale = 1f;
 
     private Rigidbody rb;
+    private LayerMask triggerExplosionMask;
+    private LayerMask damageMask;
+    private Transform ownerRoot;
     private Vector3 currentVelocity;
     private float gravityMultiplier = 9.81f;
     private float forwardAcceleration;
@@ -43,8 +44,12 @@ public class Missile : MonoBehaviour
     public void Launch(Vector3 targetPosition, 
         float missileLaunchSpeed, float missileForwardAcceleration, 
         float missileGravityMultiplier, float missileExplosionScale,
-        Vector3 hostVelocity)
+        Vector3 hostVelocity, LayerMask triggerExplosionMask, LayerMask damageMask, 
+        Transform launcherRoot)
     {
+        this.triggerExplosionMask = triggerExplosionMask;
+        this.damageMask = damageMask;
+        ownerRoot = launcherRoot;
         gravityMultiplier = missileGravityMultiplier;
         forwardAcceleration = missileForwardAcceleration;
 
@@ -57,12 +62,18 @@ public class Missile : MonoBehaviour
     {
         int hitLayer = collision.gameObject.layer;
 
-        bool shouldExplode = (triggerExplosionMask.value & (1 << hitLayer)) != 0;
-
-        if (shouldExplode)
-        {
+        if (ShouldExplode(hitLayer, collision))
             Explode();
-        }
+    }
+
+    private bool ShouldExplode(int hitLayer, Collision collision)
+    {
+        // if triggered by self (same root), don't explode
+        if (collision.transform.root == ownerRoot)
+            return false;
+
+        // hit layer is in triggerExplosionMask --> return true
+        return (triggerExplosionMask.value & (1 << hitLayer)) != 0;
     }
 
     private void Explode()

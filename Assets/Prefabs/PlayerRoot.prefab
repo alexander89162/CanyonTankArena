@@ -339,6 +339,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 72cbe7a2-acae-4a24-bbe2-ca4ba91d0aee
     m_ActionName: 'Tanks/SwapNextWeapon[/Keyboard/o]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 2b1c7f4d-6e3e-4b0d-a2d9-5f0e2d1f9a13
+    m_ActionName: 'Tanks/Dash[/Keyboard/space]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Tanks
@@ -362,6 +366,17 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   movementJoystick: {fileID: 0}
+  dashDistance: 30
+  dashCooldown: 3
+  dashStepDistance: 0.5
+  dashSound: {fileID: 8300000, guid: fbfe894aa475e420487f76a9efb057bf, type: 3}
+  dashSoundVolume: 1
+  dashSoundPitch: 1.6
+  dashSoundStartOffset: 0.075
+  afterImageLifetime: 0.32
+  afterImageTint: {r: 1, g: 1, b: 1, a: 0.04}
+  afterImageGhostCount: 4
+  afterImageMinSpacing: 3
   playerInput: {fileID: 0}
 --- !u!114 &5401098349999313366
 MonoBehaviour:
@@ -439,9 +454,17 @@ MonoBehaviour:
   accelerationTime: 0.7
   decelerationTime: 0.9
   backwardMultiplier: 0.8
+  boostMultiplier: 1.5
   rotationSpeed: 80
   gravity: -20
+  movementSound: {fileID: 8300000, guid: c3442bc3d74be4abd8fa61d063709ca6, type: 3}
+  movementSoundVolume: 0.9
+  movementSoundFadeOutTime: 1
+  turnSound: {fileID: 8300000, guid: 8e5a6602247df48a7bd69266201c2f8c, type: 3}
+  turnSoundVolume: 0.85
+  turnSoundFadeOutTime: 0.15
   moveInput: {x: 0, y: 0}
+  isBoosting: 0
   currentVelocityV: {x: 0, y: 0, z: 0}
 --- !u!114 &1500795135076783563
 MonoBehaviour:
@@ -524,6 +547,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AimWeapons
   targetingSystem: {fileID: 3881638368709395}
+  firingRange: 80
   swapDuration: 0.3
   playerControlled: 1
 --- !u!114 &3747664054482870426
@@ -546,6 +570,7 @@ MonoBehaviour:
   reloadTime: 2.4
   fireCooldown: 0.2
   fireTimer: 0
+  idealTimeBetweenFires: 1
   minigunBase: {fileID: 1463718979728589051}
   minigunBody: {fileID: 5145701297541417887}
   minigunBarrels: {fileID: 6125532802844184429}
@@ -620,6 +645,7 @@ MonoBehaviour:
   reloadTime: 2.8
   fireCooldown: 0.4
   fireTimer: 0
+  idealTimeBetweenFires: 1
   cannonBody: {fileID: 901582733180140385}
   cannonBarrel: {fileID: 1274267042147132088}
   barrelEnd: {fileID: 2764794793873280870}
@@ -649,6 +675,7 @@ MonoBehaviour:
   reloadTime: 2.8
   fireCooldown: 1.2
   fireTimer: 0
+  idealTimeBetweenFires: 1
   ballisticBody: {fileID: 2814358481767717443}
   missiles:
   - {fileID: 5986751097307067140}
@@ -662,6 +689,12 @@ MonoBehaviour:
   liftMissileLaunchAngle: -10
   rotationOnSpawn: {x: -90, y: 0, z: 0}
   missileExplosionScale: 0.7
+  triggerExplosionMask:
+    serializedVersion: 2
+    m_Bits: 905
+  damageMask:
+    serializedVersion: 2
+    m_Bits: 960
 --- !u!1 &1464745253870193127
 GameObject:
   m_ObjectHideFlags: 0

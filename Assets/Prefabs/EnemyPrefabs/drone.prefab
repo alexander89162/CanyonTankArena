@@ -453,11 +453,18 @@ MonoBehaviour:
   reloadTime: 3.5
   fireCooldown: 1.2
   fireTimer: 0
+  idealTimeBetweenFires: 1
   droneBodyBone: {fileID: 1993685012595064227}
   weaponBone1: {fileID: 6237938920600968843}
   weaponBone2: {fileID: 221552068821785936}
   weaponBone3End: {fileID: 6317285158222925233}
   missilePrefab: {fileID: 1492125259254952849, guid: b6c328ebbbb43d34195bdb7816e924a8, type: 3}
+  triggerExplosionMask:
+    serializedVersion: 2
+    m_Bits: 968
+  damageMask:
+    serializedVersion: 2
+    m_Bits: 960
   missileLaunchSpeed: 120
   missileForwardAcceleration: 3
   missileGravityMultiplier: 0

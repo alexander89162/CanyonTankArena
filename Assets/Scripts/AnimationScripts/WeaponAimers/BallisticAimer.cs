@@ -16,6 +16,8 @@ public class BallisticAimer : WeaponAimer
     public float liftMissileLaunchAngle = -50f;
     public Vector3 rotationOnSpawn = new Vector3(-90, 0, 0);
     public float missileExplosionScale = 1f;
+    public LayerMask triggerExplosionMask;
+    public LayerMask damageMask;
 
     private Quaternion bodyRestRotation;
     private Vector3[] missileRestPositions;
@@ -66,7 +68,7 @@ public class BallisticAimer : WeaponAimer
 
             missileLoaded[i] = false;
             currentAmmo--;
-            SpawnMissile(i, targetPosition);
+            SpawnMissile(i, targetPosition, triggerExplosionMask, damageMask);
             missiles[i].localPosition = missileRestPositions[i] - missiles[i].localRotation * Vector3.up * missileHideBackwardsOffset;
 
             return;
@@ -89,7 +91,7 @@ public class BallisticAimer : WeaponAimer
     }
 
     /*Spawn a missile and use index to spawn in correct start position*/
-    private void SpawnMissile(int i, Vector3 targetPosition)
+    private void SpawnMissile(int i, Vector3 targetPosition, LayerMask triggerExplosionMask, LayerMask damageMask)
     {
         Vector3 startPos = missiles[i].position;
         Quaternion startRot = missiles[i].rotation * Quaternion.Euler(rotationOnSpawn);
@@ -103,7 +105,11 @@ public class BallisticAimer : WeaponAimer
 
         Vector3 currentVelocity = (transform.position - lastPos) / Time.deltaTime;
         GameObject missile = Instantiate(missilePrefab, startPos, spawnRot);
-        missile.GetComponent<Missile>().Launch(targetPosition, missileLaunchSpeed, missileForwardAcceleration, missileGravityMultiplier, missileExplosionScale, currentVelocity);
+        missile.GetComponent<Missile>().Launch(targetPosition, 
+            missileLaunchSpeed, missileForwardAcceleration, 
+            missileGravityMultiplier, missileExplosionScale, 
+            currentVelocity, triggerExplosionMask, damageMask, 
+            transform.root);
     }
 
     public override void DoWhileHolding()

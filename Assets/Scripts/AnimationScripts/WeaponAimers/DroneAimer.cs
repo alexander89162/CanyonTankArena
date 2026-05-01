@@ -10,6 +10,8 @@ public class DroneAimer : WeaponAimer
     [SerializeField] private Transform weaponBone2; // up/down aiming
     [SerializeField] private Transform weaponBone3End; // spawn missiles from here
     [SerializeField] private GameObject missilePrefab;
+    public LayerMask triggerExplosionMask;
+    public LayerMask damageMask;
     public float missileLaunchSpeed = 120f;
     public float missileForwardAcceleration = 0f;
     public float missileGravityMultiplier = 0f;
@@ -74,7 +76,7 @@ public class DroneAimer : WeaponAimer
         fireTimer = fireCooldown;
         Vector3 droneVelocity = (transform.position - lastPos) / Time.deltaTime;
 
-        SpawnMissile(targetPosition, droneVelocity);
+        SpawnMissile(targetPosition, droneVelocity, triggerExplosionMask, damageMask);
         currentAmmo--;
     }
 
@@ -91,7 +93,7 @@ public class DroneAimer : WeaponAimer
     public override void OnWeaponSwapped(){}
 
     /*Spawn a missile from the tip of the drone's launcher towards target*/
-    private void SpawnMissile(Vector3 targetPosition, Vector3 droneVel)
+    private void SpawnMissile(Vector3 targetPosition, Vector3 droneVel, LayerMask triggerExplosionMask, LayerMask damageMask)
     {
         Vector3 startPos = weaponBone3End.position;
         Quaternion startRot = weaponBone3End.rotation * Quaternion.Euler(rotationOnSpawn);
@@ -114,7 +116,10 @@ public class DroneAimer : WeaponAimer
         spawnRot = Quaternion.LookRotation(clampedDir, weaponBone2.up);
 
         GameObject missile = Instantiate(missilePrefab, startPos, spawnRot);
-        missile.GetComponent<Missile>().Launch(targetPosition, missileLaunchSpeed, missileForwardAcceleration, missileGravityMultiplier, missileExplosionScale, droneVel);
+        missile.GetComponent<Missile>().Launch(targetPosition, missileLaunchSpeed, 
+            missileForwardAcceleration, missileGravityMultiplier, 
+            missileExplosionScale, droneVel, triggerExplosionMask, 
+            damageMask, transform.root);
     }
 
     public override void DoWhileHolding()
