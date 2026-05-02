@@ -16,6 +16,7 @@ public class SaveManager : MonoBehaviour
     [SerializeField] private InputActionReference clearAction;
 
     private string saveFilePath;
+    private const string SAVEKEY = "PlayerSaveData";
 
     private void Awake()
     {
@@ -75,22 +76,41 @@ public class SaveManager : MonoBehaviour
             }
             };
 
-
         string json = JsonUtility.ToJson(data, true);
+
         File.WriteAllText(saveFilePath, json);
-        Debug.Log($" SAVED successfully! Items saved: {data.inventoryItems.Count}");
+        //Debug.Log($" SAVED successfully! Items saved: {data.inventoryItems.Count}");
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        PlayerPrefs.SetString(SAVEKEY, json);
+        PlayerPrefs.Save();
+        Debug.Log("💾 Saved to PlayerPrefs (WebGL)");
+#else
+        File.WriteAllText(saveFilePath, json);
+        Debug.Log("💾 Saved to file: " + saveFilePath);
+#endif
+ 
     }
 
     //func to load the game
     public void LoadGame()
     {
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if (!PlayerPrefs.HasKey(SAVEKEY))
+        {
+            Debug.Log("No save data found (WebGL)");
+            return;
+        }
+        string json = PlayerPrefs.GetString(SAVEKEY);
+#else
         if (!File.Exists(saveFilePath))
         {
             Debug.LogWarning("No save file found at: " + saveFilePath);
             return;
         }
-
         string json = File.ReadAllText(saveFilePath);
+#endif
         PlayerSaveData data = JsonUtility.FromJson<PlayerSaveData>(json);
 
         if (PlayerInventory.Instance != null)
@@ -135,6 +155,20 @@ public class SaveManager : MonoBehaviour
             TechTreeManager.Instance.LoadFromData(new PlayerTechData());
             Debug.Log("  Tech Tree Reset");
         }
+
+        DeleteSave();
+    }
+
+    public void DeleteSave()
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        PlayerPrefs.DeleteKey(SAVEKEY);
+        PlayerPrefs.Save();
+#else
+        if (File.Exists(saveFilePath))
+            File.Delete(saveFilePath);
+#endif
+        Debug.Log("🗑️ Save data deleted");
     }
  
     //func to save the highscore
