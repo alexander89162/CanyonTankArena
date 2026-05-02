@@ -19,6 +19,7 @@ public class HUDController : MonoBehaviour
     [SerializeField] private Sprite[] ammoTypeSprites = new Sprite[3];
     [SerializeField] private Image[] ammoIconImages = new Image[3];
     [SerializeField] private TMP_Text[] ammoCountTexts = new TMP_Text[3];
+    [SerializeField] private WeaponAimer[] weaponAimers = new WeaponAimer[3];
     [SerializeField] private bool showAmmoIcons = true;
 
     [Header("Ammo Layout")]
@@ -232,6 +233,8 @@ public class HUDController : MonoBehaviour
     {
         float maxHealth = playerHealth.MaxHealth;
         float currentHealth = playerHealth.CurrentHealth;
+        //float currentAmmo = GetComponent<CannonAimer>().currentAmmo;
+        //float maxAmmo = GetComponent<CannonAimer>().maxAmmo;
 
         if (healthBar != null)
         {
@@ -248,7 +251,7 @@ public class HUDController : MonoBehaviour
 
         /*
         if (ammoText != null)
-            ammoText.text = $"Ammo {controller.CurrentAmmo}/{controller.MaxAmmo}";
+            ammoText.text = $"Ammo {currentAmmo}/{maxAmmo}";
         */
     }
 
@@ -875,7 +878,7 @@ public class HUDController : MonoBehaviour
                             Array.Resize(ref ammoCountTexts, 3);
 
                         ammoCountTexts[i] = txt;
-                        ammoCountTexts[i].text = "?/ ?";
+                        //ammoCountTexts[i].text = $"{weaponAimers[i].currentAmmo}/{weaponAimers[i].maxAmmo}";
                         ammoCountTexts[i].gameObject.SetActive(true);
                     }
                 }
@@ -963,9 +966,10 @@ public class HUDController : MonoBehaviour
                     // keep text inside the bottom of the slot
                     countRect.anchoredPosition = new Vector2(0f, ammoSlotPadding);
                 }
+                
                 if (txt != null)
                 {
-                    txt.text = "?/ ?";
+                    txt.text = $"{weaponAimers[i].currentAmmo}/{weaponAimers[i].maxAmmo}";
                     // center text both horizontally and vertically within the bottom area
                     txt.alignment = TextAlignmentOptions.Center;
                     txt.fontSize = Mathf.Max(16f, txt.fontSize);

@@ -27,7 +27,6 @@ public class CannonAimer : WeaponAimer
 
         if (gameObject.CompareTag("Player") && PlayerTankStats.Instance != null && PlayerTankStats.Instance.cannonDamageMultiplier != 0f)
         {
-            //PlayerTankStats.Instance.ApplyTechBonuses();
             shellDamage += shellDamage * PlayerTankStats.Instance.cannonDamageMultiplier;
         }
        
