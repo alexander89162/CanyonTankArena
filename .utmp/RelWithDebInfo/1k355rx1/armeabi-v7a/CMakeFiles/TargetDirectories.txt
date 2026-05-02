@@ -1,0 +1,5 @@
+C:/Users/aramir316/Unity Projects/MiniTankArena/.utmp/RelWithDebInfo/1k355rx1/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/aramir316/Unity Projects/MiniTankArena/.utmp/RelWithDebInfo/1k355rx1/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+C:/Users/aramir316/Unity Projects/MiniTankArena/.utmp/RelWithDebInfo/1k355rx1/armeabi-v7a/GameActivity/CMakeFiles/game.dir
+C:/Users/aramir316/Unity Projects/MiniTankArena/.utmp/RelWithDebInfo/1k355rx1/armeabi-v7a/GameActivity/CMakeFiles/edit_cache.dir
+C:/Users/aramir316/Unity Projects/MiniTankArena/.utmp/RelWithDebInfo/1k355rx1/armeabi-v7a/GameActivity/CMakeFiles/rebuild_cache.dir
