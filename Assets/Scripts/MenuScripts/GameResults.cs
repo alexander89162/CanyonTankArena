@@ -95,7 +95,7 @@ public class GameResults : MonoBehaviour
 
         ShowCursor();
 
-        if(root != null) root.style.display = DisplayStyle.Flex;
+        if (root != null) root.style.display = DisplayStyle.Flex;
         if (pausePanel != null) pausePanel.style.display = DisplayStyle.Flex;
         if (winPanel != null) winPanel.style.display = DisplayStyle.None;
         if (losePanel != null) losePanel.style.display = DisplayStyle.None;
@@ -146,6 +146,8 @@ public class GameResults : MonoBehaviour
             winPanel.Q<Label>("win-time").text = $"Time Survived: {timeSurvived:F2}s";
             winPanel.Q<Label>("enemies-defeated").text = $"Enemies Defeated: {enemiesDefeated}";
         }
+        if (aimWeapons != null)
+            aimWeapons.SetAllowedToFire(false);
     }
 
     public void ShowLoseScreen()
@@ -159,6 +161,8 @@ public class GameResults : MonoBehaviour
         if (hudCanvas != null) hudCanvas.enabled = false;
         if (root != null) root.style.display = DisplayStyle.Flex;
         if (losePanel != null) losePanel.style.display = DisplayStyle.Flex;
+        if (aimWeapons != null)
+            aimWeapons.SetAllowedToFire(false);
     }
 
     private void ShowCursor()
