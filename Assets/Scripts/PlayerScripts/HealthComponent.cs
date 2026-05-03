@@ -59,12 +59,24 @@ public class HealthComponent : MonoBehaviour
             if (destroyOnDeath)
             {
                 GetComponent<EnemyDrop>()?.OnDeath();
-                Destroy(gameObject, deathDelay);
+                
 
                 if (gameObject.CompareTag("Player"))
                 {
                     ScoreManager.Instance?.SaveHighScore();
-                    SceneManager.LoadScene("StartMenu"); // Reload current scene on player death
+                    //SceneManager.LoadScene("StartMenu"); // Reload current scene on player death
+
+                    var resultScreen = FindFirstObjectByType<GameResults>();
+
+                    if (resultScreen != null)
+                        resultScreen.ShowLoseScreen();
+                    else
+                        SceneManager.LoadScene("MainMenu");
+
+                }
+                else
+                {
+                    Destroy(gameObject, deathDelay);
                 }
             }
         }

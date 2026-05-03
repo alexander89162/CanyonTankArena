@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 
 public class AimWeapons : MonoBehaviour
 {
+    public static AimWeapons Instance { get; private set; }
     public TargetingSystem targetingSystem;
     public float firingRange = 80f;
     private float firingRangeSquared; // automatically updated to match firingRange
@@ -66,6 +67,12 @@ public class AimWeapons : MonoBehaviour
                 return;
             case WeaponState.Disabled: return;
         }
+    }
+
+    public bool SetAllowedToFire(bool allowed)
+    {
+        allowedToFire = allowed;
+        return allowedToFire;
     }
 
     public void SwapToWeapon(int newWeaponIndex)

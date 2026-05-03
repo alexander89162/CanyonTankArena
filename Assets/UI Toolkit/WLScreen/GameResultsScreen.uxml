@@ -1,0 +1,29 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/WLScreen/GameResultsStyle.uss?fileID=7433441132597879392&amp;guid=8c04bfe8876c6bc4c8661d03fc857278&amp;type=3#GameResultsStyle"/>
+    <ui:VisualElement name="root" class="screen-root">
+        <ui:VisualElement name="PausePanel" class="pause-panel" style="width: 600px;">
+            <ui:Label text="PAUSED" class="pause-title"/>
+            <ui:VisualElement class="button-group">
+                <ui:Button name="ResumeBtn" text="RESUME" class="pause-button" style="height: 74px; width: 240px; margin-right: 4px; margin-left: 4px;"/>
+                <ui:Button name="QuitBtn" text="QUIT TO MENU" class="pause-button" style="width: 240px; height: 74px; margin-left: 4px; margin-right: 4px;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="win-panel" class="panel win-panel">
+            <ui:Label text="VICTORY" class="title victory-title"/>
+            <ui:Label name="win-time" class="stat"/>
+            <ui:Label name="enemies-defeated" class="stat"/>
+            <ui:VisualElement class="button-group">
+                <ui:Button name="retryW-btn" text="Play Again?" class="action-button" style="height: 74px;"/>
+                <ui:Button name="menuW-btn" text="Return to Main Menu" class="action-button" style="white-space: normal; height: 74px;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="lose-panel" class="panel lose-panel">
+            <ui:Label text="DEFEAT" class="title defeat-title"/>
+            <ui:Label name="lose-reason" text="Your tank was destroyed" class="stat"/>
+            <ui:VisualElement class="button-group">
+                <ui:Button name="retryL-btn" text="Retry?" class="action-button" style="height: 74px;"/>
+                <ui:Button name="menuL-btn" text="Return to Main Menu" class="action-button" style="white-space: normal; height: 74px;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

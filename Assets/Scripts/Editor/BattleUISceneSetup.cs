@@ -972,7 +972,7 @@ public static class BattleUISceneSetup
             virtualButton = root.AddComponent<UIVirtualButton>();
 
         if (pauseManager != null)
-            UnityEventTools.AddPersistentListener(virtualButton.buttonClickOutputEvent, pauseManager.TogglePause);
+            UnityEventTools.AddPersistentListener(virtualButton.buttonClickOutputEvent, pauseManager.TryTogglePause);
 
         TextMeshProUGUI buttonLabel = GetOrCreateTMPText(root.transform, "ButtonLabel", "PAUSE", 24, TextAlignmentOptions.Center);
         RectTransform labelRect = buttonLabel.GetComponent<RectTransform>();

@@ -1,89 +1,122 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.InputSystem;
-
+using UnityEngine.SceneManagement;
 
 public class GameUIManager : MonoBehaviour
 {
+    [Header("UI Documents")]
+    [SerializeField] private UIDocument pauseDocument;
+    [SerializeField] private UIDocument gameResultDocument;
+
+    private VisualElement pauseRoot;
+    private VisualElement resultRoot;
+
+    private bool isGameOver = false;
+
     public static GameUIManager Instance { get; private set; }
 
-    [Header("UI Document")]
-    [SerializeField] private UIDocument uiDocument;
-
-    [Header("Screens")]
-    [SerializeField] private WinScreen winScreen;
-    [SerializeField] private LoseScreen loseScreen;
-    [SerializeField] private PauseScreen pauseScreen;
-
-    private UnitManager unitManager;
-    private bool isPaused = false;
-
-    [SerializeField] private InputActionReference pauseAction;
-
-    void Awake()
+    private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
-
-        // Initialize all screens
-        winScreen?.Initialize(uiDocument);
-        loseScreen?.Initialize(uiDocument);
-        pauseScreen?.Initialize(uiDocument);
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
-        unitManager = FindFirstObjectByType<UnitManager>();
-        if (unitManager != null)
-        {
-            unitManager.OnVictory += winScreen.Show;
-            unitManager.OnBattleExit += loseScreen.Show;
-        }
+        if (pauseDocument != null)
+            pauseRoot = pauseDocument.rootVisualElement;
 
-        if (pauseAction?.action != null)
-        {
-            pauseAction.action.Enable();
-            pauseAction.action.performed += ctx => TogglePause();
-        }
+        if (gameResultDocument != null)
+            resultRoot = gameResultDocument.rootVisualElement;
     }
 
+    // ====================== GAME RESULT ======================
+    public void ShowWinScreen(float timeSurvived, int enemiesDefeated)
+    {
+        isGameOver = true;
+        Time.timeScale = 0f;
+
+        if (resultRoot != null)
+        {
+            resultRoot.Q<VisualElement>("win-panel").style.display = DisplayStyle.Flex;
+            resultRoot.Q<VisualElement>("lose-panel").style.display = DisplayStyle.None;
+
+            resultRoot.Q<Label>("win-time").text = $"Survival Time: {FormatTime(timeSurvived)}";
+            resultRoot.Q<Label>("enemies-defeated").text = $"Enemies Defeated: {enemiesDefeated}";
+        }
+
+        // Disable pause menu
+        SetPauseMenuEnabled(false);
+    }
+
+    public void ShowLoseScreen()
+    {
+        isGameOver = true;
+        Time.timeScale = 0f;
+
+        if (resultRoot != null)
+        {
+            resultRoot.Q<VisualElement>("win-panel").style.display = DisplayStyle.None;
+            resultRoot.Q<VisualElement>("lose-panel").style.display = DisplayStyle.Flex;
+        }
+
+        SetPauseMenuEnabled(false);
+    }
+
+    // ====================== PAUSE ======================
     public void TogglePause()
     {
-        if (Time.timeScale <= 0f && !isPaused) return; // Don't pause during win/lose
+        if (isGameOver) return; // ← This is the key fix
 
-        isPaused = !isPaused;
+        bool isPaused = Time.timeScale == 0f;
 
-        if (isPaused)
-            pauseScreen.Show();
+        if (!isPaused)
+            PauseGame();
         else
-            pauseScreen.Hide();
+            ResumeGame();
     }
 
-    public void RestartBattle()
+    private void PauseGame()
     {
+        Time.timeScale = 0f;
+        if (pauseRoot != null)
+            pauseRoot.style.display = DisplayStyle.Flex;
+    }
+
+    public void ResumeGame()
+    {
+        if (isGameOver) return;
+
         Time.timeScale = 1f;
-        UnityEngine.Cursor.visible = false;
-        UnityEngine.Cursor.lockState = UnityEngine.CursorLockMode.Locked;
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        if (pauseRoot != null)
+            pauseRoot.style.display = DisplayStyle.None;
     }
 
-    public void ReturnToMenu()
+    private void SetPauseMenuEnabled(bool enabled)
     {
-        Time.timeScale = 1f;
-        UnityEngine.Cursor.visible = true;
-        UnityEngine.Cursor.lockState = UnityEngine.CursorLockMode.None;
-        UnityEngine.SceneManagement.SceneManager.LoadScene("StartMenu");
+        if (pauseRoot != null)
+            pauseRoot.style.display = enabled ? DisplayStyle.Flex : DisplayStyle.None;
     }
 
-    void OnDisable()
+    private string FormatTime(float time)
     {
-        if (unitManager != null)
+        int min = Mathf.FloorToInt(time / 60);
+        int sec = Mathf.FloorToInt(time % 60);
+        return $"{min:00}:{sec:00}";
+    }
+
+    // Optional: Force close everything
+    public void CloseAll()
+    {
+        if (pauseRoot != null) pauseRoot.style.display = DisplayStyle.None;
+        if (resultRoot != null)
         {
-            unitManager.OnVictory -= winScreen.Show;
-            unitManager.OnBattleExit -= loseScreen.Show;
+            resultRoot.Q<VisualElement>("win-panel").style.display = DisplayStyle.None;
+            resultRoot.Q<VisualElement>("lose-panel").style.display = DisplayStyle.None;
         }
-
-        if (pauseAction?.action != null)
-            pauseAction.action.performed -= ctx => TogglePause();
     }
 }

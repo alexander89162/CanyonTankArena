@@ -10,8 +10,8 @@ public class PauseScreen : basicUIScreen
     protected override void SetupScreen(VisualElement screen)
     {
         BindButton(screen, "ResumeBttn", () => GameUIManager.Instance.TogglePause());
-        BindButton(screen, "RestartButton", () => GameUIManager.Instance.RestartBattle());
-        BindButton(screen, "QuitMenuBtn", () => GameUIManager.Instance.ReturnToMenu());
+        //BindButton(screen, "RestartButton", () => GameUIManager.Instance.RestartBattle());
+        //BindButton(screen, "QuitMenuBtn", () => GameUIManager.Instance.ReturnToMenu());
     }
 
     protected override void OnShow()

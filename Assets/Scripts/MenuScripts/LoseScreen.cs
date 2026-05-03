@@ -9,8 +9,8 @@ public class LoseScreen : basicUIScreen
 
     protected override void SetupScreen(VisualElement screen)
     {
-        BindButton(screen, "RestartButton", () => GameUIManager.Instance.RestartBattle());
-        BindButton(screen, "GarageButton", () => GameUIManager.Instance.ReturnToMenu());
+        //BindButton(screen, "RestartButton", () => GameUIManager.Instance.RestartBattle());
+        //BindButton(screen, "GarageButton", () => GameUIManager.Instance.ReturnToMenu());
     }
 
     protected override void OnShow()

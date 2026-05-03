@@ -32,7 +32,7 @@ public class UnitManager : MonoBehaviour
     private string currentWave;
     private string waveMode;
     private float interWaveTimer = 0f;
-    private float waveTimer = 0;
+    public float waveTimer = 0;
     private Queue<UnitData> spawnQueue;
     private Dictionary<int, SpawnPoint> spawnPointLookup;
     private bool busy = false; // set True while allocating or deallocating memory
@@ -378,6 +378,12 @@ public class UnitManager : MonoBehaviour
         else if (result == 1)
         {
             OnVictory?.Invoke();
+
+            var resultScreen = FindFirstObjectByType<GameResults>();
+
+            if (resultScreen != null)
+                resultScreen.ShowWinScreen(waveTimer, spawnQueue.Count);
+
             Destroy(this);
         }
         else

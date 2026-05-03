@@ -5,100 +5,82 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenuController : MonoBehaviour
 {
-    private UIDocument pauseDocument; 
+    [SerializeField] private UIDocument pauseDocument;
+    [SerializeField] private Canvas hud;
 
-    // References to the panels and buttons inside your UXML
     private VisualElement root;
     private VisualElement pausePanel;
 
     private bool isPaused = false;
-    public Canvas hud;
-    [SerializeField] private InputActionAsset inputActions;
-    private InputActionMap player;
-    private InputActionMap ui;
+
     private InputAction pauseAction;
 
     void Awake()
     {
-        pauseDocument = GetComponent<UIDocument>();
         if (pauseDocument == null)
-        {
-            Debug.LogError("Pause UIDocument is not assigned in the Inspector!");
-            return;
-        }
+            pauseDocument = GetComponent<UIDocument>();
 
         root = pauseDocument.rootVisualElement;
-
         pausePanel = root.Q<VisualElement>("PauseOverlay");
-        player = inputActions != null ? inputActions.FindActionMap("Tanks") : null;
-        ui = inputActions != null ? inputActions.FindActionMap("UI") : null;
-        pauseAction = inputActions != null ? inputActions.FindActionMap("Tanks")?.FindAction("Pause") : null;
 
-        // Hide everything at start
-        if (pausePanel != null) 
+        // Find pause action
+        var inputActions = GetComponent<PlayerInput>()?.actions ?? FindFirstObjectByType<PlayerInput>()?.actions;
+        if (inputActions != null)
         {
-            //pausePanel.style.display = DisplayStyle.None;
-            pausePanel.visible = false;
+            pauseAction = inputActions.FindActionMap("Tanks")?.FindAction("Pause");
         }
 
-        // Wire up all buttons (names must match your UXML button names)
+        // Wire buttons
         if (pausePanel != null)
         {
-            pausePanel.Q<Button>("ResumeBtn").clicked     += OnResumeButton;
-            //pausePanel.Q<Button>("SettingsBtn").clicked   += OpenSettings;
-            pausePanel.Q<Button>("QuitMenuBtn").clicked  += QuitToMainMenu;
+            pausePanel.Q<Button>("ResumeBtn").clicked += OnResumeButton;
+            pausePanel.Q<Button>("QuitMenuBtn").clicked += QuitToMainMenu;
+        }
+
+        // Hide at start
+        if (pausePanel != null)
+        {
+            pausePanel.style.display = DisplayStyle.None;
         }
     }
 
-    void Start()
+    void OnEnable()
     {
-        DontDestroyOnLoad(gameObject);
-    }
-
-void OnEnable()
-{
-        player?.Enable();
-    }
-
-    void OnDisable()
-    {
-        player?.Disable();
-    }
-
-    void OnDestroy()
-    {
+        root.focusable = true;
+        root.pickingMode = PickingMode.Position;
     }
 
     void Update()
     {
-        bool escapePressed = Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
-        bool pauseActionPressed = pauseAction != null && pauseAction.WasPressedThisFrame();
-
-        if (escapePressed || pauseActionPressed)
-            TogglePause();
+        if (pauseAction != null && pauseAction.WasPressedThisFrame())
+        {
+            TryTogglePause();
+        }
     }
 
-    public void TogglePause()
+    public void TryTogglePause()
     {
+        var resultScreen = FindFirstObjectByType<GameResults>(); // Make sure class name matches
+
+        if (resultScreen != null && resultScreen.IsGameOver())
+            return;
+
         isPaused = !isPaused;
 
         if (isPaused)
-        {
             PauseGame();
-        }
         else
-        {   
             ResumeGame();
-        }
     }
 
     private void PauseGame()
     {
         Time.timeScale = 0f;
+        AudioListener.pause = true;
+        AudioListener.volume = 0f;
 
         if (pausePanel != null)
         {
-            pausePanel.visible = true; // Show the pause panel
             pausePanel.style.display = DisplayStyle.Flex;
         }
 
@@ -107,17 +89,31 @@ void OnEnable()
 
         UnityEngine.Cursor.visible = true;
         UnityEngine.Cursor.lockState = CursorLockMode.None;
-    
-        player?.Disable();
-        ui?.Enable();
+
+        if (root != null)
+        {
+            root.focusable = true;
+            root.pickingMode = PickingMode.Position;
+        }
+
+        if (pausePanel != null)
+        {
+            pausePanel.focusable = true;
+            pausePanel.pickingMode = PickingMode.Position;
+        }
+        // Switch input to UI
+        EnableUIInput();
     }
 
     public void ResumeGame()
     {
         Time.timeScale = 1f;
-        if (pausePanel != null)    
+        AudioListener.pause = false;
+        AudioListener.volume = 1f;
+
+        if (pausePanel != null)
         {
-            pausePanel.visible = false; // Hide the pause panel
+            pausePanel.style.display = DisplayStyle.None;
         }
 
         if (hud != null)
@@ -126,42 +122,43 @@ void OnEnable()
         UnityEngine.Cursor.visible = false;
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
 
-        ui?.Disable();
-        player?.Enable();   
-        
+        EnablePlayerInput();
 
         isPaused = false;
     }
 
-    // Button callbacks
-    public void OnResumeButton() => ResumeGame(); 
-
-    public void OpenSettings()
+    private void EnableUIInput()
     {
-        if (pausePanel != null) pausePanel.style.display = DisplayStyle.None;
+        // Disable player actions, enable UI actions
+        var playerMap = FindActionMap("Tanks");
+        var uiMap = FindActionMap("UI");
+
+        playerMap?.Disable();
+        uiMap?.Enable();
     }
 
-    public void CloseSettings()
+    private void EnablePlayerInput()
     {
-        if (pausePanel != null) pausePanel.style.display = DisplayStyle.Flex;
+        var playerMap = FindActionMap("Tanks");
+        var uiMap = FindActionMap("UI");
+
+        uiMap?.Disable();
+        playerMap?.Enable();
     }
+
+    private InputActionMap FindActionMap(string mapName)
+    {
+        var playerInput = FindFirstObjectByType<PlayerInput>();
+        return playerInput?.actions?.FindActionMap(mapName);
+    }
+
+    // Button Callbacks
+    public void OnResumeButton() => ResumeGame();
 
     public void QuitToMainMenu()
     {
-        ResumeGame(); // reset time scale before loading
-        SceneManager.LoadScene("StartMenu"); 
-        ScoreManager.Instance?.SaveHighScore();
-        ScoreManager.Instance.currentScore = 0;
-    }
-
-    public void QuitGame()
-    {
         ResumeGame();
-        #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-        #else
-                Application.Quit();
-        #endif
+        SceneManager.LoadScene("MainMenu");
     }
 
     public bool IsPaused => isPaused;

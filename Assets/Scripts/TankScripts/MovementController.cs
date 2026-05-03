@@ -133,11 +133,12 @@ public class MovementController : MonoBehaviour
         if (movementAudioSource == null || movementSound == null)
             return;
 
+        /*
         if (Time.timeScale <= 0f)
         {
             StopAudioSource(movementAudioSource);
             return;
-        }
+        }*/
 
         float moveStrength = Mathf.Clamp01(Mathf.Abs(moveInput.x) + Mathf.Abs(moveInput.y));
 
@@ -172,11 +173,11 @@ public class MovementController : MonoBehaviour
         if (turnAudioSource == null || turnSound == null)
             return;
 
-        if (Time.timeScale <= 0f)
+        /*if (Time.timeScale <= 0f)
         {
             StopAudioSource(turnAudioSource);
             return;
-        }
+        }*/
 
         float turnStrength = Mathf.Abs(moveInput.x);
 
