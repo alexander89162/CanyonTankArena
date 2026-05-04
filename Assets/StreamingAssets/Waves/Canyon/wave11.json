@@ -1,0 +1,22 @@
+{
+  "unitConfigs": [
+    { "prefabName": "tank-minigun", "spawnDelay": 1.0, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 1.0, "spawnPointId": 2, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 1.0, "spawnPointId": 3, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 2.5, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 2.5, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 2.5, "spawnPointId": 2, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 4.0, "spawnPointId": 3, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 4.0, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 4.0, "spawnPointId": 2, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 5.0, "spawnPointId": 3, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 5.0, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 5.0, "spawnPointId": 2, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 7.0, "spawnPointId": 3, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 7.0, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 9.0, "spawnPointId": 2, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 10.0, "spawnPointId": 3, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 12.0, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
+    { "prefabName": "tank-minigun", "spawnDelay": 14.0, "spawnPointId": 2, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 }
+  ]
+}

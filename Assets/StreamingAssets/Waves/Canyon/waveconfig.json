@@ -1,0 +1,7 @@
+{
+    "waveMode": "sequential",
+
+    "startWave" : "wave1",
+
+    "transitions": []
+}

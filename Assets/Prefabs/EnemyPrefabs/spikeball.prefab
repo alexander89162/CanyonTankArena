@@ -378,8 +378,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a64b6101670c89469f527821700ee1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpikeballDamage
-  grazeDamage: 5
-  launchDamage: 30
+  grazeDamage: 20
+  launchDamage: 65
   minDamageSpeed: 9
   heavyImpactSpeed: 20
   playerTag: Player
