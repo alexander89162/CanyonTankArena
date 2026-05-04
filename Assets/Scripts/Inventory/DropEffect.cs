@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using Unity.VisualScripting;
 
 public class DropEffect : MonoBehaviour
 {
@@ -13,18 +12,21 @@ public class DropEffect : MonoBehaviour
     [SerializeField] private bool rotateWhilePopping = true;
     [SerializeField] private Vector3 rotationSpeed = new Vector3(0, 180, 0);
 
+    [Header("Ground Detection")]
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float groundRaycastDistance = 50f;
+    [SerializeField] private float groundOffset = 0.1f; 
+
     private Vector3 startPosition;
     private Vector3 targetPosition;
     private float elapsedTime = 0f;
-
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float gravity = -9.81f;
+    private bool isPopping = false;
 
     public void PopOut()
     {
         startPosition = transform.position;
-        
-        // Calculate random landing position
+
+        // Random horizontal scatter
         Vector3 randomOffset = new Vector3(
             Random.Range(-randomSideways, randomSideways),
             0,
@@ -32,9 +34,20 @@ public class DropEffect : MonoBehaviour
         );
 
         targetPosition = startPosition + randomOffset;
-        targetPosition.y = startPosition.y; // land at same height
+
+        Vector3 rayOrigin = new Vector3(targetPosition.x, startPosition.y + 1f, targetPosition.z);
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, groundRaycastDistance, groundLayer))
+        {
+            targetPosition.y = hit.point.y + groundOffset;
+        }
+        else
+        {
+            targetPosition.y = startPosition.y;
+        }
 
         elapsedTime = 0f;
+        isPopping = true;
+        StopAllCoroutines();
         StartCoroutine(PopCoroutine());
     }
 
@@ -43,30 +56,25 @@ public class DropEffect : MonoBehaviour
         while (elapsedTime < popDuration)
         {
             elapsedTime += Time.deltaTime;
-            float t = elapsedTime / popDuration;
+            float t = Mathf.Clamp01(elapsedTime / popDuration);
 
-            // Smooth ease out
-            t = 1 - Mathf.Pow(1 - t, 3);
+            float tEased = 1 - Mathf.Pow(1 - t, 3);
 
-            // Parabolic arc (goes up then down)
             float height = Mathf.Sin(t * Mathf.PI) * popHeight;
 
-            Vector3 newPos = Vector3.Lerp(startPosition, targetPosition, t);
-            newPos.y += height;
-
+            Vector3 newPos = Vector3.Lerp(startPosition, targetPosition, tEased);
+            newPos.y = Mathf.Lerp(startPosition.y, targetPosition.y, tEased) + height;
             transform.position = newPos;
 
-            // Optional rotation
             if (rotateWhilePopping)
                 transform.Rotate(rotationSpeed * Time.deltaTime);
 
             yield return null;
         }
 
-        // Final position
         transform.position = targetPosition;
+        isPopping = false;
 
-        // Optional gentle bob after landing
         StartCoroutine(GentleBob());
     }
 
@@ -82,27 +90,5 @@ public class DropEffect : MonoBehaviour
             transform.position = basePos + Vector3.up * bobOffset;
             yield return null;
         }
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        // Reflect velocity and apply bounce force
-        Vector3 bounceDirection = Vector3.Reflect(transform.forward, collision.contacts[0].normal);
-        transform.position += bounceDirection * 0.1f; // Small offset to avoid sticking
-
-        // Apply upward force to simulate gravity
-        transform.position += Vector3.up * 0.1f;
-
-        // Add bounce force in the bounce direction
-        transform.position += bounceDirection * 0.1f;
-
-        // Apply a small impulse to keep it moving
-        transform.position += bounceDirection * 0.1f;
-    }
-
-    private void Update()
-    {
-        // Apply gravity over time
-        transform.position += Vector3.up * gravity * Time.deltaTime;
     }
 }

@@ -318,4 +318,5 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  gravity: -9.81
+  groundRaycastDistance: 50
+  groundOffset: 10
