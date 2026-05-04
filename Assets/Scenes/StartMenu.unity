@@ -5253,7 +5253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 600aa172a24739448a0e703f8ce67e18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTankStats
-  baseMaxHealth: 500
+  baseMaxHealth: 250
   baseDamageMultiplier: 1
   baseCannonDamageMultiplier: 1
   baseMinigunDamageMultiplier: 1
@@ -5663,7 +5663,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7122927668909341037, guid: 14cd00df0f06298429ca22aff6c8637c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 320.9818
+      value: 335
       objectReference: {fileID: 0}
     - target: {fileID: 7122927668909341037, guid: 14cd00df0f06298429ca22aff6c8637c, type: 3}
       propertyPath: m_LocalPosition.y
@@ -5671,7 +5671,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7122927668909341037, guid: 14cd00df0f06298429ca22aff6c8637c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 521.0926
+      value: 612
       objectReference: {fileID: 0}
     - target: {fileID: 7122927668909341037, guid: 14cd00df0f06298429ca22aff6c8637c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -16072,7 +16072,7 @@ Transform:
   m_GameObject: {fileID: 1857810862}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.5, y: 0, z: 11.1}
+  m_LocalPosition: {x: 0.5, y: -0, z: 10.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
