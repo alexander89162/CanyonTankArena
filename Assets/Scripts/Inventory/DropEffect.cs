@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class DropEffect : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class DropEffect : MonoBehaviour
     private Vector3 startPosition;
     private Vector3 targetPosition;
     private float elapsedTime = 0f;
+
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float gravity = -9.81f;
 
     public void PopOut()
     {
@@ -78,5 +82,27 @@ public class DropEffect : MonoBehaviour
             transform.position = basePos + Vector3.up * bobOffset;
             yield return null;
         }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Reflect velocity and apply bounce force
+        Vector3 bounceDirection = Vector3.Reflect(transform.forward, collision.contacts[0].normal);
+        transform.position += bounceDirection * 0.1f; // Small offset to avoid sticking
+
+        // Apply upward force to simulate gravity
+        transform.position += Vector3.up * 0.1f;
+
+        // Add bounce force in the bounce direction
+        transform.position += bounceDirection * 0.1f;
+
+        // Apply a small impulse to keep it moving
+        transform.position += bounceDirection * 0.1f;
+    }
+
+    private void Update()
+    {
+        // Apply gravity over time
+        transform.position += Vector3.up * gravity * Time.deltaTime;
     }
 }

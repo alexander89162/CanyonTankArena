@@ -147,6 +147,10 @@ MonoBehaviour:
   randomSideways: 1.2
   rotateWhilePopping: 1
   rotationSpeed: {x: 360, y: 360, z: 360}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  gravity: -9.81
 --- !u!1 &6114879283311928235
 GameObject:
   m_ObjectHideFlags: 0
