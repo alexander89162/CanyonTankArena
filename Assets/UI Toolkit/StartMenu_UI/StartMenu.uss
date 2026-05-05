@@ -1,0 +1,101 @@
+/* ====================== MAIN MENU STYLES ====================== */
+
+.main-container {
+    flex-grow: 1;
+    background-color: rgba(18, 20, 16, 0.96);
+    cursor: url("project://database/Assets/Sprites/Sprite_Aim_Marker.png?fileID=2800000&guid=66963a72cd79bd14eb743e3a8d4ca7a8&type=3#Sprite_Aim_Marker"), default;
+}
+
+.background-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(35, 40, 32, 0.65);
+    border-width: 4px;
+    border-color: rgb(85, 95, 75);
+    border-radius: 8px;
+}
+
+/* ====================== TITLE ====================== */
+
+.title-container {
+    position: absolute;
+    top: 17%;
+    left: 33%;
+    width: auto;
+    height: auto;
+    padding: 20px 45px;
+    background-color: rgba(45, 55, 42, 0.95);
+    border-width: 6px;
+    border-color: rgb(115, 140, 100);
+    border-radius: 12px;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.7);
+}
+
+.title-label {
+    -unity-text-align: middle-center;
+    font-size: 92px;
+    -unity-font-style: bold;
+    color: rgb(235, 245, 225);
+    -unity-text-outline-color: rgb(145, 190, 125);
+    -unity-text-outline-width: 6px;
+    text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.85);
+    letter-spacing: 3px;
+    white-space: nowrap;
+}
+
+/* ====================== BUTTONS ====================== */
+
+.menu-button {
+    position: absolute;
+    height: 110px;
+    width: 280px;
+    font-size: 46px;
+    -unity-font-style: bold;
+    color: rgb(240, 245, 230);
+    -unity-text-outline-width: 3px;
+    background-color: rgb(52, 62, 48);
+    border-width: 5px;
+    border-radius: 12px;
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.18s;
+    cursor: url("project://database/Assets/Sprites/Sprite_Aim_Marker.png?fileID=2800000&guid=66963a72cd79bd14eb743e3a8d4ca7a8&type=3#Sprite_Aim_Marker"), pointer;
+}
+
+.menu-button:hover {
+    scale: 1.06;
+    background-color: rgb(72, 88, 65);
+}
+
+/* Specific Button Colors */
+.play-button {
+    top: 38%;
+    left: 42%;
+    -unity-text-outline-color: rgb(110, 190, 90);
+    border-color: rgb(135, 170, 105);
+}
+
+.quit-button {
+    top: 58%;
+    left: 42%;
+    -unity-text-outline-color: rgb(200, 85, 75);
+    border-color: rgb(170, 95, 85);
+}
+
+.settings-button {
+    top: 78%;
+    left: 5%;
+    font-size: 42px;
+    -unity-text-outline-color: rgb(90, 185, 120);
+    border-color: rgb(105, 165, 115);
+}
+
+.credits-button {
+    top: 78%;
+    right: 5%;
+    font-size: 42px;
+    -unity-text-outline-color: rgb(195, 175, 80);
+    border-color: rgb(175, 155, 75);
+}

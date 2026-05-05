@@ -244,4 +244,36 @@ public class SaveManager : MonoBehaviour
 
         return data?.techData ?? new PlayerTechData();
     }
+
+    public void SaveSettings(SettingsData settings)
+{
+    string json = JsonUtility.ToJson(settings, true);
+    
+#if UNITY_WEBGL && !UNITY_EDITOR
+    PlayerPrefs.SetString("PlayerSettings", json);
+    PlayerPrefs.Save();
+#else
+    string path = Path.Combine(Application.persistentDataPath, "settings.json");
+    File.WriteAllText(path, json);
+#endif
+}
+
+public SettingsData LoadSettings()
+{
+    string json = "";
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    if (PlayerPrefs.HasKey("PlayerSettings"))
+        json = PlayerPrefs.GetString("PlayerSettings");
+#else
+    string path = Path.Combine(Application.persistentDataPath, "settings.json");
+    if (File.Exists(path))
+        json = File.ReadAllText(path);
+#endif
+
+    if (string.IsNullOrEmpty(json))
+        return new SettingsData();
+
+    return JsonUtility.FromJson<SettingsData>(json) ?? new SettingsData();
+    }
 }

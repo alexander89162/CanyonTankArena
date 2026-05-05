@@ -1,8 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/MenuUI/MenuUI.uss?fileID=7433441132597879392&amp;guid=98821a5a1e4e0ba4abe03dc91292d269&amp;type=3#MenuUI"/>
     <ui:VisualElement name="root" class="root">
-        <ui:VisualElement name="header" class="header" style="background-image: url(&quot;project://database/Assets/Materials/Materials/6701333.jpg?fileID=2800000&amp;guid=c089028c75a02d942bf14bdbe265346c&amp;type=3#6701333&quot;); background-repeat: no-repeat no-repeat; background-position-x: center; background-position-y: center; -unity-background-scale-mode: scale-and-crop;">
-            <ui:Label text="MiniTank Arena" enable-rich-text="false" class="title" style="color: rgb(0, 0, 0);"/>
+        <ui:VisualElement name="header" class="header" style="background-image: url(&quot;project://database/Assets/StarterAssets/Environment/Art/Textures/Grid_01_Emissive.png?fileID=2800000&amp;guid=d4d6919451fe3e24388816386a6d15a4&amp;type=3#Grid_01_Emissive&quot;); background-repeat: no-repeat no-repeat; background-position-x: center; background-position-y: center; -unity-background-scale-mode: scale-and-crop;">
+            <ui:Label text="Canyon Tank Arena" enable-rich-text="false" class="title" style="color: rgb(255, 204, 0); background-color: rgba(0, 0, 0, 0.86); background-image: none; background-repeat: no-repeat no-repeat;"/>
         </ui:VisualElement>
         <ui:VisualElement name="tab-bar" class="tab-bar" style="background-image: url(&quot;project://database/Assets/Plugins/PrimeTween/Demo/Stylized%20Sand%20by%20Joao%20Paulo/Stylized_Sand_001_height.png?fileID=2800000&amp;guid=593e1963d5983481bb7a93634ccbdf4c&amp;type=3#Stylized_Sand_001_height&quot;); background-repeat: no-repeat no-repeat; -unity-background-scale-mode: scale-and-crop;">
             <ui:Button name="tab-main" text="MAIN" class="tab-button active" style="background-image: url(&quot;project://database/Assets/StarterAssets/Environment/Art/Textures/Grid_01_Emissive.png?fileID=2800000&amp;guid=d4d6919451fe3e24388816386a6d15a4&amp;type=3#Grid_01_Emissive&quot;); -unity-background-scale-mode: scale-and-crop;"/>
@@ -25,7 +25,44 @@
                 <ui:Label text="Customization" class="placeholder"/>
             </ui:VisualElement>
             <ui:VisualElement name="content-settings" class="tab-content">
-                <ui:Label text="Settings " enable-rich-text="true" emoji-fallback-support="true" class="placeholder"/>
+                <ui:VisualElement class="settings-container">
+                    <ui:Label text="SETTINGS" class="settings-title"/>
+                    <ui:Label text="Audio" class="section-header"/>
+                    <ui:VisualElement class="setting-row">
+                        <ui:Label text="Master Volume" class="setting-label"/>
+                        <ui:Slider name="slider-master" low-value="0" high-value="1" value="0.8" class="setting-slider"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="setting-row">
+                        <ui:Label text="Music Volume" class="setting-label"/>
+                        <ui:Slider name="slider-music" low-value="0" high-value="1" value="0.7" class="setting-slider"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="setting-row">
+                        <ui:Label text="SFX Volume" class="setting-label"/>
+                        <ui:Slider name="slider-sfx" low-value="0" high-value="1" value="0.9" class="setting-slider"/>
+                    </ui:VisualElement>
+                    <ui:Label text="Graphics" class="section-header"/>
+                    <ui:VisualElement class="setting-row">
+                        <ui:Label text="Quality Preset" class="setting-label"/>
+                        <ui:DropdownField name="dropdown-quality" choices="Low,Medium,High,Ultra" value="High" class="setting-dropdown"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="setting-row">
+                        <ui:Label text="Fullscreen" class="setting-label"/>
+                        <ui:Toggle name="toggle-fullscreen" value="true" class="setting-toggle"/>
+                    </ui:VisualElement>
+                    <ui:Label text="Controls" class="section-header"/>
+                    <ui:VisualElement class="setting-row">
+                        <ui:Label text="Invert Y-Axis" class="setting-label"/>
+                        <ui:Toggle name="toggle-invert-y" value="false" class="setting-toggle"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="setting-row">
+                        <ui:Label text="Mouse Sensitivity" class="setting-label"/>
+                        <ui:Slider name="slider-sensitivity" low-value="0.5" high-value="3" value="1.5" class="setting-slider"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="settings-bottom">
+                        <ui:Button name="btn-apply" text="APPLY CHANGES" class="settings-button"/>
+                        <ui:Button name="btn-reset" text="RESET TO DEFAULTS" class="settings-button secondary"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
