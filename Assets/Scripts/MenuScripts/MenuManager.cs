@@ -13,6 +13,11 @@ public class MenuManager : MonoBehaviour
     private VisualElement root;
     private VisualElement[] contents;
     private Button[] tabButtons;
+    private Slider masterSlider, musicSlider, sfxSlider, sensitivitySlider;
+    private DropdownField qualityDropdown;
+    private Toggle fullscreenToggle, invertYToggle;
+    private Button applyButton, resetButton;
+    private SettingsData currentSettings = new SettingsData();
 
     private void OnEnable()
     {
@@ -59,6 +64,8 @@ public class MenuManager : MonoBehaviour
 
         // Show first tab by default
         SwitchToTab(0);
+
+        SetupSettings();
     }
 
     private void SwitchToTab(int index)
@@ -107,6 +114,94 @@ public class MenuManager : MonoBehaviour
         }
         //Debug.Log($"Starting match → {arenaSceneName}");
         SceneManager.LoadScene(arenaSceneName);
+    }
+
+    private void SetupSettings()
+    {
+        masterSlider = root.Q<Slider>("slider-master");
+        musicSlider = root.Q<Slider>("slider-music");
+        sfxSlider = root.Q<Slider>("slider-sfx");
+        sensitivitySlider = root.Q<Slider>("slider-sensitivity");
+
+        qualityDropdown = root.Q<DropdownField>("dropdown-quality");
+        fullscreenToggle = root.Q<Toggle>("toggle-fullscreen");
+        invertYToggle = root.Q<Toggle>("toggle-invert-y");
+
+        applyButton = root.Q<Button>("btn-apply");
+        resetButton = root.Q<Button>("btn-reset");
+
+        if (applyButton != null) applyButton.clicked += ApplySettings;
+        if (resetButton != null) resetButton.clicked += ResetSettingsToDefault;
+
+        LoadSettings();
+    }
+
+    private void LoadSettings()
+    {
+        currentSettings = SaveManager.Instance.LoadSettings();
+
+        // Apply to UI
+        if (masterSlider != null) masterSlider.value = currentSettings.masterVolume;
+        if (musicSlider != null) musicSlider.value = currentSettings.musicVolume;
+        if (sfxSlider != null) sfxSlider.value = currentSettings.sfxVolume;
+        if (sensitivitySlider != null) sensitivitySlider.value = currentSettings.sensitivity;
+
+        if (qualityDropdown != null) qualityDropdown.index = currentSettings.qualityLevel;
+        if (fullscreenToggle != null) fullscreenToggle.value = currentSettings.fullscreen;
+        if (invertYToggle != null) invertYToggle.value = currentSettings.invertY;
+    }
+
+    private void ApplySettings()
+    {
+        // Read from UI
+        if (masterSlider != null) currentSettings.masterVolume = masterSlider.value;
+        if (musicSlider != null) currentSettings.musicVolume = musicSlider.value;
+        if (sfxSlider != null) currentSettings.sfxVolume = sfxSlider.value;
+        if (sensitivitySlider != null) currentSettings.sensitivity = sensitivitySlider.value;
+
+        if (qualityDropdown != null) currentSettings.qualityLevel = qualityDropdown.index;
+        if (fullscreenToggle != null) currentSettings.fullscreen = fullscreenToggle.value;
+        if (invertYToggle != null) currentSettings.invertY = invertYToggle.value;
+
+        // Apply to game
+        ApplyToGame();
+
+        // Save
+        SaveManager.Instance.SaveSettings(currentSettings);
+
+        Debug.Log("Settings Applied & Saved");
+    }
+
+    private void ResetSettingsToDefault()
+    {
+        currentSettings = new SettingsData();
+
+        // Update UI
+        if (masterSlider != null) masterSlider.value = currentSettings.masterVolume;
+        if (musicSlider != null) musicSlider.value = currentSettings.musicVolume;
+        if (sfxSlider != null) sfxSlider.value = currentSettings.sfxVolume;
+        if (sensitivitySlider != null) sensitivitySlider.value = currentSettings.sensitivity;
+
+        if (qualityDropdown != null) qualityDropdown.index = currentSettings.qualityLevel;
+        if (fullscreenToggle != null) fullscreenToggle.value = currentSettings.fullscreen;
+        if (invertYToggle != null) invertYToggle.value = currentSettings.invertY;
+
+        ApplyToGame();
+        SaveManager.Instance.SaveSettings(currentSettings);
+    }
+
+    private void ApplyToGame()
+    {
+        // Audio
+        AudioListener.volume = currentSettings.masterVolume;
+
+        // Quality
+        QualitySettings.SetQualityLevel(currentSettings.qualityLevel, true);
+
+        // Fullscreen
+        Screen.fullScreen = currentSettings.fullscreen;
+
+        
     }
 
     // Public methods to open specific tabs from other scripts

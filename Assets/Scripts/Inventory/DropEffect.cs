@@ -75,6 +75,7 @@ public class DropEffect : MonoBehaviour
         transform.position = targetPosition;
         isPopping = false;
 
+        StopAllCoroutines();
         StartCoroutine(GentleBob());
     }
 
