@@ -7,14 +7,13 @@ using UnityEngine.Networking;
 the drone's movement, rotation, attack pattern, and troop deployment*/
 public class DroneController : MonoBehaviour
 {
-    public string droneActions; // the file containing the specific actions this drone will follow
-    //[SerializeField] private AimWeapons aimWeapons; // enable/disable shooting
+    public string droneActions; // the file containing the actions this drone will follow
     private List<Move> moves;
     private List<BrakingManeuver> brakingManeuvers;
     private List<DeploymentAction> deploymentActions;
     private int currentNodeIndex = 1;
     private ControllerState currentState = ControllerState.Forward;
-    private float elapsedTime = 0f; // time from drone spawn. NEVER reset, used for deployment events and attack patterns
+    private float timeIdle = 0f; // time since drone became idle
     private float segmentTimer = 0f; // reset on move to next segment
     private float segmentDuration = 0f;
     private int brakingIndex = 0;
@@ -24,8 +23,8 @@ public class DroneController : MonoBehaviour
     private Quaternion maneuverEndRot;
 
     [Header("Idle Hover")]
-    public float hoverAmplitude = 5.0f;   // vertical travel in world units
-    public float hoverFrequency = 0.4f;   // oscillations per second
+    public float hoverAmplitude = 10.0f;   // vertical travel in world units
+    public float hoverFrequency = 0.35f;   // oscillations per second
 
     private Vector3 hoverOrigin;
 
@@ -128,7 +127,21 @@ public class DroneController : MonoBehaviour
     void Awake()
     {
         SetState(ControllerState.InitializingController);
+        Initialize(droneActions); // TODO: remove this and UnitManager calls it
+    }
+
+    // Drone will begin moving from here
+    public void Initialize(string actionsFile)
+    {
+        droneActions = actionsFile;
         StartCoroutine(InitializeDroneActions());
+    }
+
+    // drone will leave the arena from here
+    public void FlyAway(string exitActionsFile)
+    {
+        StopAllCoroutines();
+        Initialize(exitActionsFile);
     }
 
     void Update()
@@ -140,9 +153,8 @@ public class DroneController : MonoBehaviour
         // 2) Movement and rotation of drone as a whole
         switch (currentState)
         {
-            case ControllerState.InitializingController: break;
+            case ControllerState.InitializingController: return;
             case ControllerState.Forward:
-                elapsedTime += Time.deltaTime;
                 segmentTimer += Time.deltaTime;
 
                 float t = Mathf.Clamp01(segmentTimer / segmentDuration);
@@ -191,7 +203,6 @@ public class DroneController : MonoBehaviour
                 
                 break;
             case ControllerState.StabilizingFromStop:
-                elapsedTime += Time.deltaTime;
                 segmentTimer += Time.deltaTime;
 
                 t = segmentTimer / segmentDuration;
@@ -213,7 +224,7 @@ public class DroneController : MonoBehaviour
 
                 break;
             case ControllerState.Idle:
-                elapsedTime += Time.deltaTime;
+                timeIdle += Time.deltaTime;
                 segmentTimer+= Time.deltaTime;
 
                 float hoverOffset = Mathf.Sin(segmentTimer * hoverFrequency * Mathf.PI * 2f) * hoverAmplitude;
@@ -270,7 +281,12 @@ public class DroneController : MonoBehaviour
         if (moves.Count >= 2)
             segmentDuration = ComputeSegmentDuration(moves[0], moves[1]);
 
-        // 5) Done initializing
+        // 5) Done initializing: reset state
+        currentNodeIndex = 1;
+        brakingIndex = 0;
+        timeIdle = 0f;
+        segmentTimer = 0f;
+
         if (debug) Debug.Log("DroneController finished initialization");
         if (moves.Count >= 2)
             SetState(ControllerState.Forward);
@@ -282,11 +298,11 @@ public class DroneController : MonoBehaviour
     {
         // 1) There should be no nulls
         if (actions.movements == null)
-            Debug.LogError("movements is NULL in external actions");
+            Debug.LogError("movements is NULL in actions");
         if (actions.brakingManeuvers == null)
-            Debug.LogError("brakingManeuvers is NULL in external actions");
+            Debug.LogError("brakingManeuvers is NULL in actions");
         if (actions.deploymentActions == null)
-            Debug.LogError("deploymentActions is NULL in external actions");
+            Debug.LogError("deploymentActions is NULL in actions");
 
         // 2) Interpolation methods must be valid
         for (int i = 0; i < actions.movements.Length; i++)
@@ -294,13 +310,13 @@ public class DroneController : MonoBehaviour
             var move = actions.movements[i];
             if (!System.Enum.TryParse(move.accelerationType, true, out AccelerationType a) || a == AccelerationType.Unknown)
             {
-                Debug.LogError("Acceleration type is invalid.");
+                Debug.LogError("Acceleration type is invalid");
                 return false;
             }
 
             if (!System.Enum.TryParse(move.rotationType, true, out RotationType r) || r == RotationType.Unknown)
             {
-                Debug.LogError("Rotation type is invalid.");
+                Debug.LogError("Rotation type is invalid");
                 return false;
             }
         }
@@ -359,7 +375,6 @@ public class DroneController : MonoBehaviour
 
         Vector3 baseDirection = Vector3.forward;
         baseDirection = (moves[moves.Count - 1].position - moves[moves.Count - 2].position).normalized;
-        Quaternion moveDirection = Quaternion.LookRotation(baseDirection);
 
         maneuverEndPos = maneuverStartPos + baseDirection * maneuver.outwardMove;
         maneuverEndRot = maneuverStartRot * Quaternion.Euler(maneuver.targetTilt);
@@ -383,8 +398,6 @@ public class DroneController : MonoBehaviour
         else if (newState == ControllerState.Idle)
         {
             hoverOrigin = transform.position;
-            if (debug) Debug.Log($"entered Idle state, hoverOrigin initialized to {hoverOrigin}");
         }
-        
     }
 }

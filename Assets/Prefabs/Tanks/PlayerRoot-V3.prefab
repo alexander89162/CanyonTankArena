@@ -529,6 +529,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 2b1c7f4d-6e3e-4b0d-a2d9-5f0e2d1f9a13
     m_ActionName: 'Tanks/Dash[/Keyboard/space]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 0ad98c57-f5a3-4361-9d2f-84a4bfcd5e9b
+    m_ActionName: 'UI/Pause[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Tanks
@@ -552,8 +556,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   movementJoystick: {fileID: 0}
-  dashDistance: 30
-  dashCooldown: 3
+  dashDistance: 45
+  dashCooldown: 2
   dashStepDistance: 0.5
   dashSound: {fileID: 8300000, guid: fbfe894aa475e420487f76a9efb057bf, type: 3}
   dashSoundVolume: 1
@@ -576,7 +580,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19bc73e8f4cb44246bfb6bb287d048e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthComponent
-  maxHealth: 100
+  maxHealth: 300
   destroyOnDeath: 1
   deathDelay: 0.1
   OnHealthChanged:
@@ -756,6 +760,7 @@ MonoBehaviour:
   reloadTime: 2.2
   fireCooldown: 0.6
   fireTimer: 0
+  idealTimeBetweenFires: 1
   cannonBody: {fileID: 3693948950903757929}
   cannonBarrel: {fileID: 3733138744357158700}
   barrelEnd: {fileID: 6375823491436421907}
@@ -785,6 +790,7 @@ MonoBehaviour:
   reloadTime: 2.4
   fireCooldown: 0.2
   fireTimer: 0
+  idealTimeBetweenFires: 1
   minigunBase: {fileID: 9190617853616400103}
   minigunBody: {fileID: 7149488607723657372}
   minigunBarrels: {fileID: 7524745047229489321}
@@ -841,6 +847,7 @@ MonoBehaviour:
   reloadTime: 2.8
   fireCooldown: 0
   fireTimer: 0
+  idealTimeBetweenFires: 1
   ballisticBody: {fileID: 232889882843070434}
   missiles:
   - {fileID: 4144300463051730989}
@@ -854,6 +861,12 @@ MonoBehaviour:
   liftMissileLaunchAngle: -10
   rotationOnSpawn: {x: -90, y: 0, z: 0}
   missileExplosionScale: 1
+  triggerExplosionMask:
+    serializedVersion: 2
+    m_Bits: 0
+  damageMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &4599737716883312119
 GameObject:
   m_ObjectHideFlags: 0
