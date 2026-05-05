@@ -18,6 +18,7 @@ public class UnitManager : MonoBehaviour
         WaveRunning, // Gradually empty the SpawnQueue, then transition to next wave when all enemies or player has died
         Deallocating // Destroys all units, empty unitHandles
     }
+    [SerializeField] private DroneScheduler droneScheduler;
     [SerializeField] private List<GameObject> prefabList;
     [SerializeField] private float minInterWaveTime = 10f; // min time to wait between waves
     public int batchSize = 20; // how many units to allocate per frame during allocation state
@@ -39,7 +40,7 @@ public class UnitManager : MonoBehaviour
     private string waveContentsPath;
     private Dictionary<string, string> waveTransitions;
 
-    [System.Serializable]
+    [Serializable]
     public class WaveConfigFile
     {
         public string waveMode;
@@ -47,14 +48,14 @@ public class UnitManager : MonoBehaviour
         public Transition[] transitions;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class Transition
     {
         public string from;
         public string to;
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct UnitConfig // data to be used by SpawnQueue, ensuring we place units with proper configurations
     {
         public string prefabName;
@@ -66,11 +67,31 @@ public class UnitManager : MonoBehaviour
         public float movementSpeed;
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct WaveDefinition
     {
         public string spawnMethod;
         public UnitConfig[] unitConfigs;
+        public DroneConfig[] droneConfigs;
+        public DroneEvent[] droneEvents;
+    }
+
+    [Serializable]
+    public struct DroneConfig
+    {
+        public int droneId;
+        public string prefabName;
+        public int team;
+        public float damageMultiplier;
+        public float healthMultiplier;
+    }
+
+    [Serializable]
+    public struct DroneEvent
+    {
+        public int droneId;
+        public float triggerTime;
+        public string actionsFile;
     }
 
     public event Action OnVictory; // when we win
@@ -191,6 +212,8 @@ public class UnitManager : MonoBehaviour
         {
             sp.TryFlush();
         }
+
+        droneScheduler?.Tick(waveTimer);
     }
 
     public void EnqueueForSpawn()
@@ -239,6 +262,11 @@ public class UnitManager : MonoBehaviour
             JsonUtility.FromJson<WaveDefinition>(jsonString);
 
         FillUnitHandles(wave);
+
+        if (wave.droneConfigs != null && droneScheduler != null)
+            droneScheduler.Initialize(wave.droneConfigs, wave.droneEvents);
+        else
+            droneScheduler?.Initialize(new DroneConfig[0], new DroneEvent[0]);
     }
 
     private IEnumerator LoadWaveConfigurations()
@@ -273,15 +301,13 @@ public class UnitManager : MonoBehaviour
         if (waveMode.ToLower() == "procedural")
         {
             foreach (var t in config.transitions)
-            {
                 waveTransitions[t.from] = t.to;
-            }
+
             currentWave = config.startWave;
         } 
         else
-        {
             currentWave = "wave1";
-        }
+
         SetState(WaveState.Allocating);
     }
 

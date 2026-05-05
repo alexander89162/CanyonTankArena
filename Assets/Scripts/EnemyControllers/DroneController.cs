@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using static UnitManager;
 
 /*Given a series of instructions via json, this component automatically guides 
 the drone's movement, rotation, attack pattern, and troop deployment*/
@@ -25,9 +26,7 @@ public class DroneController : MonoBehaviour
     [Header("Idle Hover")]
     public float hoverAmplitude = 10.0f;   // vertical travel in world units
     public float hoverFrequency = 0.35f;   // oscillations per second
-
     private Vector3 hoverOrigin;
-
 
     [Header("Rigging")]
     public Transform[] propellers;
@@ -40,7 +39,6 @@ public class DroneController : MonoBehaviour
         StabilizingFromStop, // rock back and forth to simulate realistic stopping
         Idle, // Rock up and down, small sideways noise which should always return to original position and tilt gently while doing so
     }
-
     [System.Serializable]
     public class DroneActions
     {
@@ -48,15 +46,14 @@ public class DroneController : MonoBehaviour
         public BrakingManeuver[] brakingManeuvers;
         public DeploymentAction[] deploymentActions;
     }
-
     public struct Move
     {
         public int moveId;
         public Vector3 position;
         public Quaternion rotation;
         public float endVelocity;
-        public AccelerationType accelerationType; // "linear" or "quadratic"
-        public RotationType rotationType; // "linear" or "Slerp"
+        public AccelerationType accelerationType;
+        public RotationType rotationType;
         public Move(MoveJson json)
         {
             moveId = json.moveId;
@@ -73,7 +70,6 @@ public class DroneController : MonoBehaviour
                 ? r : RotationType.Unknown;
         }
     }
-
     [System.Serializable]
     public struct MoveJson
     {
@@ -84,7 +80,6 @@ public class DroneController : MonoBehaviour
         public string accelerationType;
         public string rotationType;
     }
-
     [System.Serializable]
     public struct BrakingManeuver
     {
@@ -97,7 +92,6 @@ public class DroneController : MonoBehaviour
             return Quaternion.Euler(targetTilt);
         }
     }
-
     [System.Serializable]
     public struct DeploymentAction
     {
@@ -106,7 +100,6 @@ public class DroneController : MonoBehaviour
         public float startDelay;
         public float duration;
     }
-
     public enum AccelerationType
     {
         Unknown, // fails on validation
@@ -114,7 +107,6 @@ public class DroneController : MonoBehaviour
         QuadraticIncreasing, // increasingly fast shift
         QuadraticDecreasing // decreasingly fast shift
     }
-
     public enum RotationType
     {
         Unknown,
@@ -378,6 +370,31 @@ public class DroneController : MonoBehaviour
 
         maneuverEndPos = maneuverStartPos + baseDirection * maneuver.outwardMove;
         maneuverEndRot = maneuverStartRot * Quaternion.Euler(maneuver.targetTilt);
+    }
+
+    public void EnterArena()
+    {
+        // Reset state
+        currentNodeIndex = 0;
+        // TODO
+
+        // Load new drone actions
+        SetState(ControllerState.InitializingController);
+        Initialize(droneActions);
+
+        PerformNextEvent();
+    }
+
+    public void ExitArena()
+    {
+        StopAllCoroutines();
+        SetState(ControllerState.Idle);
+        PerformNextEvent();
+    }
+
+    public void PerformNextEvent()
+    {
+        //
     }
 
     private void SetState(ControllerState newState)
