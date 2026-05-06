@@ -5141,6 +5141,8 @@ GameObject:
   - component: {fileID: 723681798}
   - component: {fileID: 723681799}
   - component: {fileID: 723681800}
+  - component: {fileID: 723681801}
+  - component: {fileID: 723681802}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -5253,7 +5255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 600aa172a24739448a0e703f8ce67e18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTankStats
-  baseMaxHealth: 250
+  baseMaxHealth: 500
   baseDamageMultiplier: 1
   baseCannonDamageMultiplier: 1
   baseMinigunDamageMultiplier: 1
@@ -5284,6 +5286,37 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 80e92447cf44f9b4380bf9a0971c5432, type: 2}
   - {fileID: 11400000, guid: a1eb76a0cb3dccb458f9caa364567464, type: 2}
   - {fileID: 11400000, guid: 809ca608522f67c41bd5aa2ad20738ca, type: 2}
+--- !u!114 &723681801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 723681792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc24d0f51df73a549b4b3eae1a186f5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  mainAudioMixer: {fileID: 24100000, guid: bf08166ca0da60f41be073c49c9816fb, type: 2}
+  musicSource: {fileID: 0}
+  crossfadeDuration: 1.5
+  startMenuMusic: {fileID: 0}
+  garageMusic: {fileID: 0}
+  arenaMusic: {fileID: 0}
+--- !u!114 &723681802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 723681792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 085b8c548db6a3445add4035d270f5a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SettingsManager
+  mainAudioMixer: {fileID: 24100000, guid: bf08166ca0da60f41be073c49c9816fb, type: 2}
 --- !u!1001 &747743795
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5911,29 +5944,16 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1230223364}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Script: {fileID: 11500000, guid: 98daddae3cc925e4cac0b95bfad48f21, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
-  m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: 
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::MenuSoundManager
+  hoverSound: {fileID: 8300000, guid: 0da2ba62ae130634c8affac7ff09a721, type: 3}
+  clickSound: {fileID: 8300000, guid: fa0833424847cb546a180efc6832ca11, type: 3}
+  hoverVolume: 0.7
+  clickVolume: 1
+  sfxMixerGroup: {fileID: 24300002, guid: 434f6f1c19b359f428f8a5ae497f1a0a, type: 2}
 --- !u!1 &1410074874
 GameObject:
   m_ObjectHideFlags: 0

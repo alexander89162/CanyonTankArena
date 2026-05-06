@@ -668,6 +668,7 @@ GameObject:
   - component: {fileID: 1501178744}
   - component: {fileID: 1501178743}
   - component: {fileID: 1501178746}
+  - component: {fileID: 1501178747}
   m_Layer: 5
   m_Name: MainMenuUI
   m_TagString: Untagged
@@ -690,6 +691,7 @@ MonoBehaviour:
   uiDocument: {fileID: 1501178744}
   arenaSceneName: Demo3-V3
   techTreeView: {fileID: 333333335}
+  mainAudioMixer: {fileID: 0}
 --- !u!114 &1501178744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -741,6 +743,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TechTreeController
   sceneView: {fileID: 333333335}
+--- !u!114 &1501178747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1501178742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98daddae3cc925e4cac0b95bfad48f21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuSoundManager
+  hoverSound: {fileID: 8300000, guid: 0da2ba62ae130634c8affac7ff09a721, type: 3}
+  clickSound: {fileID: 8300000, guid: fa0833424847cb546a180efc6832ca11, type: 3}
+  hoverVolume: 0.7
+  clickVolume: 1
+  sfxMixerGroup: {fileID: 24300002, guid: 434f6f1c19b359f428f8a5ae497f1a0a, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

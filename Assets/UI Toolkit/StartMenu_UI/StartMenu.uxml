@@ -1,12 +1,53 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/StartMenu_UI/StartMenu.uss?fileID=7433441132597879392&amp;guid=6029a8ff98471084595903c1d0772594&amp;type=3#StartMenu"/>
-    <ui:VisualElement name="MainMenuContainer" class="main-container" style="opacity: 0.62; display: flex; visibility: visible; overflow: visible; cursor: url(&quot;project://database/Assets/Sprites/Crosshair_19%201.png?fileID=2800000&amp;guid=86fe0642fdc778647a2d3c9d445ccd17&amp;type=3#Crosshair_19 1&quot;);">
-        <ui:VisualElement name="Title" class="title-container" style="top: 151px; left: 417px;">
-            <ui:Label text="Canyon Tank Arena" name="TitleName" class="title-label"/>
+    <ui:VisualElement name="content-container" style="flex-grow: 1; position: absolute; height: 1078px; width: 1915px;">
+        <ui:VisualElement name="content-main" class="main-container" style="opacity: 0.62; display: flex; visibility: visible; overflow: visible; cursor: url(&quot;project://database/Assets/Sprites/CrosshairMenu.png?fileID=2800000&amp;guid=df96873c839a5034fa7e7fcdaebbf8b9&amp;type=3#CrosshairMenu&quot;); position: relative; height: 1084px; width: 1919px; left: 0;">
+            <ui:VisualElement name="Title" class="title-container" style="top: 151px; left: 417px; cursor: url(&quot;project://database/Assets/Sprites/CrosshairMenu.png?fileID=2800000&amp;guid=df96873c839a5034fa7e7fcdaebbf8b9&amp;type=3#CrosshairMenu&quot;);">
+                <ui:Label text="Canyon Tank Arena" name="TitleName" class="title-label" style="cursor: url(&quot;project://database/Assets/Sprites/CrosshairMenu.png?fileID=2800000&amp;guid=df96873c839a5034fa7e7fcdaebbf8b9&amp;type=3#CrosshairMenu&quot;);"/>
+            </ui:VisualElement>
+            <ui:Button text="Play" name="Play_Btn" class="menu-button play-button" style="cursor: url(&quot;project://database/Assets/Sprites/CrosshairMenu.png?fileID=2800000&amp;guid=df96873c839a5034fa7e7fcdaebbf8b9&amp;type=3#CrosshairMenu&quot;);"/>
+            <ui:Button text="Quit" name="Quit_Btn" class="menu-button quit-button" style="cursor: url(&quot;project://database/Assets/Sprites/CrosshairMenu.png?fileID=2800000&amp;guid=df96873c839a5034fa7e7fcdaebbf8b9&amp;type=3#CrosshairMenu&quot;);"/>
+            <ui:Button text="Settings" name="Settings_Btn" class="menu-button settings-button" style="cursor: url(&quot;project://database/Assets/Sprites/CrosshairMenu.png?fileID=2800000&amp;guid=df96873c839a5034fa7e7fcdaebbf8b9&amp;type=3#CrosshairMenu&quot;);"/>
+            <ui:Button text="Credits" name="Credits_Btn" class="menu-button credits-button" style="cursor: url(&quot;project://database/Assets/Sprites/CrosshairMenu.png?fileID=2800000&amp;guid=df96873c839a5034fa7e7fcdaebbf8b9&amp;type=3#CrosshairMenu&quot;);"/>
         </ui:VisualElement>
-        <ui:Button text="Play" name="Play_Btn" class="menu-button play-button"/>
-        <ui:Button text="Quit" name="Quit_Btn" class="menu-button quit-button"/>
-        <ui:Button text="Settings" name="Settings_Btn" class="menu-button settings-button"/>
-        <ui:Button text="Credits" name="Credits_Btn" class="menu-button credits-button"/>
+        <ui:VisualElement name="content-settings" class="tab-content" style="position: absolute; height: 934px; width: 810px; top: 7px; display: none; left: 464px; padding-top: 44px; padding-right: 44px; padding-bottom: 70px; padding-left: 44px; margin-top: 68px; margin-right: 68px; margin-bottom: 69px; margin-left: 68px; background-color: rgb(56, 56, 56); visibility: visible;">
+            <ui:Label text="SETTINGS" class="settings-title"/>
+            <ui:Label text="Audio" class="section-header"/>
+            <ui:VisualElement class="setting-row">
+                <ui:Label text="Master Volume" class="setting-label"/>
+                <ui:Slider name="slider-master" low-value="0" high-value="1" value="0.8" class="setting-slider"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="setting-row">
+                <ui:Label text="Music Volume" class="setting-label"/>
+                <ui:Slider name="slider-music" low-value="0" high-value="1" value="0.7" class="setting-slider"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="setting-row">
+                <ui:Label text="SFX Volume" class="setting-label"/>
+                <ui:Slider name="slider-sfx" low-value="0" high-value="1" value="0.9" class="setting-slider"/>
+            </ui:VisualElement>
+            <ui:Label text="Graphics" class="section-header"/>
+            <ui:VisualElement class="setting-row">
+                <ui:Label text="Quality Preset" class="setting-label"/>
+                <ui:DropdownField name="dropdown-quality" choices="Low,Medium,High,Ultra" value="High" class="setting-dropdown"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="setting-row">
+                <ui:Label text="Fullscreen" class="setting-label"/>
+                <ui:Toggle name="toggle-fullscreen" value="true" class="setting-toggle"/>
+            </ui:VisualElement>
+            <ui:Label text="Controls" class="section-header"/>
+            <ui:VisualElement class="setting-row">
+                <ui:Label text="Invert Y-Axis" class="setting-label"/>
+                <ui:Toggle name="toggle-invert-y" value="false" class="setting-toggle"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="setting-row">
+                <ui:Label text="Mouse Sensitivity" class="setting-label"/>
+                <ui:Slider name="slider-sensitivity" low-value="0.5" high-value="3" value="1.5" class="setting-slider"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="settings-bottom">
+                <ui:Button name="btn-apply" text="APPLY CHANGES" class="settings-button primary"/>
+                <ui:Button name="btn-reset" text="RESET TO DEFAULTS" class="settings-button secondary"/>
+                <ui:Button name="btn-close" text="CLOSE SETTINGS" class="settings-button primary" style="position: absolute; top: -766px; left: 435px;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

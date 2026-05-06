@@ -1,102 +1,143 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements; 
+using UnityEngine.UIElements;
 
 public class StartMenuController : MonoBehaviour
 {
     private UIDocument uiDocument;
+    private VisualElement root;
+    private VisualElement settingsPanel;
+
+    // Settings UI elements
+    private Slider masterSlider, musicSlider, sfxSlider;
+    private Button applyButton, resetButton, closeButton;
+
     [SerializeField] private GameObject loadingScreen;
 
     void Start()
     {
-        //Allows to get the uidoc
         uiDocument = GetComponent<UIDocument>();
-        
-        //Grabs to root visual element to manipulate
-        var root = uiDocument.rootVisualElement;
+        root = uiDocument.rootVisualElement;
 
-        //Grabs the buttons 
-        var playButton   = root.Q<Button>("Play_Btn");
+        // Main Menu Buttons
+        var playButton = root.Q<Button>("Play_Btn");
         var settingsButton = root.Q<Button>("Settings_Btn");
-        var creditsButton  = root.Q<Button>("Credits_Btn");
-        var quitButton     = root.Q<Button>("Quit_Btn");
+        var creditsButton = root.Q<Button>("Credits_Btn");
+        var quitButton = root.Q<Button>("Quit_Btn");
 
-        //Click events
-        if (playButton != null)
-            playButton.clicked += OnPlayClicked;
+        if (playButton != null) playButton.clicked += OnPlayClicked;
+        if (settingsButton != null) settingsButton.clicked += OnSettingsClicked;
+        if (creditsButton != null) creditsButton.clicked += OnCreditsClicked;
+        if (quitButton != null) quitButton.clicked += OnQuitClicked;
 
-        if (settingsButton != null)
-            settingsButton.clicked += OnSettingsClicked;
+        // Setup Settings Panel
+        SetupSettingsPanel();
+    }
 
-        if (creditsButton != null)
-            creditsButton.clicked += OnCreditsClicked;
+    private void SetupSettingsPanel()
+    {
+        settingsPanel = root.Q<VisualElement>("content-settings");
 
-        if (quitButton != null)
-            quitButton.clicked += OnQuitClicked;
+        masterSlider = root.Q<Slider>("slider-master");
+        musicSlider = root.Q<Slider>("slider-music");
+        sfxSlider = root.Q<Slider>("slider-sfx");
+
+        applyButton = root.Q<Button>("btn-apply");
+        resetButton = root.Q<Button>("btn-reset");
+        closeButton = root.Q<Button>("btn-close");
+
+        if (applyButton != null) applyButton.clicked += ApplySettings;
+        if (resetButton != null) resetButton.clicked += ResetToDefaults;
+        if (closeButton != null) closeButton.clicked += CloseSettings;
+
+        // Load current settings when opening
+        LoadSettingsIntoUI();
+    }
+
+    private void OnSettingsClicked()
+    {
+        if (settingsPanel != null)
+        {
+            settingsPanel.style.display = DisplayStyle.Flex;
+            LoadSettingsIntoUI(); // Refresh values
+        }
+    }
+
+    private void CloseSettings()
+    {
+        if (settingsPanel != null)
+            settingsPanel.style.display = DisplayStyle.None;
+    }
+
+    private void LoadSettingsIntoUI()
+    {
+        if (masterSlider != null) masterSlider.value = PlayerPrefs.GetFloat("MasterVolume", 0.8f);
+        if (musicSlider != null) musicSlider.value = PlayerPrefs.GetFloat("MusicVolume", 0.75f);
+        if (sfxSlider != null) sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 0.9f);
+    }
+
+    private void ApplySettings()
+    {
+        if (SettingsManager.Instance != null)
+        {
+            SettingsManager.Instance.SaveAndApplySettings(
+                masterSlider.value,
+                musicSlider.value,
+                sfxSlider.value,
+                1.5f,           // sensitivity (can expand later)
+                3,              // Quality High
+                true,           // Fullscreen
+                false           // Invert Y
+            );
+        }
+
+        Debug.Log("[StartMenu] Settings Applied");
+    }
+
+    private void ResetToDefaults()
+    {
+        if (SettingsManager.Instance != null)
+            SettingsManager.Instance.ResetToDefaults();
+
+        LoadSettingsIntoUI();
     }
 
     private void OnPlayClicked()
     {
         StartCoroutine(LoadGameWithScreen());
-        
     }
 
     private System.Collections.IEnumerator LoadGameWithScreen()
     {
-        // Show loading screen immediately
-        if (loadingScreen != null)
-            loadingScreen.SetActive(true);
+        if (loadingScreen != null) loadingScreen.SetActive(true);
 
-        Time.timeScale = 1f;
-
-        // Start async load (single mode replaces menu)
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu");
-        SaveManager.Instance.LoadGame();
-        SaveManager.Instance.LoadTechData();
-        asyncLoad.allowSceneActivation = false; 
+        asyncLoad.allowSceneActivation = false;
 
-        // Fake progress while waiting (or use asyncLoad.progress)
-       while (!asyncLoad.isDone)
+        while (!asyncLoad.isDone)
         {
-
             if (asyncLoad.progress >= 0.9f)
             {
-                // Loading complete → small delay or wait for input if you want "Press any key"
-                yield return new WaitForSeconds(0.5f);  // or while(!Input.anyKeyDown) yield return null;
-
-                asyncLoad.allowSceneActivation = true;  // now activate the new scene
+                yield return new WaitForSeconds(0.5f);
+                asyncLoad.allowSceneActivation = true;
             }
-
             yield return null;
         }
 
-        //hide loading after activation
-        if (loadingScreen != null)
-            loadingScreen.SetActive(false);
+        if (loadingScreen != null) loadingScreen.SetActive(false);
     }
 
-    //Func to check settings button works
-    private void OnSettingsClicked()
-    {
-        Debug.Log("Settings clicked");
-       
-    }
-
-    //Func to check credits button works
     private void OnCreditsClicked()
     {
-        Debug.Log("Credits clicked");
-        
+        Debug.Log("Credits clicked - TODO: Implement Credits Panel");
     }
 
-    //Function to quit the game
     private void OnQuitClicked()
     {
-        Debug.Log("Quit clicked");
         #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
+            UnityEditor.EditorApplication.isPlaying = false;
         #else
-                Application.Quit();
+            Application.Quit();
         #endif
     }
 }

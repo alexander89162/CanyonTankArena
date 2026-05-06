@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 public class MenuManager : MonoBehaviour
 {
+    public static MenuManager Instance { get; private set; }
     [SerializeField] private UIDocument uiDocument;
     [SerializeField] private string arenaSceneName = "Demo3_V3";
 
@@ -17,7 +19,7 @@ public class MenuManager : MonoBehaviour
     private DropdownField qualityDropdown;
     private Toggle fullscreenToggle, invertYToggle;
     private Button applyButton, resetButton;
-    private SettingsData currentSettings = new SettingsData();
+    [SerializeField] private AudioMixer mainAudioMixer;
 
     private void OnEnable()
     {
@@ -74,6 +76,9 @@ public class MenuManager : MonoBehaviour
         foreach (var content in contents)
             if (content != null) content.RemoveFromClassList("active");
 
+        if (index == 3) 
+            LoadSettingsIntoUI(); 
+
         // Show selected content
         if (contents[index] != null)
             contents[index].AddToClassList("active");
@@ -118,6 +123,7 @@ public class MenuManager : MonoBehaviour
 
     private void SetupSettings()
     {
+        // Find UI elements
         masterSlider = root.Q<Slider>("slider-master");
         musicSlider = root.Q<Slider>("slider-music");
         sfxSlider = root.Q<Slider>("slider-sfx");
@@ -130,78 +136,58 @@ public class MenuManager : MonoBehaviour
         applyButton = root.Q<Button>("btn-apply");
         resetButton = root.Q<Button>("btn-reset");
 
+        // Load saved values when opening settings
+        LoadSettingsIntoUI();
+
+        // Register listeners
         if (applyButton != null) applyButton.clicked += ApplySettings;
-        if (resetButton != null) resetButton.clicked += ResetSettingsToDefault;
-
-        LoadSettings();
+        if (resetButton != null) resetButton.clicked += ResetToDefaults;
     }
 
-    private void LoadSettings()
+    // Load saved settings from PlayerPrefs
+    private void LoadSettingsIntoUI()
     {
-        currentSettings = SaveManager.Instance.LoadSettings();
+        if (masterSlider != null) masterSlider.value = PlayerPrefs.GetFloat("MasterVolume", 0.8f);
+        if (musicSlider != null) musicSlider.value = PlayerPrefs.GetFloat("MusicVolume", 0.7f);
+        if (sfxSlider != null) sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 0.9f);
+        if (sensitivitySlider != null) sensitivitySlider.value = PlayerPrefs.GetFloat("Sensitivity", 1.5f);
 
-        // Apply to UI
-        if (masterSlider != null) masterSlider.value = currentSettings.masterVolume;
-        if (musicSlider != null) musicSlider.value = currentSettings.musicVolume;
-        if (sfxSlider != null) sfxSlider.value = currentSettings.sfxVolume;
-        if (sensitivitySlider != null) sensitivitySlider.value = currentSettings.sensitivity;
+        if (qualityDropdown != null)
+            qualityDropdown.value = PlayerPrefs.GetString("QualityPreset", "High");
 
-        if (qualityDropdown != null) qualityDropdown.index = currentSettings.qualityLevel;
-        if (fullscreenToggle != null) fullscreenToggle.value = currentSettings.fullscreen;
-        if (invertYToggle != null) invertYToggle.value = currentSettings.invertY;
+        if (fullscreenToggle != null)
+            fullscreenToggle.value = PlayerPrefs.GetInt("Fullscreen", 1) == 1;
+
+        if (invertYToggle != null)
+            invertYToggle.value = PlayerPrefs.GetInt("InvertY", 0) == 1;
     }
 
+    // ====================== APPLY SETTINGS ======================
     private void ApplySettings()
     {
-        // Read from UI
-        if (masterSlider != null) currentSettings.masterVolume = masterSlider.value;
-        if (musicSlider != null) currentSettings.musicVolume = musicSlider.value;
-        if (sfxSlider != null) currentSettings.sfxVolume = sfxSlider.value;
-        if (sensitivitySlider != null) currentSettings.sensitivity = sensitivitySlider.value;
+        if (SettingsManager.Instance == null) return;
 
-        if (qualityDropdown != null) currentSettings.qualityLevel = qualityDropdown.index;
-        if (fullscreenToggle != null) currentSettings.fullscreen = fullscreenToggle.value;
-        if (invertYToggle != null) currentSettings.invertY = invertYToggle.value;
+        int qualityIndex = qualityDropdown?.index ?? 2;
 
-        // Apply to game
-        ApplyToGame();
+        SettingsManager.Instance.SaveAndApplySettings(
+            masterSlider.value,
+            musicSlider.value,
+            sfxSlider.value,
+            sensitivitySlider?.value ?? 1.5f,
+            qualityIndex,
+            fullscreenToggle?.value ?? true,
+            invertYToggle?.value ?? false
+        );
 
-        // Save
-        SaveManager.Instance.SaveSettings(currentSettings);
-
-        Debug.Log("Settings Applied & Saved");
+        Debug.Log("[Garage] Settings Applied");
     }
 
-    private void ResetSettingsToDefault()
+    private void ResetToDefaults()
     {
-        currentSettings = new SettingsData();
+        if (SettingsManager.Instance != null)
+            SettingsManager.Instance.ResetToDefaults();
 
-        // Update UI
-        if (masterSlider != null) masterSlider.value = currentSettings.masterVolume;
-        if (musicSlider != null) musicSlider.value = currentSettings.musicVolume;
-        if (sfxSlider != null) sfxSlider.value = currentSettings.sfxVolume;
-        if (sensitivitySlider != null) sensitivitySlider.value = currentSettings.sensitivity;
-
-        if (qualityDropdown != null) qualityDropdown.index = currentSettings.qualityLevel;
-        if (fullscreenToggle != null) fullscreenToggle.value = currentSettings.fullscreen;
-        if (invertYToggle != null) invertYToggle.value = currentSettings.invertY;
-
-        ApplyToGame();
-        SaveManager.Instance.SaveSettings(currentSettings);
-    }
-
-    private void ApplyToGame()
-    {
-        // Audio
-        AudioListener.volume = currentSettings.masterVolume;
-
-        // Quality
-        QualitySettings.SetQualityLevel(currentSettings.qualityLevel, true);
-
-        // Fullscreen
-        Screen.fullScreen = currentSettings.fullscreen;
-
-        
+        LoadSettingsIntoUI(); // Refresh UI with new defaults
     }
 
     // Public methods to open specific tabs from other scripts
@@ -210,4 +196,7 @@ public class MenuManager : MonoBehaviour
     public void OpenTechTree() => SwitchToTab(2);
     public void OpenSettings() => SwitchToTab(3);
     public void OpenCustomization() => SwitchToTab(4);
+
+    public void GetSetupSettings() => SetupSettings();
+    public void GetLoadSettings() => LoadSettingsIntoUI();
 }
