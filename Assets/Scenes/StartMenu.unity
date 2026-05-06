@@ -5300,10 +5300,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   mainAudioMixer: {fileID: 24100000, guid: bf08166ca0da60f41be073c49c9816fb, type: 2}
   musicSource: {fileID: 0}
-  crossfadeDuration: 1.5
-  startMenuMusic: {fileID: 0}
-  garageMusic: {fileID: 0}
-  arenaMusic: {fileID: 0}
+  crossfadeDuration: 0.5
+  startMenuMusic: {fileID: 8300000, guid: 079927b2b6cfbce4fab67b8c5fb7bcef, type: 3}
+  mainMenuMusic: {fileID: 8300000, guid: c4c7b9a4bf1dc484297d70b67e0a1f0e, type: 3}
+  arenaMusic: {fileID: 8300000, guid: cb5853e5176074645b5b354a14ed8d99, type: 3}
 --- !u!114 &723681802
 MonoBehaviour:
   m_ObjectHideFlags: 0

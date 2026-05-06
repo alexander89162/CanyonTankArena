@@ -16,7 +16,7 @@ public class AudioManager : MonoBehaviour
 
     [Header("Music Clips")]
     [SerializeField] private AudioClip startMenuMusic;
-    [SerializeField] private AudioClip garageMusic;
+    [SerializeField] private AudioClip mainMenuMusic;
     [SerializeField] private AudioClip arenaMusic;
 
     private string currentSceneName;
@@ -24,12 +24,6 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
@@ -90,8 +84,8 @@ public class AudioManager : MonoBehaviour
     {
         string lower = sceneName.ToLower();
         if (lower.Contains("start")) return startMenuMusic;
-        if (lower.Contains("garage") || lower.Contains("mainmenu")) return garageMusic;
-        if (lower.Contains("arena") || lower.Contains("battle")) return arenaMusic;
+        if (lower.Contains("garage") || lower.Contains("mainmenu")) return mainMenuMusic;
+        if (lower.Contains("arena") || lower.Contains("demo")) return arenaMusic;
 
         return null;
     }
