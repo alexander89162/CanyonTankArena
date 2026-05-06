@@ -9,6 +9,7 @@ the drone's movement, rotation, attack pattern, and troop deployment*/
 public class DroneController : MonoBehaviour
 {
     public string droneActions; // the file containing the actions this drone will follow
+    private Queue<QueuedDroneAction> actionQueue = new Queue<QueuedDroneAction>();
     private List<Move> moves;
     private List<BrakingManeuver> brakingManeuvers;
     private List<DeploymentAction> deploymentActions;
@@ -22,15 +23,19 @@ public class DroneController : MonoBehaviour
     private Quaternion maneuverStartRot;
     private Vector3 maneuverEndPos;
     private Quaternion maneuverEndRot;
+    private bool destroyOnFinish = false;
 
     [Header("Idle Hover")]
     public float hoverAmplitude = 10.0f;   // vertical travel in world units
     public float hoverFrequency = 0.35f;   // oscillations per second
+    public float minTimeBeforeReroute = 3f; // Next droneActions will not be executed until idle for at least this long
     private Vector3 hoverOrigin;
 
     [Header("Rigging")]
     public Transform[] propellers;
     public float propellerSpeed = 1800f;
+
+    public bool debug = false;
 
     private enum ControllerState
     {
@@ -45,6 +50,17 @@ public class DroneController : MonoBehaviour
         public MoveJson[] movements;
         public BrakingManeuver[] brakingManeuvers;
         public DeploymentAction[] deploymentActions;
+    }
+    public struct QueuedDroneAction
+    {
+        public string actionsFile;
+        public float delay; // time AFTER previous action completes
+
+        public QueuedDroneAction(string actionsFile, float delay)
+        {
+            this.actionsFile = actionsFile;
+            this.delay = delay;
+        }
     }
     public struct Move
     {
@@ -114,8 +130,6 @@ public class DroneController : MonoBehaviour
         Slerp
     }
 
-    public bool debug = false;
-
     void Awake()
     {
         SetState(ControllerState.InitializingController);
@@ -125,15 +139,9 @@ public class DroneController : MonoBehaviour
     // Drone will begin moving from here
     public void Initialize(string actionsFile)
     {
+        destroyOnFinish = false; // keep in case pooling is added later
         droneActions = actionsFile;
         StartCoroutine(InitializeDroneActions());
-    }
-
-    // drone will leave the arena from here
-    public void FlyAway(string exitActionsFile)
-    {
-        StopAllCoroutines();
-        Initialize(exitActionsFile);
     }
 
     void Update()
@@ -221,6 +229,13 @@ public class DroneController : MonoBehaviour
 
                 float hoverOffset = Mathf.Sin(segmentTimer * hoverFrequency * Mathf.PI * 2f) * hoverAmplitude;
                 transform.position = hoverOrigin + Vector3.up * hoverOffset;
+
+                if (timeIdle > minTimeBeforeReroute && actionQueue.Count > 0 && actionQueue.Peek().delay < timeIdle)
+                {
+                    droneActions = actionQueue.Dequeue().actionsFile;
+                    RunScript(droneActions);
+                    if (debug) Debug.Log($"droneActions='{droneActions}' was dequeued and began execution");
+                }
                 break;
         }
     }
@@ -270,6 +285,7 @@ public class DroneController : MonoBehaviour
             moves.Add(new Move(m));
 
         // 4) Final initialization work goes here
+        segmentDuration = 0f;
         if (moves.Count >= 2)
             segmentDuration = ComputeSegmentDuration(moves[0], moves[1]);
 
@@ -278,6 +294,12 @@ public class DroneController : MonoBehaviour
         brakingIndex = 0;
         timeIdle = 0f;
         segmentTimer = 0f;
+
+        if (moves.Count > 0)
+        {
+            transform.position = moves[0].position;
+            transform.rotation = moves[0].rotation;
+        }
 
         if (debug) Debug.Log("DroneController finished initialization");
         if (moves.Count >= 2)
@@ -365,36 +387,39 @@ public class DroneController : MonoBehaviour
         maneuverStartPos = transform.position;
         maneuverStartRot = transform.rotation;
 
-        Vector3 baseDirection = Vector3.forward;
-        baseDirection = (moves[moves.Count - 1].position - moves[moves.Count - 2].position).normalized;
+        Vector3 baseDirection = transform.forward;
+        if (moves.Count >= 2)
+            baseDirection = (moves[moves.Count - 1].position - moves[moves.Count - 2].position).normalized;
 
         maneuverEndPos = maneuverStartPos + baseDirection * maneuver.outwardMove;
         maneuverEndRot = maneuverStartRot * Quaternion.Euler(maneuver.targetTilt);
     }
 
-    public void EnterArena()
+    ///<summary> Set new state and run a script that enters the arena</summary>
+    public void EnterArena(string droneActions)
     {
-        // Reset state
-        currentNodeIndex = 0;
-        // TODO
-
         // Load new drone actions
-        SetState(ControllerState.InitializingController);
-        Initialize(droneActions);
-
-        PerformNextEvent();
+        RunScript(droneActions);
     }
 
-    public void ExitArena()
+    ///<summary> Run a script that leaves the arena then delete the drone</summary>
+    public void ExitArena(string droneActions)
+    {
+        destroyOnFinish = true;
+        RunScript(droneActions);
+    }
+
+    ///<summary> The drone's behavior now depends on the new droneActions</summary>
+    public void RunScript(string droneActions)
     {
         StopAllCoroutines();
-        SetState(ControllerState.Idle);
-        PerformNextEvent();
+        SetState(ControllerState.InitializingController);
+        Initialize(droneActions);
     }
 
-    public void PerformNextEvent()
+    public void EnqueueActions(QueuedDroneAction droneAction)
     {
-        //
+        actionQueue.Enqueue(droneAction);
     }
 
     private void SetState(ControllerState newState)
@@ -415,6 +440,12 @@ public class DroneController : MonoBehaviour
         else if (newState == ControllerState.Idle)
         {
             hoverOrigin = transform.position;
+
+            if (destroyOnFinish)
+            {
+                if (debug) Debug.Log($"Drone finished exit sequence and was destroyed.");
+                Destroy(gameObject);
+            }
         }
     }
 }

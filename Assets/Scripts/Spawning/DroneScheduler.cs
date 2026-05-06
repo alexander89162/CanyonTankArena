@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static DroneController;
 using static UnitManager;
 
 /*Schedules drone spawning and retreating. Receives drone spawn data 
@@ -28,7 +29,7 @@ public class DroneScheduler : MonoBehaviour
         droneConfigs = configs.ToDictionary(c => c.droneId);
 
         eventQueue = new Queue<DroneEvent>(
-        events.OrderBy(e => e.triggerTime)
+        events.OrderBy(e => e.triggerDelay)
         );
 
         if (debug) Debug.Log($"DroneScheduler initialized with {configs.Length} entries.");
@@ -36,20 +37,31 @@ public class DroneScheduler : MonoBehaviour
 
     public void Tick(float waveTimer)
     {
-        while (eventQueue.Count > 0 && eventQueue.Peek().triggerTime <= waveTimer)
-            HandleEvent(eventQueue.Dequeue());
+        while (eventQueue.Count > 0 && eventQueue.Peek().triggerDelay <= waveTimer)
+        {
+            var evt = eventQueue.Dequeue();
+
+            if (!activeDrones.TryGetValue(evt.droneId, out var drone))
+            {
+                Debug.Log($"droneId={evt.droneId} is not active but an event was dequeued and depends on it."); // this may be fine if drone was destroyed by player before it retreats
+                continue;
+            }
+
+            QueuedDroneAction droneActions = new QueuedDroneAction
+            {
+                actionsFile = evt.actionsFile,
+                delay = evt.triggerDelay
+            };
+
+            activeDrones[evt.droneId]
+                .GetComponent<DroneController>()
+                .EnqueueActions(droneActions);
+        }
     }
 
-    private void HandleEvent(DroneEvent evt)
+    public void SpawnDrone(DroneConfig droneConfig)
     {
-        if (!activeDrones.ContainsKey(evt.droneId))
-            SpawnDrone(evt.droneId);
-
-        BeginEvent(evt);
-    }
-
-    private void SpawnDrone(int droneId)
-    {
+        int droneId = droneConfig.droneId;
         if (activeDrones.ContainsKey(droneId))
         {
             Debug.LogWarning($"droneId={droneId} already exists. Skipping spawn.");
@@ -57,12 +69,12 @@ public class DroneScheduler : MonoBehaviour
         }
         if (!droneConfigs.TryGetValue(droneId, out var config))
         {
-            Debug.LogError($"droneId={droneId} not found.");
+            Debug.LogError($"SpawnDrone(): droneId={droneId} not found.");
             return;
         }
         if (!prefabLookup.TryGetValue(config.prefabName, out var prefab))
         {
-            Debug.LogError($"Prefab '{config.prefabName}' not found.");
+            Debug.LogError($"SpawnDrone(): prefab '{config.prefabName}' not found.");
             return;
         }
 
@@ -78,20 +90,6 @@ public class DroneScheduler : MonoBehaviour
 
         var controller = drone.GetComponent<DroneController>();
         drone.SetActive(true);
-        controller?.EnterArena();
-    }
-
-    private void BeginEvent(DroneEvent evt)
-    {
-        if (!activeDrones.TryGetValue(evt.droneId, out var drone))
-        {
-            Debug.LogWarning($"Drone {evt.droneId} not found for event with droneId={evt.droneId}, triggerTime={evt.triggerTime}");
-            return;
-        }
-
-        var controller = drone.GetComponent<DroneController>();
-
-        drone.SetActive(true);
-        controller?.PerformNextEvent();
+        controller.EnterArena(droneConfig.actionsFile);
     }
 }

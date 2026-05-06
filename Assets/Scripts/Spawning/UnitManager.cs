@@ -77,20 +77,21 @@ public class UnitManager : MonoBehaviour
     }
 
     [Serializable]
-    public struct DroneConfig
+    public struct DroneConfig // used to spawn drones
     {
         public int droneId;
         public string prefabName;
+        public string actionsFile;
         public int team;
         public float damageMultiplier;
         public float healthMultiplier;
     }
 
     [Serializable]
-    public struct DroneEvent
+    public struct DroneEvent // used to reroute drones after triggerDelay
     {
         public int droneId;
-        public float triggerTime;
+        public float triggerDelay;
         public string actionsFile;
     }
 
@@ -452,7 +453,7 @@ public class UnitManager : MonoBehaviour
                 Debug.LogWarning("Error: No procedural transition was found for " + currentWave);
                 return -1;
             default:
-                Debug.Log("Error: Spawn method was not specified");
+                Debug.LogWarning("Error: Spawn method was not specified");
                 return -1;
         }
     }
@@ -465,7 +466,7 @@ public class UnitManager : MonoBehaviour
 
     public void tryOnbattleExit()
     {
-            OnBattleExit?.Invoke();
-            Destroy(this);
+        OnBattleExit?.Invoke();
+        Destroy(this);
     }
 }
