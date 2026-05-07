@@ -78,7 +78,7 @@ using UnityEditor;
             unitManager = manager;
             exitPoint = exitOffset != Vector3.zero 
                 ? transform.position + transform.rotation * exitOffset
-                : transform.position + transform.forward * 90f;
+                : transform.position + transform.forward * 120f;
         }
 
         #if UNITY_EDITOR
