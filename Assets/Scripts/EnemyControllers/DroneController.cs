@@ -55,11 +55,13 @@ public class DroneController : MonoBehaviour
     {
         public string actionsFile;
         public float delay; // time AFTER previous action completes
+        public bool destroyOnFinish;
 
-        public QueuedDroneAction(string actionsFile, float delay)
+        public QueuedDroneAction(string actionsFile, float delay, bool destroyOnFinish = false)
         {
             this.actionsFile = actionsFile;
             this.delay = delay;
+            this.destroyOnFinish = destroyOnFinish;
         }
     }
     public struct Move
@@ -232,8 +234,12 @@ public class DroneController : MonoBehaviour
 
                 if (timeIdle > minTimeBeforeReroute && actionQueue.Count > 0 && actionQueue.Peek().delay < timeIdle)
                 {
-                    droneActions = actionQueue.Dequeue().actionsFile;
-                    RunScript(droneActions);
+                    var next = actionQueue.Dequeue();
+                    if (next.destroyOnFinish)
+                        ExitArena(next.actionsFile);
+                    else
+                        RunScript(next.actionsFile);
+                    
                     if (debug) Debug.Log($"droneActions='{droneActions}' was dequeued and began execution");
                 }
                 break;
@@ -439,13 +445,13 @@ public class DroneController : MonoBehaviour
         }
         else if (newState == ControllerState.Idle)
         {
-            hoverOrigin = transform.position;
-
             if (destroyOnFinish)
             {
                 if (debug) Debug.Log($"Drone finished exit sequence and was destroyed.");
                 Destroy(gameObject);
             }
+
+            hoverOrigin = transform.position;
         }
     }
 }

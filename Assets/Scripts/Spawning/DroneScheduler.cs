@@ -13,6 +13,7 @@ public class DroneScheduler : MonoBehaviour
     private Dictionary<int, DroneConfig> droneConfigs;
     private Dictionary<string, GameObject> prefabLookup;
     private Dictionary<int, GameObject> activeDrones;
+    private Queue<DroneConfig> spawnQueue;
     private Queue<DroneEvent> eventQueue;
 
     public bool debug = false;
@@ -20,23 +21,32 @@ public class DroneScheduler : MonoBehaviour
     void Awake()
     {
         prefabLookup = dronePrefabs.ToDictionary(p => p.name, p => p);
+        activeDrones = new Dictionary<int, GameObject>();
     }
 
     public void Initialize(DroneConfig[] configs, DroneEvent[] events)
     {
-        activeDrones = new Dictionary<int, GameObject>();
-
         droneConfigs = configs.ToDictionary(c => c.droneId);
+
+        spawnQueue = new Queue<DroneConfig>(
+            configs.OrderBy(c => c.spawnDelay)
+        );
 
         eventQueue = new Queue<DroneEvent>(
         events.OrderBy(e => e.triggerDelay)
         );
 
-        if (debug) Debug.Log($"DroneScheduler initialized with {configs.Length} entries.");
+        if (debug) Debug.Log($"DroneScheduler initialized with {configs.Length} config entries.");
     }
 
+    /*Called every frame by UnitManager to spawn drones, and swap their 
+    droneActions after triggerDelay to ensure events are called only when 
+    drones have spawned*/
     public void Tick(float waveTimer)
     {
+        while (spawnQueue.Count > 0 && spawnQueue.Peek().spawnDelay <= waveTimer)
+            SpawnDrone(spawnQueue.Dequeue());
+
         while (eventQueue.Count > 0 && eventQueue.Peek().triggerDelay <= waveTimer)
         {
             var evt = eventQueue.Dequeue();
@@ -50,7 +60,8 @@ public class DroneScheduler : MonoBehaviour
             QueuedDroneAction droneActions = new QueuedDroneAction
             {
                 actionsFile = evt.actionsFile,
-                delay = evt.triggerDelay
+                delay = evt.triggerDelay,
+                destroyOnFinish = evt.destroyOnFinish
             };
 
             activeDrones[evt.droneId]
@@ -59,7 +70,8 @@ public class DroneScheduler : MonoBehaviour
         }
     }
 
-    public void SpawnDrone(DroneConfig droneConfig)
+    /*Drones are spawned by Tick() based on spawnDelay*/
+    private void SpawnDrone(DroneConfig droneConfig)
     {
         int droneId = droneConfig.droneId;
         if (activeDrones.ContainsKey(droneId))
@@ -79,7 +91,6 @@ public class DroneScheduler : MonoBehaviour
         }
 
         GameObject drone = Instantiate(prefab);
-        drone.SetActive(false);
 
         activeDrones[droneId] = drone;
 
@@ -89,7 +100,8 @@ public class DroneScheduler : MonoBehaviour
         // }
 
         var controller = drone.GetComponent<DroneController>();
-        drone.SetActive(true);
         controller.EnterArena(droneConfig.actionsFile);
+
+        if (debug) Debug.Log($"Spawned droneId={droneId} with actionsFile='{droneConfig.actionsFile}'");
     }
 }

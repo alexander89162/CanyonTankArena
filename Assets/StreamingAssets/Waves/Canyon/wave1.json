@@ -16,8 +16,8 @@
     { 
     "droneId": 1, 
     "prefabName": "drone", 
-    "spawnDelay": 6.0, 
-    "actionsFile": "dronePath1", 
+    "spawnDelay": 1.0, 
+    "actionsFile": "droneEnter1", 
     "damageMultiplier": 1.0, 
     "healthMultiplier": 1.0, 
     "team": 1
@@ -27,8 +27,9 @@
   "droneEvents": [
     {
       "droneId": 1, 
-      "triggerDelay": 6.5, 
-      "actionsFile": "dronePath1"
+      "triggerDelay": 35.0, 
+      "actionsFile": "droneExit1", 
+      "destroyOnFinish": true
     }
   ]
 

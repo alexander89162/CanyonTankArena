@@ -1,0 +1,150 @@
+{
+    "movements": [
+        {
+            "moveId": 0,
+            "position": {
+                "x": -14.44024658203125,
+                "y": 231.44500732421876,
+                "z": 222.1748046875
+            },
+            "rotation": {
+                "x": 2.4600043296813967,
+                "y": 64.98201751708985,
+                "z": 0.0
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 1,
+            "position": {
+                "x": 3.55975341796875,
+                "y": 301.44500732421877,
+                "z": 352.1748046875
+            },
+            "rotation": {
+                "x": 21.607316970825197,
+                "y": 72.14614868164063,
+                "z": 21.258865356445314
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 2,
+            "position": {
+                "x": 36.659454345703128,
+                "y": 364.5852355957031,
+                "z": 508.24981689453127
+            },
+            "rotation": {
+                "x": 43.38684844970703,
+                "y": 72.4026870727539,
+                "z": 20.454662322998048
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 3,
+            "position": {
+                "x": 135.55975341796876,
+                "y": 453.44500732421877,
+                "z": 680.1748046875
+            },
+            "rotation": {
+                "x": 45.21559143066406,
+                "y": 68.46265411376953,
+                "z": 10.398601531982422
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 4,
+            "position": {
+                "x": 324.70806884765627,
+                "y": 613.6392211914063,
+                "z": 860.2853393554688
+            },
+            "rotation": {
+                "x": 47.32732391357422,
+                "y": 69.03463745117188,
+                "z": 10.81199836730957
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 5,
+            "position": {
+                "x": 602.5597534179688,
+                "y": 736.4450073242188,
+                "z": 987.1748046875
+            },
+            "rotation": {
+                "x": 49.51508331298828,
+                "y": 69.67852783203125,
+                "z": 11.293755531311036
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 6,
+            "position": {
+                "x": 795.5597534179688,
+                "y": 777.4450073242188,
+                "z": 1319.1748046875
+            },
+            "rotation": {
+                "x": 38.883052825927737,
+                "y": 47.34988021850586,
+                "z": 357.1246643066406
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 7,
+            "position": {
+                "x": 1163.559814453125,
+                "y": 645.4450073242188,
+                "z": 1644.1748046875
+            },
+            "rotation": {
+                "x": 38.883052825927737,
+                "y": 47.34988021850586,
+                "z": 357.1246643066406
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 8,
+            "position": {
+                "x": 1344.559814453125,
+                "y": 566.4450073242188,
+                "z": 1804.1748046875
+            },
+            "rotation": {
+                "x": 38.883052825927737,
+                "y": 47.34988021850586,
+                "z": 357.1246643066406
+            },
+            "endVelocity": 40.0,
+            "accelerationType": "quadraticDecreasing",
+            "rotationType": "linear"
+        }
+    ],
+    "brakingManeuvers": [],
+    "deploymentActions": []
+}

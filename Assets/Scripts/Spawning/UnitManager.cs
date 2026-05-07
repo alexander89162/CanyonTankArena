@@ -81,6 +81,7 @@ public class UnitManager : MonoBehaviour
     {
         public int droneId;
         public string prefabName;
+        public float spawnDelay;
         public string actionsFile;
         public int team;
         public float damageMultiplier;
@@ -93,6 +94,7 @@ public class UnitManager : MonoBehaviour
         public int droneId;
         public float triggerDelay;
         public string actionsFile;
+        public bool destroyOnFinish;
     }
 
     public event Action OnVictory; // when we win
