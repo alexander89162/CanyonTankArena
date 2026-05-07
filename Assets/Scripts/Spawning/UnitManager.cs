@@ -382,7 +382,7 @@ public class UnitManager : MonoBehaviour
         SetState(WaveState.WaveReady);
     }
 
-    public void DeallocateWave()
+    public IEnumerator DeallocateWave()
     /*Destroy all the GameObjects in unitHandles, then clear list*/
     {
         if (debug) Debug.Log("DeallocateWave() invoked on " + currentWave);
@@ -396,23 +396,56 @@ public class UnitManager : MonoBehaviour
 
         // try to find the next wave. If it does not exist, we can terminate this
         // UnitManager instance and send message to UI about Victory
-        string next;
-        int result = FindNextWave(currentWave, out next);
+        string nextWave = null;
+        int result = -1;
+
+        switch (waveMode.ToLower())
+        {
+            case "sequential":
+                if (!currentWave.StartsWith("wave") || !int.TryParse(currentWave.Substring(4), out int lastWaveNum))
+                {
+                    Debug.LogError("Invalid wave name: " + currentWave);
+                    OnBattleExit?.Invoke(); Destroy(this); yield break;
+                }
+
+                nextWave = "wave" + (lastWaveNum + 1);
+                string path = System.IO.Path.Combine(waveContentsPath, nextWave + ".json");
+
+                UnityWebRequest request = UnityWebRequest.Get(path);
+                yield return request.SendWebRequest();
+                result = request.result == UnityWebRequest.Result.Success ? 0 : 1;
+                break;
+
+            case "procedural":
+                if (waveTransitions != null && waveTransitions.TryGetValue(currentWave, out string next))
+                {
+                    nextWave = next;
+                    result = 0;
+                }
+                else
+                {
+                    Debug.LogWarning("No procedural transition found for " + currentWave);
+                    result = -1;
+                }
+                break;
+
+            default:
+                Debug.LogWarning("Spawn method not specified");
+                result = -1;
+                break;
+        }
 
         if (result == 0)
         {
-            currentWave = next;
+            currentWave = nextWave;
             SetState(WaveState.Allocating);
         }
         else if (result == 1)
         {
             OnVictory?.Invoke();
-
             var resultScreen = FindFirstObjectByType<GameResults>();
-
             if (resultScreen != null)
                 resultScreen.ShowWinScreen(waveTimer, spawnQueue.Count);
-
             Destroy(this);
         }
         else
@@ -421,43 +454,6 @@ public class UnitManager : MonoBehaviour
             Destroy(this);
         }
         busy = false;
-    }
-
-    public int FindNextWave(string previous, out string nextWave)
-    {
-        if (debug) Debug.Log("FindNextWave() invoked on " + currentWave);
-
-        nextWave = null;
-
-        switch (waveMode.ToLower())
-        {
-            case "sequential":
-                if (!previous.StartsWith("wave") || !int.TryParse(previous.Substring(4), out int lastWaveNum))
-                {
-                    Debug.LogError("Invalid wave name: " + previous);
-                    OnBattleExit?.Invoke(); Destroy(this); return -1;
-                }
-
-                nextWave = "wave" + (lastWaveNum + 1);
-                string path = System.IO.Path.Combine(
-                    waveContentsPath,
-                    nextWave + ".json"
-                );
-                return System.IO.File.Exists(path) ? 0 : 1;
-                
-            case "procedural": // endless mode
-                if (debug) Debug.Log("Previous wave: " + (previous ?? "NULL"));
-                if (waveTransitions != null && waveTransitions.TryGetValue(previous, out string next))
-                {
-                    nextWave = next;
-                    return 0;
-                }
-                Debug.LogWarning("Error: No procedural transition was found for " + currentWave);
-                return -1;
-            default:
-                Debug.LogWarning("Error: Spawn method was not specified");
-                return -1;
-        }
     }
     
     public void SetState(WaveState newState)
