@@ -860,13 +860,13 @@ MonoBehaviour:
   missileHideBackwardsOffset: 0.04
   liftMissileLaunchAngle: -10
   rotationOnSpawn: {x: -90, y: 0, z: 0}
-  missileExplosionScale: 1
+  missileExplosionScale: 0.7
   triggerExplosionMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 904
   damageMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 960
 --- !u!1 &4599737716883312119
 GameObject:
   m_ObjectHideFlags: 0
