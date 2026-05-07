@@ -1,0 +1,70 @@
+{
+    "movements": [
+        {
+            "moveId": 0,
+            "position": {
+                "x": 861.7369995117188,
+                "y": 267.14471435546877,
+                "z": -27.1849365234375
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 345.6903991699219,
+                "z": 0.0
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 1,
+            "position": {
+                "x": 841.0563354492188,
+                "y": 268.36236572265627,
+                "z": 229.28338623046876
+            },
+            "rotation": {
+                "x": 48.423667907714847,
+                "y": 358.44744873046877,
+                "z": 4.0204525930676029e-7
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 2,
+            "position": {
+                "x": 858.9283447265625,
+                "y": 268.0248107910156,
+                "z": 605.129638671875
+            },
+            "rotation": {
+                "x": 32.73125076293945,
+                "y": 310.5462646484375,
+                "z": -0.000001014927875075955
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 3,
+            "position": {
+                "x": 854.334716796875,
+                "y": 267.14471435546877,
+                "z": 791.7647705078125
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 242.7503204345703,
+                "z": 0.0
+            },
+            "endVelocity": 40.0,
+            "accelerationType": "quadraticDecreasing",
+            "rotationType": "linear"
+        }
+    ],
+    "brakingManeuvers": [],
+    "deploymentActions": []
+}

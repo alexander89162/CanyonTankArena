@@ -1,0 +1,134 @@
+{
+    "movements": [
+        {
+            "moveId": 0,
+            "position": {
+                "x": 854.334716796875,
+                "y": 267.14471435546877,
+                "z": 791.7647705078125
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 242.7503204345703,
+                "z": 0.0
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 1,
+            "position": {
+                "x": 666.749267578125,
+                "y": 304.11663818359377,
+                "z": 695.4631958007813
+            },
+            "rotation": {
+                "x": 58.15667724609375,
+                "y": 242.7503204345703,
+                "z": 0.0
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 2,
+            "position": {
+                "x": 392.8282470703125,
+                "y": 424.05718994140627,
+                "z": 554.5040283203125
+            },
+            "rotation": {
+                "x": 54.391441345214847,
+                "y": 242.7503204345703,
+                "z": 0.000002932696816060343
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 3,
+            "position": {
+                "x": 42.85211181640625,
+                "y": 577.0377807617188,
+                "z": 374.5159912109375
+            },
+            "rotation": {
+                "x": 53.226966857910159,
+                "y": 242.7503204345703,
+                "z": 0.000005704690465790918
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 4,
+            "position": {
+                "x": -233.04766845703126,
+                "y": 696.9451293945313,
+                "z": 232.567626953125
+            },
+            "rotation": {
+                "x": 48.09025192260742,
+                "y": 242.7503204345703,
+                "z": 0.000005112728558742674
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 5,
+            "position": {
+                "x": -541.080810546875,
+                "y": 831.9777221679688,
+                "z": 73.5504150390625
+            },
+            "rotation": {
+                "x": 49.83639144897461,
+                "y": 242.75033569335938,
+                "z": 0.000010589890734991059
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 6,
+            "position": {
+                "x": -946.107177734375,
+                "y": 772.1165161132813,
+                "z": -134.4630126953125
+            },
+            "rotation": {
+                "x": 46.659786224365237,
+                "y": 242.7503204345703,
+                "z": 0.0
+            },
+            "endVelocity": 200.0,
+            "accelerationType": "linear",
+            "rotationType": "linear"
+        },
+        {
+            "moveId": 7,
+            "position": {
+                "x": -1371.665283203125,
+                "y": 751.1447143554688,
+                "z": -353.2352294921875
+            },
+            "rotation": {
+                "x": 46.659786224365237,
+                "y": 242.7503204345703,
+                "z": 0.0
+            },
+            "endVelocity": 40.0,
+            "accelerationType": "quadraticDecreasing",
+            "rotationType": "linear"
+        }
+    ],
+    "brakingManeuvers": [],
+    "deploymentActions": []
+}

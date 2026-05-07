@@ -17,5 +17,13 @@
     { "prefabName": "tank-cannon", "spawnDelay": 23.0, "spawnPointId": 2, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
     { "prefabName": "tank-cannon", "spawnDelay": 25.0, "spawnPointId": 3, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
     { "prefabName": "tank-cannon", "spawnDelay": 26.0, "spawnPointId": 3, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 }
+  ],
+  "droneEvents": [
+    {
+      "droneId": 2, 
+      "triggerDelay": 10.0, 
+      "actionsFile": "droneExit2", 
+      "destroyOnFinish": true
+    }
   ]
 }
