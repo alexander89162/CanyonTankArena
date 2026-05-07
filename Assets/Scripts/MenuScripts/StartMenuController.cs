@@ -104,6 +104,7 @@ public class StartMenuController : MonoBehaviour
 
     private void OnPlayClicked()
     {
+        SaveManager.Instance?.LoadGame();
         StartCoroutine(LoadGameWithScreen());
     }
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.IO;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 public class SaveManager : MonoBehaviour
 {
@@ -15,8 +16,8 @@ public class SaveManager : MonoBehaviour
     [SerializeField] private InputActionReference loadAction;
     [SerializeField] private InputActionReference clearAction;
 
+    private const string GAME_ID = "tank_arena_save_v1";
     private string saveFilePath;
-    private const string SAVEKEY = "PlayerSaveData";
 
     private void Awake()
     {
@@ -28,252 +29,252 @@ public class SaveManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        saveFilePath = Path.Combine(Application.persistentDataPath, "playerSave.json");
-        //Debug.Log("SaveManager Awake - Save path: " + saveFilePath);
+
+        saveFilePath = GetSaveFilePath();
+        Debug.Log("[SaveManager] Save path: " + saveFilePath);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        MountIDBFS();
+        StartCoroutine(LoadAfterMount());
+#else
+        LoadGame();
+#endif
+    }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    private System.Collections.IEnumerator LoadAfterMount()
+    {
+        // Wait for syncfs(true) to finish before reading files
+        yield return new WaitForSeconds(0.5f);
+        LoadGame();
+    }
+#endif
+
+    private string GetSaveFilePath()
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        return "/idbfs/" + GAME_ID + "/playerSave.json";
+#else
+        string folder = Application.persistentDataPath;
+        if (!Directory.Exists(folder))
+            Directory.CreateDirectory(folder);
+        return Path.Combine(folder, "playerSave.json");
+#endif
     }
 
     private void OnEnable()
     {
-        if (saveAction?.action != null) 
+        if (saveAction != null && saveAction.action != null)
         {
             saveAction.action.Enable();
-            saveAction.action.performed += _ => SaveGame();
+            saveAction.action.performed += OnSavePressed;
         }
-        if (loadAction?.action != null) 
+        if (loadAction != null && loadAction.action != null)
         {
             loadAction.action.Enable();
-            loadAction.action.performed += _ => LoadGame();
+            loadAction.action.performed += OnLoadPressed;
         }
-        if (clearAction?.action != null) 
+        if (clearAction != null && clearAction.action != null)
         {
             clearAction.action.Enable();
-            clearAction.action.performed += _ => ClearInventory();
+            clearAction.action.performed += OnClearPressed;
         }
     }
 
-    //func to save the game
+    private void OnSavePressed(InputAction.CallbackContext ctx) { SaveGame(); }
+    private void OnLoadPressed(InputAction.CallbackContext ctx) { LoadGame(); }
+    private void OnClearPressed(InputAction.CallbackContext ctx) { ClearInventory(); }
+
     public void SaveGame()
     {
-        if (PlayerInventory.Instance == null)
-        {
-            Debug.LogError("Cannot save - PlayerInventory.Instance is null");
-            return;
-        }
+        if (PlayerInventory.Instance == null) return;
 
-        if (ScoreManager.Instance == null)
-        {
-            Debug.LogError("Cannot save - ScoreManager.Instance is null");
-            return;
-        }
+        PlayerSaveData data = new PlayerSaveData();
 
-        ScoreManager.Instance?.SaveHighScore();
-
-        PlayerSaveData data = new PlayerSaveData { 
-            inventoryItems = PlayerInventory.Instance.items, 
-            highScore = ScoreManager.Instance.highScore,
-            techData = new PlayerTechData{
-                unlockedNodeIDs = TechTreeManager.Instance.GetUnlockedNodeIDs(),
-            }
-            };
-
-        string json = JsonUtility.ToJson(data, true);
-
-        File.WriteAllText(saveFilePath, json);
-        //Debug.Log($" SAVED successfully! Items saved: {data.inventoryItems.Count}");
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-        PlayerPrefs.SetString(SAVEKEY, json);
-        PlayerPrefs.Save();
-        Debug.Log("💾 Saved to PlayerPrefs (WebGL)");
-#else
-        File.WriteAllText(saveFilePath, json);
-        Debug.Log("💾 Saved to file: " + saveFilePath);
-#endif
- 
-    }
-
-    //func to load the game
-    public void LoadGame()
-    {
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-        if (!PlayerPrefs.HasKey(SAVEKEY))
-        {
-            Debug.Log("No save data found (WebGL)");
-            return;
-        }
-        string json = PlayerPrefs.GetString(SAVEKEY);
-#else
-        if (!File.Exists(saveFilePath))
-        {
-            Debug.LogWarning("No save file found at: " + saveFilePath);
-            return;
-        }
-        string json = File.ReadAllText(saveFilePath);
-#endif
-        PlayerSaveData data = JsonUtility.FromJson<PlayerSaveData>(json);
-
-        if (PlayerInventory.Instance != null)
-        {
-            PlayerInventory.Instance.items = data.inventoryItems ?? new List<ItemInstance>();
-            PlayerInventory.Instance.TriggerInventoryChanged();
-            Debug.Log($" LOADED! Items loaded: {PlayerInventory.Instance.items.Count}");
-        }
+        data.inventoryItems = PlayerInventory.Instance.items != null ?
+                             PlayerInventory.Instance.items : new List<ItemInstance>();
 
         if (ScoreManager.Instance != null)
-        {
-            ScoreManager.Instance.highScore = data.highScore;
-            Debug.Log($" High Score Loaded: {data.highScore}");
-        }
+            data.highScore = ScoreManager.Instance.highScore;
 
         if (TechTreeManager.Instance != null)
         {
-            TechTreeManager.Instance.LoadFromData(data.techData);
-            Debug.Log($" Tech Data Loaded: Unlocked Nodes: {data.techData.unlockedNodeIDs.Count}");
+            data.techData = new PlayerTechData();
+            data.techData.unlockedNodeIDs = TechTreeManager.Instance.GetUnlockedNodeIDs();
+        }
+        else
+        {
+            data.techData = new PlayerTechData();
+        }
+
+        string json = JsonUtility.ToJson(data, true);
+        string path = GetSaveFilePath();
+
+        try
+        {
+            File.WriteAllText(path, json);
+            SyncFileSystem();
+            Debug.Log("✅ Full Game Saved");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Save failed: " + e.Message);
         }
     }
 
-    //func to clear the inventory, highscore, and tech tree, used for testing and debugging
+    public void SaveHighScore(int newHighScore)
+    {
+        if (ScoreManager.Instance != null)
+            ScoreManager.Instance.highScore = newHighScore;
+
+        SaveGame();
+    }
+
+    public int GetHighScore()
+    {
+        if (ScoreManager.Instance != null)
+            return ScoreManager.Instance.highScore;
+
+        string path = GetSaveFilePath();
+        if (!File.Exists(path)) return 0;
+
+        try
+        {
+            string json = File.ReadAllText(path);
+            PlayerSaveData data = JsonUtility.FromJson<PlayerSaveData>(json);
+            return data != null ? data.highScore : 0;
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    public void SaveTechData(PlayerTechData techData)
+    {
+        PlayerSaveData data = LoadFullSaveData();
+        data.techData = techData;
+        SaveFullData(data);
+    }
+
+    public PlayerTechData LoadTechData()
+    {
+        PlayerSaveData data = LoadFullSaveData();
+        return data != null && data.techData != null ? data.techData : new PlayerTechData();
+    }
+
+    private PlayerSaveData LoadFullSaveData()
+    {
+        string path = GetSaveFilePath();
+        if (!File.Exists(path)) return new PlayerSaveData();
+
+        try
+        {
+            string json = File.ReadAllText(path);
+            return JsonUtility.FromJson<PlayerSaveData>(json) ?? new PlayerSaveData();
+        }
+        catch
+        {
+            return new PlayerSaveData();
+        }
+    }
+
+    private void SaveFullData(PlayerSaveData data)
+    {
+        string json = JsonUtility.ToJson(data, true);
+        string path = GetSaveFilePath();
+
+        try
+        {
+            File.WriteAllText(path, json);
+            SyncFileSystem();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Tech save failed: " + e.Message);
+        }
+    }
+
+    public void LoadGame()
+    {
+        string path = GetSaveFilePath();
+        if (!File.Exists(path))
+        {
+            Debug.Log("No save data found yet.");
+            return;
+        }
+
+        try
+        {
+            string json = File.ReadAllText(path);
+            PlayerSaveData data = JsonUtility.FromJson<PlayerSaveData>(json);
+
+            if (data == null) return;
+
+            if (PlayerInventory.Instance != null)
+            {
+                PlayerInventory.Instance.items = data.inventoryItems != null ?
+                    data.inventoryItems : new List<ItemInstance>();
+                PlayerInventory.Instance.TriggerInventoryChanged();
+            }
+
+            if (ScoreManager.Instance != null)
+                ScoreManager.Instance.highScore = data.highScore;
+
+            if (TechTreeManager.Instance != null && data.techData != null)
+                TechTreeManager.Instance.LoadFromData(data.techData);
+
+            Debug.Log("✅ Game Loaded Successfully!");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Load failed: " + e.Message);
+        }
+    }
+
     public void ClearInventory()
     {
         if (PlayerInventory.Instance != null)
         {
             PlayerInventory.Instance.items.Clear();
             PlayerInventory.Instance.TriggerInventoryChanged();
-            Debug.Log(" Inventory Cleared");
         }
 
         if (ScoreManager.Instance != null)
-        {
-            ScoreManager.Instance.currentScore = 0;
             ScoreManager.Instance.highScore = 0;
-            Debug.Log("  Score Reset");
-        }
 
         if (TechTreeManager.Instance != null)
-        {
             TechTreeManager.Instance.LoadFromData(new PlayerTechData());
-            Debug.Log("  Tech Tree Reset");
-        }
 
         DeleteSave();
+        Debug.Log("🗑️ All progress cleared.");
     }
 
     public void DeleteSave()
     {
+        string path = GetSaveFilePath();
+        if (File.Exists(path))
+            File.Delete(path);
+
+        SyncFileSystem();
+        Debug.Log("Save file deleted");
+    }
+
+    // ====================== WEBGL SYNC ======================
 #if UNITY_WEBGL && !UNITY_EDITOR
-        PlayerPrefs.DeleteKey(SAVEKEY);
-        PlayerPrefs.Save();
-#else
-        if (File.Exists(saveFilePath))
-            File.Delete(saveFilePath);
+    [DllImport("__Internal")] private static extern void MountIDBFS();
+    [DllImport("__Internal")] private static extern void SyncFiles();
 #endif
-        Debug.Log("🗑️ Save data deleted");
-    }
- 
-    //func to save the highscore
-    public void SaveHighScore(int newHighScore)
+
+    private void SyncFileSystem()
     {
-        // We'll load existing data, update high score, and save
-        PlayerSaveData data;
-
-        if (File.Exists(saveFilePath))
-        {
-            string json = File.ReadAllText(saveFilePath);
-            data = JsonUtility.FromJson<PlayerSaveData>(json) ?? new PlayerSaveData();
-        }
-        else
-        {
-            data = new PlayerSaveData();
-        }
-
-        data.highScore = newHighScore;
-
-        string newJson = JsonUtility.ToJson(data, true);
-        File.WriteAllText(saveFilePath, newJson);
+#if UNITY_WEBGL && !UNITY_EDITOR
+        SyncFiles();
+#endif
     }
 
-    //func to get the highscore
-    public int GetHighScore()
-    {
-        if (!File.Exists(saveFilePath)) return 0;
-
-        string json = File.ReadAllText(saveFilePath);
-        PlayerSaveData data = JsonUtility.FromJson<PlayerSaveData>(json);
-        return data != null ? data.highScore : 0;
-    }
-
-    //when the game quits, or crash save game, needs to test crash save still
     private void OnApplicationQuit()
     {
         SaveGame();
-        TechTreeManager.Instance?.SaveTechTree();
-        ScoreManager.Instance?.SaveHighScore();
-        ScoreManager.Instance.currentScore = 0;
-    }
-
-    //func to save the tech tree data
-    public void SaveTechData(PlayerTechData techData)
-    {
-        PlayerSaveData data;
-
-        if (File.Exists(saveFilePath))
-        {
-            string json = File.ReadAllText(saveFilePath);
-            data = JsonUtility.FromJson<PlayerSaveData>(json) ?? new PlayerSaveData();
-        }
-        else
-        {
-            data = new PlayerSaveData();
-        }
-
-        data.techData = techData;
-
-        string jsonToSave = JsonUtility.ToJson(data, true);
-        File.WriteAllText(saveFilePath, jsonToSave);
-    }
-
-    //func to load the tech tree data
-    public PlayerTechData LoadTechData()
-    {
-        if (!File.Exists(saveFilePath))
-            return new PlayerTechData();
-
-        string json = File.ReadAllText(saveFilePath);
-        PlayerSaveData data = JsonUtility.FromJson<PlayerSaveData>(json);
-
-        return data?.techData ?? new PlayerTechData();
-    }
-
-    public void SaveSettings(SettingsData settings)
-{
-    string json = JsonUtility.ToJson(settings, true);
-    
-#if UNITY_WEBGL && !UNITY_EDITOR
-    PlayerPrefs.SetString("PlayerSettings", json);
-    PlayerPrefs.Save();
-#else
-    string path = Path.Combine(Application.persistentDataPath, "settings.json");
-    File.WriteAllText(path, json);
-#endif
-}
-
-public SettingsData LoadSettings()
-{
-    string json = "";
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-    if (PlayerPrefs.HasKey("PlayerSettings"))
-        json = PlayerPrefs.GetString("PlayerSettings");
-#else
-    string path = Path.Combine(Application.persistentDataPath, "settings.json");
-    if (File.Exists(path))
-        json = File.ReadAllText(path);
-#endif
-
-    if (string.IsNullOrEmpty(json))
-        return new SettingsData();
-
-    return JsonUtility.FromJson<SettingsData>(json) ?? new SettingsData();
     }
 }
