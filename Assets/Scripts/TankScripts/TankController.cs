@@ -571,8 +571,7 @@ public class TankController : MonoBehaviour
     {
         if (ghostMaterial == null)
             return;
-
-        // Ensure the material is set to use the alpha value
+        // Clamp alpha and apply to common color properties used by shaders
         color.a = Mathf.Clamp01(color.a);
 
         if (ghostMaterial.HasProperty("_BaseColor"))
@@ -581,9 +580,17 @@ public class TankController : MonoBehaviour
         if (ghostMaterial.HasProperty("_Color"))
             ghostMaterial.SetColor("_Color", color);
 
-        ghostMaterial.color = color;
+        if (ghostMaterial.HasProperty("_TintColor"))
+            ghostMaterial.SetColor("_TintColor", color);
 
-        // Force shader to recognize alpha blending
+        // Fallback to material.color for shaders that use that property
+        try
+        {
+            ghostMaterial.color = color;
+        }
+        catch { }
+
+        // If the shader exposes a surface mode flag, ensure it is marked transparent
         if (ghostMaterial.HasProperty("_Surface"))
             ghostMaterial.SetFloat("_Surface", 1f);
     }
@@ -595,10 +602,10 @@ public class TankController : MonoBehaviour
 
         ghostMaterial.SetOverrideTag("RenderType", "Transparent");
 
+        // Prefer safe property changes only when the shader exposes them.
         if (ghostMaterial.HasProperty("_Mode"))
             ghostMaterial.SetFloat("_Mode", 3f);
 
-        // URP settings for transparency
         if (ghostMaterial.HasProperty("_Surface"))
             ghostMaterial.SetFloat("_Surface", 1f);
 
@@ -617,29 +624,50 @@ public class TankController : MonoBehaviour
         if (ghostMaterial.HasProperty("_ZWrite"))
             ghostMaterial.SetFloat("_ZWrite", 0f);
 
-        // Disable depth testing to ensure transparency renders correctly
-        ghostMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
+        if (ghostMaterial.HasProperty("_ZTest"))
+            ghostMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
 
         ghostMaterial.DisableKeyword("_ALPHATEST_ON");
         ghostMaterial.EnableKeyword("_ALPHABLEND_ON");
         ghostMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        ghostMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        if (ghostMaterial.HasProperty("_Surface"))
+            ghostMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
 
-        // Ensure the material uses the correct render queue for transparency
+        // Use a transparent render queue to ensure correct ordering
         ghostMaterial.renderQueue = 3000;
     }
 
     private Material CreateGhostMaterial(Material sourceMaterial)
     {
-        Shader transparentShader = Shader.Find("Universal Render Pipeline/Unlit");
+        // Prefer a simple, platform-friendly transparent shader. "Sprites/Default" is
+        // widely supported (including WebGL). Fall back to URP or Unlit if available.
+        Shader transparentShader = Shader.Find("Sprites/Default");
+        if (transparentShader == null)
+            transparentShader = Shader.Find("Universal Render Pipeline/Unlit");
         if (transparentShader == null)
             transparentShader = Shader.Find("Unlit/Transparent");
 
-        Material ghostMaterial = transparentShader != null
-            ? new Material(transparentShader)
-            : new Material(sourceMaterial);
+        Material ghostMaterial = null;
+        if (transparentShader != null)
+        {
+            ghostMaterial = new Material(transparentShader);
 
-        CopySourceTexture(sourceMaterial, ghostMaterial);
+            // Copy the main texture into the new shader if possible
+            if (sourceMaterial != null)
+            {
+                if (sourceMaterial.HasProperty("_MainTex") && ghostMaterial.HasProperty("_MainTex"))
+                    ghostMaterial.SetTexture("_MainTex", sourceMaterial.GetTexture("_MainTex"));
+
+                if (sourceMaterial.HasProperty("_BaseMap") && ghostMaterial.HasProperty("_BaseMap"))
+                    ghostMaterial.SetTexture("_BaseMap", sourceMaterial.GetTexture("_BaseMap"));
+            }
+        }
+        else
+        {
+            // Last resort: duplicate the source material so we keep its texture/shader behavior
+            ghostMaterial = sourceMaterial != null ? new Material(sourceMaterial) : new Material(Shader.Find("Sprites/Default"));
+        }
+
         return ghostMaterial;
     }
 
