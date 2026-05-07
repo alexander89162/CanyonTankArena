@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 910600987153807274}
   - component: {fileID: 6630620664104389440}
   - component: {fileID: -4773547222628276771}
+  - component: {fileID: -9076183844911343773}
   m_Layer: 7
   m_Name: tank-cannon
   m_TagString: Enemy
@@ -395,7 +396,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3136921829313457731}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6ae97e5853cb6b84eaa627164fc930d8, type: 3}
   m_Name: 
@@ -628,6 +629,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-9076183844911343773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3136921829313457731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c77e48046b018e6429051584cc4dd4e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthBarSetup
+  healthBarPrefab: {fileID: 3482239761806860289, guid: d0fe6404c984c0c45b3e753b3e9e249e, type: 3}
+  spawnHeight: 2.8
 --- !u!1 &3237836485336562178
 GameObject:
   m_ObjectHideFlags: 0
