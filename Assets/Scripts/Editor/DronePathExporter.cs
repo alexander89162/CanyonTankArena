@@ -10,7 +10,7 @@ Note: drone armature needs to be Rotation {-90, 0, 0} for this to work.*/
 public class DronePathExporterWindow : EditorWindow
 {
     private Transform arrowParent;
-    private string jsonFileName = "dronePath1";
+    private string jsonFileName = "drone";
     private float defaultVelocity = 200f;
     private bool overrideBrakingManeuvers = true;
     private float brakingRecoilDistance = 20f;
@@ -25,11 +25,10 @@ public class DronePathExporterWindow : EditorWindow
 
     private void OnGUI()
     {
-        if (arrowParent == null)
+        if (Selection.activeGameObject != null)
         {
-            GameObject arrows = GameObject.Find("Arrows");
-            if (arrows != null)
-                arrowParent = arrows.transform;
+            arrowParent = Selection.activeGameObject.transform;
+            jsonFileName = Selection.activeGameObject.name;
         }
 
         GUILayout.Label("Drone Path Exporter", EditorStyles.boldLabel);

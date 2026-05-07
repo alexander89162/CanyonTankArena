@@ -11,5 +11,13 @@
     { "prefabName": "spikeball",   "spawnDelay": 38.0, "spawnPointId": 1, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },    
     { "prefabName": "tank-cannon", "spawnDelay": 39.0, "spawnPointId": 2, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 },
     { "prefabName": "tank-minigun", "spawnDelay": 41.0, "spawnPointId": 3, "team": 1, "damageMultiplier": 1.0, "healthMultiplier": 1.0, "movementSpeed": 1.0 }
+  ],
+  "droneEvents": [
+    {
+      "droneId": 2, 
+      "triggerDelay": 0.0, 
+      "actionsFile": "droneMove2", 
+      "destroyOnFinish": true
+    }
   ]
 }

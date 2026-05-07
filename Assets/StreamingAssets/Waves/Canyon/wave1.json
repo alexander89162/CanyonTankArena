@@ -27,7 +27,7 @@
   "droneEvents": [
     {
       "droneId": 1, 
-      "triggerDelay": 35.0, 
+      "triggerDelay": 45.0, 
       "actionsFile": "droneExit1", 
       "destroyOnFinish": true
     }
