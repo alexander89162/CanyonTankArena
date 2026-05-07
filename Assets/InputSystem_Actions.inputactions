@@ -1253,6 +1253,17 @@
                 },
                 {
                     "name": "",
+                    "id": "d5710596-a2d7-440a-97e2-17661cc828ac",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "SwapNextWeapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "4fd1b7a9-66f8-4fa0-bc2a-3c0a4d6f1c8e",
                     "path": "<Keyboard>/space",
                     "interactions": "Press",
