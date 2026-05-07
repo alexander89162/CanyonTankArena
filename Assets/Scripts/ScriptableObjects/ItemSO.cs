@@ -21,6 +21,7 @@ public abstract class ItemSO : ScriptableObject
     [Header("Stacking")]
     public bool canStack = true;
     public int maxStackSize = 999;
+    public AudioClip pickupSound;
 
 
     [Header("Multiplayer & Save")]

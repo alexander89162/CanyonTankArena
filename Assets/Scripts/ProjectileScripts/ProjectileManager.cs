@@ -12,7 +12,6 @@ public class ProjectileManager : MonoBehaviour
     [SerializeField] private Mesh bulletMesh;
     [SerializeField] private Material bulletMaterial;
 
-
     private Bullet[] bullets;
     private HitEvent[] hitBuffer;
     private Matrix4x4[] cannonMatrices;
@@ -117,7 +116,7 @@ public class ProjectileManager : MonoBehaviour
                 if (hitRoot == bullet.owner)
                 {
                     bullet.position = newPosition;
-                    return true; // ignore and continue
+                    return true;
                 }
 
                 if (hitCount < hitBuffer.Length)
@@ -133,7 +132,7 @@ public class ProjectileManager : MonoBehaviour
                 }
 
                 bullet.position = hit.point + hit.normal * 0.01f;
-                return false; // destroy bullet
+                return false;
             }
         }
 
@@ -147,11 +146,7 @@ public class ProjectileManager : MonoBehaviour
 
         var damageController = hit.target.GetComponent<DamageController>();
         if (damageController != null)
-        {
-            damageController.TakeDamage(hit.damage);
-        }
-
-        // TODO: VFX spawn goes here
+            damageController.TakeDamage(hit.damage, hit.point);
     }
 
     private void RenderProjectiles()
@@ -184,25 +179,9 @@ public class ProjectileManager : MonoBehaviour
         }
 
         if (cannonCount > 0)
-        {
-            Graphics.DrawMeshInstanced(
-                cannonShellMesh,
-                0,
-                cannonMeshMaterial,
-                cannonMatrices,
-                cannonCount
-            );
-        }
+            Graphics.DrawMeshInstanced(cannonShellMesh, 0, cannonMeshMaterial, cannonMatrices, cannonCount);
 
         if (bulletCount > 0)
-        {
-            Graphics.DrawMeshInstanced(
-                bulletMesh,
-                0,
-                bulletMaterial,
-                bulletMatrices,
-                bulletCount
-            );
-        }
+            Graphics.DrawMeshInstanced(bulletMesh, 0, bulletMaterial, bulletMatrices, bulletCount);
     }
 }

@@ -18,4 +18,5 @@ MonoBehaviour:
   rarity: 0
   canStack: 1
   maxStackSize: 999999
+  pickupSound: {fileID: 8300000, guid: ba029591754a8ce45868e2bb89adf115, type: 3}
   itemID: 98f7c680-8c22-4c3d-b1ac-b79f91825b06

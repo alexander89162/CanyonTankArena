@@ -104,12 +104,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Missile
   lifeTime: 10
-  triggerExplosionMask:
-    serializedVersion: 2
-    m_Bits: 969
-  damageMask:
-    serializedVersion: 2
-    m_Bits: 968
   explosionDamage: 120
   explosionInnerRadius: 25
   explosionOuterRadius: 55
@@ -138,6 +132,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   explosionScale: 1
+  explosionAudioSource: {fileID: 3379248641691334318, guid: c7340930fceba4e4da486d6f9d553e7d, type: 3}
 --- !u!54 &4896170561526861550
 Rigidbody:
   m_ObjectHideFlags: 0

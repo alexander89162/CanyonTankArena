@@ -16,7 +16,8 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   rarity: 1
-  canStack: 0
-  maxStackSize: 1
+  canStack: 1
+  maxStackSize: 20
+  pickupSound: {fileID: 8300000, guid: 11adc61d3d171f145b2d21365cf24c57, type: 3}
   itemID: ae0d7b9d-180d-492a-9016-83f6b5450cfa
   healthRestoreAmount: 30
