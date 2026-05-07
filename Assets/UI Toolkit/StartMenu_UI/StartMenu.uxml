@@ -49,5 +49,23 @@
                 <ui:Button name="btn-close" text="CLOSE SETTINGS" class="settings-button primary" style="position: absolute; top: -766px; left: 435px;"/>
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:VisualElement name="content-credits" class="credits-overlay" style="display: none;">
+            <ui:VisualElement name="Overlay" class="credits-container" style="position: absolute; height: 793px; width: 1378px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px;">
+                <ui:Label text="CREDITS" name="Title" class="credits-title"/>
+                <ui:VisualElement style="flex-grow: 1; position: absolute; height: 650px; width: 756px; top: 88px; left: 306px; justify-content: flex-start; align-items: center;">
+                    <ui:Label text="Game Design &amp; Development" name="GameDD" class="credits-section"/>
+                    <ui:Label text="Leonardo Granados, Huy Lam, Alexander Ramirez " class="credits-name"/>
+                    <ui:Label text="Programming" class="credits-section"/>
+                    <ui:Label text="Leonardo Granados, Huy Lam, Alexander Ramirez" class="credits-name"/>
+                    <ui:Label text="Art &amp; 3D Models" class="credits-section"/>
+                    <ui:Label text="Alexander Ramirez" class="credits-name"/>
+                    <ui:Label text="Music &amp; Sound Design" class="credits-section"/>
+                    <ui:Label text="Leonardo Granados, Huy Lam " parse-escape-sequences="true" class="credits-name"/>
+                    <ui:Label text="Special Thanks" class="credits-section"/>
+                    <ui:Label text="To Family, Friends, and to You&#10;&#x9;Thanks For Playing!" enable-rich-text="false" class="credits-name"/>
+                </ui:VisualElement>
+                <ui:Button name="btn-close-credits" text="BACK" class="credits-back-button" style="position: absolute; top: 703px; left: 582px;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

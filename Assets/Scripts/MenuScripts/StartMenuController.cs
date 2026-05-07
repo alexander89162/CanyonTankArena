@@ -1,16 +1,20 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
+using System.Collections;
 
 public class StartMenuController : MonoBehaviour
 {
     private UIDocument uiDocument;
     private VisualElement root;
-    private VisualElement settingsPanel;
 
-    // Settings UI elements
+    // Panels
+    private VisualElement settingsPanel;
+    private VisualElement creditsPanel;
+
+    // Settings UI
     private Slider masterSlider, musicSlider, sfxSlider;
-    private Button applyButton, resetButton, closeButton;
+    private Button applyButton, resetButton, closeSettingsButton;
 
     [SerializeField] private GameObject loadingScreen;
 
@@ -19,7 +23,7 @@ public class StartMenuController : MonoBehaviour
         uiDocument = GetComponent<UIDocument>();
         root = uiDocument.rootVisualElement;
 
-        // Main Menu Buttons
+        // Main Buttons
         var playButton = root.Q<Button>("Play_Btn");
         var settingsButton = root.Q<Button>("Settings_Btn");
         var creditsButton = root.Q<Button>("Credits_Btn");
@@ -30,8 +34,42 @@ public class StartMenuController : MonoBehaviour
         if (creditsButton != null) creditsButton.clicked += OnCreditsClicked;
         if (quitButton != null) quitButton.clicked += OnQuitClicked;
 
-        // Setup Settings Panel
         SetupSettingsPanel();
+        SetupCreditsPanel();
+    }
+
+    private IEnumerator FadeIn(VisualElement panel, float duration = 0.3f)
+    {
+        panel.style.display = DisplayStyle.Flex;
+        panel.style.opacity = 0f;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            panel.style.opacity = Mathf.Lerp(0f, 1f, t);
+            yield return null;
+        }
+
+        panel.style.opacity = 1f;
+    }
+
+    private IEnumerator FadeOut(VisualElement panel, float duration = 0.25f)
+    {
+        float elapsed = 0f;
+        float startOpacity = panel.style.opacity.value;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            panel.style.opacity = Mathf.Lerp(startOpacity, 0f, t);
+            yield return null;
+        }
+
+        panel.style.display = DisplayStyle.None;
+        panel.style.opacity = 0f;
     }
 
     private void SetupSettingsPanel()
@@ -44,13 +82,12 @@ public class StartMenuController : MonoBehaviour
 
         applyButton = root.Q<Button>("btn-apply");
         resetButton = root.Q<Button>("btn-reset");
-        closeButton = root.Q<Button>("btn-close");
+        closeSettingsButton = root.Q<Button>("btn-close");
 
         if (applyButton != null) applyButton.clicked += ApplySettings;
         if (resetButton != null) resetButton.clicked += ResetToDefaults;
-        if (closeButton != null) closeButton.clicked += CloseSettings;
+        if (closeSettingsButton != null) closeSettingsButton.clicked += () => StartCoroutine(FadeOut(settingsPanel));
 
-        // Load current settings when opening
         LoadSettingsIntoUI();
     }
 
@@ -58,15 +95,26 @@ public class StartMenuController : MonoBehaviour
     {
         if (settingsPanel != null)
         {
-            settingsPanel.style.display = DisplayStyle.Flex;
-            LoadSettingsIntoUI(); // Refresh values
+            StartCoroutine(FadeIn(settingsPanel));
+            LoadSettingsIntoUI();
         }
     }
 
-    private void CloseSettings()
+    private void CloseSettings() => StartCoroutine(FadeOut(settingsPanel));
+
+    private void SetupCreditsPanel()
     {
-        if (settingsPanel != null)
-            settingsPanel.style.display = DisplayStyle.None;
+        creditsPanel = root.Q<VisualElement>("content-credits");
+        var closeBtn = root.Q<Button>("btn-close-credits");
+
+        if (closeBtn != null)
+            closeBtn.clicked += () => StartCoroutine(FadeOut(creditsPanel));
+    }
+
+    private void OnCreditsClicked()
+    {
+        if (creditsPanel != null)
+            StartCoroutine(FadeIn(creditsPanel));
     }
 
     private void LoadSettingsIntoUI()
@@ -81,17 +129,9 @@ public class StartMenuController : MonoBehaviour
         if (SettingsManager.Instance != null)
         {
             SettingsManager.Instance.SaveAndApplySettings(
-                masterSlider.value,
-                musicSlider.value,
-                sfxSlider.value,
-                1.5f,           // sensitivity (can expand later)
-                3,              // Quality High
-                true,           // Fullscreen
-                false           // Invert Y
-            );
+                masterSlider.value, musicSlider.value, sfxSlider.value,
+                1.5f, 3, true, false);
         }
-
-        Debug.Log("[StartMenu] Settings Applied");
     }
 
     private void ResetToDefaults()
@@ -102,16 +142,14 @@ public class StartMenuController : MonoBehaviour
         LoadSettingsIntoUI();
     }
 
-    private void OnPlayClicked()
-    {
-        SaveManager.Instance?.LoadGame();
-        StartCoroutine(LoadGameWithScreen());
-    }
+    private void OnPlayClicked() => StartCoroutine(LoadGameWithScreen());
 
     private System.Collections.IEnumerator LoadGameWithScreen()
     {
         if (loadingScreen != null) loadingScreen.SetActive(true);
 
+        SaveManager.Instance.LoadGame();
+        
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu");
         asyncLoad.allowSceneActivation = false;
 
@@ -128,17 +166,12 @@ public class StartMenuController : MonoBehaviour
         if (loadingScreen != null) loadingScreen.SetActive(false);
     }
 
-    private void OnCreditsClicked()
-    {
-        Debug.Log("Credits clicked - TODO: Implement Credits Panel");
-    }
-
     private void OnQuitClicked()
     {
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #else
-            Application.Quit();
-        #endif
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }
