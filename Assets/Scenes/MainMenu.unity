@@ -691,7 +691,7 @@ MonoBehaviour:
   uiDocument: {fileID: 1501178744}
   arenaSceneName: Demo3-V3
   techTreeView: {fileID: 333333335}
-  mainAudioMixer: {fileID: 0}
+  mainAudioMixer: {fileID: 24100000, guid: bf08166ca0da60f41be073c49c9816fb, type: 2}
 --- !u!114 &1501178744
 MonoBehaviour:
   m_ObjectHideFlags: 0
