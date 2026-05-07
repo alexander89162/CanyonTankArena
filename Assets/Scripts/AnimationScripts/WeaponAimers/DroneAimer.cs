@@ -16,10 +16,13 @@ public class DroneAimer : WeaponAimer
     public float missileForwardAcceleration = 0f;
     public float missileGravityMultiplier = 0f;
     public float liftMissileLaunchAngle = 0f;
-    public Vector3 rotationOnSpawn = new Vector3(-90, 0, 90); // rotate spawned missiles
+    public Vector3 rotationOnSpawn = new Vector3(-90, 0, 90);
     public float missileExplosionScale = 0.7f;
     public float minSqrDistanceToAim = 400f;
-    public float maxAimDown = 40f; // max degrees up/down for aiming
+    public float maxAimDown = 40f;
+
+    [Header("Sound")]
+    [SerializeField] private AudioSource droneAudioSource;
 
     private Quaternion bodyRestRotation;
     private Quaternion weaponBone1RestRot;
@@ -47,7 +50,7 @@ public class DroneAimer : WeaponAimer
 
         Vector3 toTarget = worldTarget - transform.position;
         float targetY = toTarget.y;
-        toTarget.y = 0f; // flatten to horizontal only for sideways aiming
+        toTarget.y = 0f;
 
         if (toTarget.sqrMagnitude < minSqrDistanceToAim) return;
 
@@ -75,6 +78,10 @@ public class DroneAimer : WeaponAimer
 
         fireTimer = fireCooldown;
         Vector3 droneVelocity = (transform.position - lastPos) / Time.deltaTime;
+
+        // Play launch sound once per missile fired
+        if (droneAudioSource != null)
+            droneAudioSource.Play();
 
         SpawnMissile(targetPosition, droneVelocity, triggerExplosionMask, damageMask);
         currentAmmo--;
@@ -105,13 +112,11 @@ public class DroneAimer : WeaponAimer
 
         Quaternion spawnRot = Quaternion.AngleAxis(liftMissileLaunchAngle, weaponBone2.right) * Quaternion.Slerp(startRot, toTargetRot, t);
 
-        // Clamp by working on the direction vector instead of euler angles
         Vector3 launchDir = spawnRot * Vector3.forward;
         Vector3 launchDirFlat = new Vector3(launchDir.x, 0f, launchDir.z).normalized;
         float pitchAngle = Mathf.Atan2(-launchDir.y, new Vector2(launchDir.x, launchDir.z).magnitude) * Mathf.Rad2Deg;
         pitchAngle = Mathf.Clamp(pitchAngle, -maxAimDown, maxAimDown);
 
-        // Rebuild direction from clamped pitch and original horizontal direction
         Vector3 clampedDir = Quaternion.AngleAxis(-pitchAngle, Vector3.Cross(launchDirFlat, Vector3.up)) * launchDirFlat;
         spawnRot = Quaternion.LookRotation(clampedDir, weaponBone2.up);
 

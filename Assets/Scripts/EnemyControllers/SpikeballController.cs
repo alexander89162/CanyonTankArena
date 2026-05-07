@@ -20,13 +20,18 @@ public class SpikeballController : MonoBehaviour
     public float launchStrengthMultiplier = 370f;
     public float returnForceMultiplier = 15f;
     public float launchArcBias = 0.05f;
-    public float bounceMomentumLoss = 0.6f; // 1 = no loss, 0 = full stop
+    public float bounceMomentumLoss = 0.6f;
     public float gravityMultiplier = 6f;
     public float groundedCooloffTime = 0.1f;
     public float airControlMultiplier = 0.4f;
-    public float exitFreeRoamVel = 12f; // when velocity drops this amount, exit FreeRoam state and return to NavMesh
+    public float exitFreeRoamVel = 12f;
     public float minFreeRoamTime = 6f;
     public float radius = 9f;
+
+    [Header("Sound")]
+    [SerializeField] private AudioSource rollAudioSource;    // looping roll while approaching
+    [SerializeField] private AudioSource chargeAudioSource;  // looping charge while lifting
+    [SerializeField] private AudioSource launchAudioSource;  // one-shot on launch
 
     private NavMeshAgent agent;
     private Rigidbody rb;
@@ -50,9 +55,9 @@ public class SpikeballController : MonoBehaviour
 
     public enum AttackState
     {
-        Approaching, // roll towards target with NavMesh
-        Lifting, // Lerp position
-        FreeRoam // free roam with rigidbody until most momentum is lost (velocity < exitFreeRoamVel). This state handles both launching and bouncing
+        Approaching,
+        Lifting,
+        FreeRoam
     }
 
     void Awake()
@@ -75,6 +80,13 @@ public class SpikeballController : MonoBehaviour
 
         if (currentState == AttackState.Approaching)
         {
+            // Fade roll sound based on actual movement speed
+            if (rollAudioSource != null && rollAudioSource.isPlaying)
+            {
+                float speed = Vector3.Distance(transform.position, lastPos) / Time.deltaTime;
+                rollAudioSource.volume = Mathf.Clamp01(speed / agent.speed);
+            }
+
             float sqrDist = (enemyTarget.position - transform.position).sqrMagnitude;
             if (launchRechargeTimer > launchRechargeTime && sqrDist < minChargeDistance * minChargeDistance)
                 SetState(AttackState.Lifting);
@@ -89,9 +101,7 @@ public class SpikeballController : MonoBehaviour
             transform.position = Vector3.Lerp(liftingStartPos, liftingEndPos, t);
 
             if (t >= 1)
-            {
                 SetState(AttackState.FreeRoam);
-            }
         }
         else if (currentState == AttackState.FreeRoam)
         {
@@ -122,11 +132,7 @@ public class SpikeballController : MonoBehaviour
             if (lastGroundedTimer < -10f)
             {
                 if ((transform.position - enemyTarget.position).sqrMagnitude > 40000f)
-                {
-                    // destroy spikeball; probably went off the arena
-                    // TODO: signal death to UnitManager
                     Destroy(gameObject);
-                }
             }
 
             if (hasBouncedThisLaunch && lastGroundedTimer < 0f) rb.AddForce(Physics.gravity * gravityMultiplier, ForceMode.Acceleration);
@@ -144,7 +150,7 @@ public class SpikeballController : MonoBehaviour
     {
         repathTimer = 0f;
         
-        switch (currentState) // some states are handled in Update() instead of here since they're more time-sensitive
+        switch (currentState)
         {
             case AttackState.Approaching:
                 Vector3 toEnemy = enemyTarget.position - transform.position;
@@ -173,7 +179,7 @@ public class SpikeballController : MonoBehaviour
         if (currentState == AttackState.FreeRoam && !hasBouncedThisLaunch)
         {
             rb.linearVelocity *= bounceMomentumLoss;
-            hasBouncedThisLaunch = true; // we want only the first bounce to lose momentum
+            hasBouncedThisLaunch = true;
         }
     }
 
@@ -194,20 +200,14 @@ public class SpikeballController : MonoBehaviour
                 break;
             case AttackState.Lifting:
                 float t = liftingTimer / liftingTime;
-
-                // accelerate over time (quadratic)
-                float spinSpeed = liftSpinSpeed +  2 * liftSpinSpeed * (t * t);
-
-                // axis perpendicular to desired movement direction
+                float spinSpeed = liftSpinSpeed + 2 * liftSpinSpeed * (t * t);
                 Vector3 toTarget = (enemyTarget.position - transform.position).normalized;
                 Vector3 axis = Vector3.Cross(toTarget, Vector3.down);
-
                 spikeballRenderer.Rotate(axis, spinSpeed * Time.deltaTime, Space.World);
                 break;
             case AttackState.FreeRoam:
                 if (!hasBouncedThisLaunch)
                 {
-                    // rotate along launchDir (forward) and also sideways
                     spikeballRenderer.Rotate(launchDir, launchSpinSpeed * Time.deltaTime, Space.World);
                     spikeballRenderer.Rotate(rightOfLaunchDir, launchSpinSpeed * Time.deltaTime * 0.4f, Space.World);
                 }
@@ -215,7 +215,6 @@ public class SpikeballController : MonoBehaviour
         }
     }
 
-    ///<summary>Set the current state and handle all state changes for the specified transition</summary>
     public void SetState(AttackState newState)
     {
         switch (newState)
@@ -226,15 +225,24 @@ public class SpikeballController : MonoBehaviour
                 if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
                     agent.Warp(hit.position);
                 repathTimer = 0f;
+
+                // Stop charge, start rolling loop
+                StopSound(chargeAudioSource);
+                PlayLooping(rollAudioSource);
                 break;
+
             case AttackState.Lifting:
                 agent.enabled = false;
                 liftingTimer = 0f;
                 liftingStartPos = transform.position;
                 liftingEndPos = liftingStartPos + new Vector3(0, liftingHeight, 0);
+
+                // Stop rolling, start charge loop
+                StopSound(rollAudioSource);
+                PlayLooping(chargeAudioSource);
                 break;
+
             case AttackState.FreeRoam:
-                // Deactivate NavMesh agent and prepare RigidBody
                 agent.enabled = false;
                 rb.isKinematic = false;
                 rb.linearVelocity = Vector3.zero;
@@ -242,11 +250,14 @@ public class SpikeballController : MonoBehaviour
                 launchRechargeTimer = 0f;
                 hasBouncedThisLaunch = false;
 
-                // Find direction to player, aim and launch
                 Vector3 toTarget = (enemyTarget.position - transform.position).normalized;
                 launchDir = new Vector3(toTarget.x, toTarget.y + launchArcBias, toTarget.z).normalized;
                 rightOfLaunchDir = Vector3.Cross(launchDir, Vector3.up);
                 rb.AddForce(launchDir * rb.mass * launchStrengthMultiplier, ForceMode.Impulse);
+
+                // Stop charge, play one-shot launch
+                StopSound(chargeAudioSource);
+                PlayOneShot(launchAudioSource);
                 break;
         }
 
@@ -254,5 +265,25 @@ public class SpikeballController : MonoBehaviour
         if (debug) Debug.Log($"Changed from {currentState} to {newState}");
         #endif
         currentState = newState;
+    }
+
+    private void PlayLooping(AudioSource source)
+    {
+        if (source == null) return;
+        source.loop = true;
+        source.Play();
+    }
+
+    private void PlayOneShot(AudioSource source)
+    {
+        if (source == null) return;
+        source.loop = false;
+        source.Play();
+    }
+
+    private void StopSound(AudioSource source)
+    {
+        if (source == null) return;
+        source.Stop();
     }
 }

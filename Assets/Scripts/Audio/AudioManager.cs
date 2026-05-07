@@ -140,6 +140,12 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void PlaySFX(AudioClip clip, float volume = 1f)
+    {
+        if (clip == null) return;
+        AudioSource.PlayClipAtPoint(clip, Camera.main.transform.position, volume);
+    }
+
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;

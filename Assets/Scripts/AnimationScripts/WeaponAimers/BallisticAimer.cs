@@ -19,6 +19,9 @@ public class BallisticAimer : WeaponAimer
     public LayerMask triggerExplosionMask;
     public LayerMask damageMask;
 
+    [Header("Sound")]
+    [SerializeField] private AudioSource ballisticAudioSource;
+
     private Quaternion bodyRestRotation;
     private Vector3[] missileRestPositions;
     private float[] missileReloadTimers;
@@ -68,6 +71,11 @@ public class BallisticAimer : WeaponAimer
 
             missileLoaded[i] = false;
             currentAmmo--;
+
+            // Play launch sound once per missile fired
+            if (ballisticAudioSource != null)
+                ballisticAudioSource.Play();
+
             SpawnMissile(i, targetPosition, triggerExplosionMask, damageMask);
             missiles[i].localPosition = missileRestPositions[i] - missiles[i].localRotation * Vector3.up * missileHideBackwardsOffset;
 

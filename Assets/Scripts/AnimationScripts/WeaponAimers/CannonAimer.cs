@@ -14,7 +14,10 @@ public class CannonAimer : WeaponAimer
     public float shellDamage = 35f;
     public float projectileSpeed = 150f;
     public float shellMaxLifetime = 6f;
-    
+
+    [Header("Sound")]
+    [SerializeField] private AudioSource cannonAudioSource;
+
     private Quaternion bodyRestRotation;
     private Quaternion barrelRestRotation;
     private float reloadTimer = 0f;
@@ -29,7 +32,6 @@ public class CannonAimer : WeaponAimer
         {
             shellDamage += shellDamage * PlayerTankStats.Instance.cannonDamageMultiplier;
         }
-       
     }
 
     public override void AimAt(Vector3 worldTarget)
@@ -55,6 +57,10 @@ public class CannonAimer : WeaponAimer
         if (currentAmmo <= 0) return;
         fireTimer = fireCooldown;
         currentAmmo--;
+
+        // Play fire sound once per shot
+        if (cannonAudioSource != null)
+            cannonAudioSource.Play();
 
         Vector3 targetPos = targetPosition;
         Vector3 origin = barrelEnd.position;
