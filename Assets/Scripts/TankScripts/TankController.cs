@@ -143,6 +143,31 @@ public class TankController : MonoBehaviour
             CycleTurret();
     }
 
+    public float DashCooldownDuration => Mathf.Max(0f, dashCooldown);
+
+    public float DashCooldownRemaining
+    {
+        get
+        {
+            if (dashCooldown <= 0f)
+                return 0f;
+
+            return Mathf.Max(0f, nextDashTime - Time.time);
+        }
+    }
+
+    public float DashCooldownNormalized
+    {
+        get
+        {
+            float duration = DashCooldownDuration;
+            if (duration <= 0f)
+                return 0f;
+
+            return Mathf.Clamp01(DashCooldownRemaining / duration);
+        }
+    }
+
     private void Update()
     {
         if (Time.timeScale <= 0f)
@@ -547,6 +572,9 @@ public class TankController : MonoBehaviour
         if (ghostMaterial == null)
             return;
 
+        // Ensure the material is set to use the alpha value
+        color.a = Mathf.Clamp01(color.a);
+
         if (ghostMaterial.HasProperty("_BaseColor"))
             ghostMaterial.SetColor("_BaseColor", color);
 
@@ -554,6 +582,10 @@ public class TankController : MonoBehaviour
             ghostMaterial.SetColor("_Color", color);
 
         ghostMaterial.color = color;
+
+        // Force shader to recognize alpha blending
+        if (ghostMaterial.HasProperty("_Surface"))
+            ghostMaterial.SetFloat("_Surface", 1f);
     }
 
     private void SetMaterialTransparent(Material ghostMaterial)
@@ -566,6 +598,7 @@ public class TankController : MonoBehaviour
         if (ghostMaterial.HasProperty("_Mode"))
             ghostMaterial.SetFloat("_Mode", 3f);
 
+        // URP settings for transparency
         if (ghostMaterial.HasProperty("_Surface"))
             ghostMaterial.SetFloat("_Surface", 1f);
 
@@ -584,11 +617,15 @@ public class TankController : MonoBehaviour
         if (ghostMaterial.HasProperty("_ZWrite"))
             ghostMaterial.SetFloat("_ZWrite", 0f);
 
+        // Disable depth testing to ensure transparency renders correctly
+        ghostMaterial.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
+
         ghostMaterial.DisableKeyword("_ALPHATEST_ON");
         ghostMaterial.EnableKeyword("_ALPHABLEND_ON");
         ghostMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
         ghostMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
 
+        // Ensure the material uses the correct render queue for transparency
         ghostMaterial.renderQueue = 3000;
     }
 
