@@ -155,9 +155,8 @@ public class UnitManager : MonoBehaviour
                 if (!busy)
                 {
                     busy = true;
-                    DeallocateWave();
+                    StartCoroutine(DeallocateWave());
                 }
-                interWaveTimer = 0f;
                 break;
         }
     }
@@ -458,6 +457,12 @@ public class UnitManager : MonoBehaviour
     
     public void SetState(WaveState newState)
     {
+        switch (newState)
+        {
+            case WaveState.Deallocating:
+                interWaveTimer = 0f;
+                break;
+        }
         if (debug) Debug.Log("UnitManager changed state from " + currentState + " to " + newState);
         currentState = newState;
     }
