@@ -71,11 +71,13 @@ public class MovementController : MonoBehaviour
 
     public void HandleMovement()
     {
+        bool rotatingThisFrame = false;
         float turnInput = moveInput.x;
         if (Mathf.Abs(turnInput) > 0.01f)
         {
             float rotationThisFrame = turnInput * rotationSpeed * Time.deltaTime;
             transform.Rotate(0, rotationThisFrame, 0);
+            rotatingThisFrame = true;
         }
 
         Vector3 targetDirection = transform.forward * moveInput.y;
@@ -117,7 +119,7 @@ public class MovementController : MonoBehaviour
 
         if (tankSlopeRig != null)
         {
-            tankSlopeRig.UpdateAlignment(currentVelocity);
+            tankSlopeRig.UpdateAlignment(currentVelocity, rotatingThisFrame);
         }
         else if (tankSlope != null)
         {

@@ -35,16 +35,16 @@ public class TankSlopeForRig : MonoBehaviour
     }
 
     // Call this method every frame in controller to update alignment
-    public void UpdateAlignment(Vector3 currentVelocity)
+    public void UpdateAlignment(Vector3 currentVelocity, bool rotatingThisFrame)
     {
         if (alignRefreshTimer < alignRefreshRate) return;
 
         alignRefreshTimer = 0f;
 
-        if (currentVelocity.sqrMagnitude < minMoveSpeedToAlign)
+        if (!rotatingThisFrame && currentVelocity.sqrMagnitude < minMoveSpeedToAlign)
         {
             #if UNITY_EDITOR
-            if (debug) Debug.Log($"Skipped AlignToSlope; velocity below minMoveSpeedToAlign");
+            if (debug) Debug.Log($"Skipped AlignToSlope; velocity below minMoveSpeedToAlign and tank is not rotating");
             #endif
 
             return;

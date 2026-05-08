@@ -36,6 +36,7 @@ public class CircularFollow : MonoBehaviour
     public Vector3 moveDestination; // position to go towards
     private TankSlopeForRig tankSlope;
     private Vector3 lastPosition;
+    private Vector3 lastForward;
     private Vector3 currentForward;
 
     void Awake()
@@ -44,6 +45,7 @@ public class CircularFollow : MonoBehaviour
         tankSlope = GetComponent<TankSlopeForRig>();
 
         lastPosition = transform.position;
+        lastForward = transform.forward;
         currentForward = transform.forward;
         agent.updateUpAxis = false;
 
@@ -53,9 +55,11 @@ public class CircularFollow : MonoBehaviour
     void Update()
     {
         Vector3 vel = (transform.position - lastPosition) / Time.deltaTime;
-        tankSlope.UpdateAlignment(vel);
+        bool isTurning = Vector3.Angle(lastForward, transform.forward) > 0.5f;
+        tankSlope.UpdateAlignment(vel, isTurning);
 
         lastPosition = transform.position;
+        lastForward = transform.forward;
         repathTimer += Time.deltaTime;
         transform.position = agent.nextPosition;
         

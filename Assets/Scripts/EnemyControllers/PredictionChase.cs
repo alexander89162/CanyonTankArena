@@ -78,8 +78,11 @@ public class PredictionChase : MonoBehaviour
     void Update()
     {
         Vector3 vel = (transform.position - lastPos) / Time.deltaTime;
-        tankSlope.UpdateAlignment(vel);
+        bool isTurning = Vector3.Angle(lastForward, transform.forward) > 0.5f;
+        tankSlope.UpdateAlignment(vel, isTurning);
+
         lastPos = transform.position;
+        lastForward = transform.forward;
 
         repathTimer += Time.deltaTime;
 
