@@ -47,18 +47,17 @@ public class TreadsAnimator : MonoBehaviour
 
     void Update()
     {
-        // compute new scroll progress based on current velocity and user input (new input system)
-        Vector2 input = moveAction.ReadValue<Vector2>();
-
-        Vector3 velocity = (transform.position - lastPosition) / Time.deltaTime;
-        float forward = Vector3.Dot(velocity, transform.forward) * scrollSpeed * Time.deltaTime;
-        //float forward = input.y * scrollSpeed * Time.deltaTime;
-
-        scrollProgress += forward;
-        scrollProgress %= 1;
+        // TODO: possibly change scroll direction on each side to animate tank turning
+        
+        if (Time.deltaTime > 0)
+        {
+            Vector3 velocity = (transform.position - lastPosition) / Time.deltaTime;
+            float forward = Vector3.Dot(velocity, transform.forward) * scrollSpeed * Time.deltaTime;
+            scrollProgress += forward;
+            scrollProgress %= 1;
+        }
 
         lastPosition = transform.position;
-
         ApplyScroll();
     }
 

@@ -161,7 +161,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &1536965132422189772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,8 +193,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthBar
   healthSlider: {fileID: 1875086579295778956}
   heightOffset: 20
-  fadeStartDistance: 35
-  fadeEndDistance: 55
 --- !u!225 &4344368447952780186
 CanvasGroup:
   m_ObjectHideFlags: 0
