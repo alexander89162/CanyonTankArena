@@ -163,12 +163,7 @@ public class UnitManager : MonoBehaviour
 
     private void SetWaveContentsPath(string mapName)
     {
-    waveContentsPath = System.IO.Path.Combine(
-        Application.streamingAssetsPath,
-        "Waves",
-        mapName
-        );
-
+        waveContentsPath = Application.streamingAssetsPath + "/Waves/" + mapName;
         if (debug) Debug.Log("waveContentsPath was set to " + waveContentsPath);
     }
 
@@ -247,7 +242,7 @@ public class UnitManager : MonoBehaviour
     {
         if (debug) Debug.Log("LoadWave() invoked on " + currentWave);
 
-        string path = System.IO.Path.Combine(waveContentsPath, String.Concat(currentWave, ".json"));
+        string path = waveContentsPath + "/" + currentWave + ".json";
 
         UnityWebRequest request = UnityWebRequest.Get(path);
         yield return request.SendWebRequest();
@@ -277,10 +272,7 @@ public class UnitManager : MonoBehaviour
     {
         if (debug) Debug.Log("LoadWaveConfigurations() invoked on " + currentWave);
 
-        string path = System.IO.Path.Combine(
-            waveContentsPath,
-            "waveconfig.json"
-        );
+        string path = waveContentsPath + "/waveconfig.json";
 
         UnityWebRequest request = UnityWebRequest.Get(path);
         yield return request.SendWebRequest();
@@ -408,7 +400,7 @@ public class UnitManager : MonoBehaviour
                 }
 
                 nextWave = "wave" + (lastWaveNum + 1);
-                string path = System.IO.Path.Combine(waveContentsPath, nextWave + ".json");
+                string path = waveContentsPath + "/" + nextWave + ".json";
 
                 UnityWebRequest request = UnityWebRequest.Get(path);
                 yield return request.SendWebRequest();

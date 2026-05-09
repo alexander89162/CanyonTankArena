@@ -161,7 +161,7 @@ public class DroneController : MonoBehaviour
 
                 float t = Mathf.Clamp01(segmentTimer / segmentDuration);
                 t = ApplyAcceleration(t, moves[currentNodeIndex].accelerationType);
-                if (debug) Debug.Log($"at nodeId={currentNodeIndex}, we have t={t} before clamp");
+                //if (debug) Debug.Log($"at nodeId={currentNodeIndex}, we have t={t} before clamp");
                 t = Mathf.Clamp01(t);
 
                 // position interpolation
@@ -181,7 +181,7 @@ public class DroneController : MonoBehaviour
                 }
                 else if (t >= 1)
                 {
-                    if (debug) Debug.Log($"t>=1 so we snap to current position and rotation at currentNodeIndex={currentNodeIndex}");
+                    //if (debug) Debug.Log($"t>=1 so we snap to current position and rotation at currentNodeIndex={currentNodeIndex}");
                     segmentTimer = 0;
                     transform.position = moves[currentNodeIndex].position;
                     transform.rotation = moves[currentNodeIndex].rotation;
@@ -250,13 +250,8 @@ public class DroneController : MonoBehaviour
     /*Extract drone path data from JSON*/
     {
         // 1) Extract data from json
-        string path = System.IO.Path.Combine(
-            Application.streamingAssetsPath,
-            "DroneActions",
-            droneActions.Trim() + ".json"
-        );
+        string path = Application.streamingAssetsPath + "/DroneActions/" + droneActions.Trim() + ".json";
 
-        path = "file://" + path;
         if (debug) Debug.Log($"droneActions evaluated to {droneActions}.\nAttempted to read from path {path}");
 
         UnityWebRequest request = UnityWebRequest.Get(path);

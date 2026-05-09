@@ -386,7 +386,7 @@ MonoBehaviour:
   - {fileID: 4979332610605277302}
   - {fileID: 8641308427753764205}
   propellerSpeed: 1800
-  debug: 0
+  debug: 1
 --- !u!114 &1548096234284035057
 MonoBehaviour:
   m_ObjectHideFlags: 0
