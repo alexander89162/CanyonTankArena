@@ -1,10 +1,19 @@
 # ninja log v5
+155	3141	7994040944891613	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	c2c61f23f0f75fc4
 1	2903	7994040940288224	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	6c8b5930f368a6d1
 46	2939	7994040940427891	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	95487b415249f050
+3379	3674	7994040950281099	C:/Users/aramir316/Unity Projects/MiniTankArena/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/1k355rx1/obj/armeabi-v7a/libgame.so	f67be6f0eb812bcc
 82	2942	7994040941049393	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	160cc39d56294784
-14	2945	7994040942089638	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	a8e5da35201e8e81
 129	2974	7994040942849548	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	ac6752a4831afe70
-155	3141	7994040944891613	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	c2c61f23f0f75fc4
+14	2945	7994040942089638	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	a8e5da35201e8e81
 63	3329	7994040946655045	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	e7ac417f438b20c0
 30	3378	7994040947227022	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	60cfaa189281b99a
-3379	3674	7994040950281099	C:/Users/aramir316/Unity Projects/MiniTankArena/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/1k355rx1/obj/armeabi-v7a/libgame.so	f67be6f0eb812bcc
+67	3025	8000941351986962	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	95487b415249f050
+114	3103	8000941352098720	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	160cc39d56294784
+50	3113	8000941352435797	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	6c8b5930f368a6d1
+32	3186	8000941353765128	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	a8e5da35201e8e81
+138	3230	8000941354354202	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	ac6752a4831afe70
+194	3424	8000941356335038	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	c2c61f23f0f75fc4
+92	3591	8000941357965759	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	e7ac417f438b20c0
+13	3731	8000941359415334	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	60cfaa189281b99a
+3732	4119	8000941363350654	C:/Users/aramir316/Unity Projects/MiniTankArena/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/1k355rx1/obj/armeabi-v7a/libgame.so	f67be6f0eb812bcc

@@ -1,10 +1,19 @@
 # ninja log v5
 84	3559	7994040872233658	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	a7273ffce51e6775
+122	4208	7994040878863493	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	8e54c9ba098224e9
 1	3607	7994040872685062	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	ccad21bd4e7cd82
 66	3627	7994040872715507	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	3e6e09a3e206f5f4
-104	3718	7994040873452937	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	fcd562202c988a35
 17	3722	7994040873816732	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	b5813ed253dc3988
+104	3718	7994040873452937	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	fcd562202c988a35
 49	4139	7994040878153641	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	e052e6492b38c3dd
-122	4208	7994040878863493	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	8e54c9ba098224e9
-33	4289	7994040879611491	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	ce1c670efd6741aa
 4290	4603	7994040882809525	C:/Users/aramir316/Unity Projects/MiniTankArena/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/1k355rx1/obj/arm64-v8a/libgame.so	d5cc865af5058d66
+33	4289	7994040879611491	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	ce1c670efd6741aa
+183	7525	8000941281847003	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	a7273ffce51e6775
+75	7578	8000941283030585	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	ccad21bd4e7cd82
+137	7603	8000941283303594	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	fcd562202c988a35
+93	7646	8000941282277354	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	3e6e09a3e206f5f4
+44	8230	8000941288679954	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	b5813ed253dc3988
+200	8321	8000941290009568	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	8e54c9ba098224e9
+158	8346	8000941290064774	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	e052e6492b38c3dd
+18	8379	8000941290849584	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	ce1c670efd6741aa
+8379	9053	8000941297620444	C:/Users/aramir316/Unity Projects/MiniTankArena/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/1k355rx1/obj/arm64-v8a/libgame.so	d5cc865af5058d66
